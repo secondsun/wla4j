@@ -2,6 +2,8 @@ package net.sagaoftherealms.tools.snes.assembler.main;
 
 import net.sagaoftherealms.tools.snes.assembler.Defines;
 
+import java.io.File;
+
 import static net.sagaoftherealms.tools.snes.assembler.Defines.Output.OUTPUT_LIBRARY;
 import static net.sagaoftherealms.tools.snes.assembler.Defines.Output.OUTPUT_NONE;
 import static net.sagaoftherealms.tools.snes.assembler.Defines.Output.OUTPUT_OBJECT;
@@ -19,7 +21,8 @@ public class Flags {
 
     private Defines.Output output_format = OUTPUT_NONE;
     private String final_name;
-
+    private String ext_incdir;
+    private Defines.YesNo use_incdir = NO;
 
     public enum Result {FAILED, SUCCEEDED}
 
@@ -85,12 +88,25 @@ public class Flags {
                     break;
                 }
 
+                case "-I": {
+                    if (count + 1 < flagc) {
+                        /* get arg */
+                        parse_and_set_incdir(flags[count + 1], NO);
+                    } else
+                        return Result.FAILED;
+
+                    count++;
+                    break;
+                }
+                default: {
+                    break;
+                }
+
+
             }
 
- else if (!strcmp(flags[count], "-D")) {
 
-                continue;
-            } else if (!strcmp(flags[count], "-I")) {
+             else if (!strcmp(flags[count], "-I")) {
                 if (count + 1 < flagc) {
                     /* get arg */
                     parse_and_set_incdir(flags[count + 1], NO);
@@ -147,6 +163,30 @@ public class Flags {
 
 
         return Result.SUCCEEDED;
+
+    }
+
+    private Result parse_and_set_incdir(String flag, Defines.YesNo contains_flag) {
+        try {
+            String name;
+            int i;
+
+            /* skip the flag? */
+            if (contains_flag == YES)
+                flag = flag.substring(2);
+
+            name = flag;
+
+
+            localize_path(n);
+
+            ext_incdir = name + File.separatorChar;
+            use_incdir = YES;
+
+            return Result.SUCCEEDED;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
