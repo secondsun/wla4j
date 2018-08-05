@@ -1,13 +1,12 @@
 package net.sagaoftherealms.tools.snes.assembler;
 
 public class FileNameInfo {
-    private final int id;
-    private final String fileName;
-    private FileNameInfo next;
+    public int id;
+    public String fileName;
+    public FileNameInfo next;
 
-    public FileNameInfo(int id, String fileName) {
-        this.id = id;
-        this.fileName = fileName;
+    public FileNameInfo() {
+
     }
 
     public void setNext(FileNameInfo next) {
