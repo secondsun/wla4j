@@ -24,17 +24,25 @@ public class Flags {
     private final Result result;
     private final String[] flags;
     private Map<String, Definition> definitions = new HashMap<>();
-    private Defines.Output output_format = OUTPUT_NONE;
-    private String final_name;
-    private String ext_incdir;
-    private boolean use_incdir =  false;
-    private boolean listfile_data =  false;
-    private boolean verbose_mode = false;
-    private boolean test_mode = false;
-    private boolean makefile_rules = false;
+    private Defines.Output outputFormat = OUTPUT_NONE;
+    private String finalName;
+    private String extIncDir;
+    private boolean useExtIncDir =  false;
+    private boolean listFileData =  false;
+    private boolean verboseMode = false;
+    private boolean testMode = false;
+    private boolean makefileRules = false;
     private boolean quiet = false;
-    private boolean extra_definitions = false;
-    private String asm_name;
+    private boolean extraDefinitions = false;
+    private String asmName;
+
+    public Result getResult() {
+        return this.result;
+    }
+
+    public void setOutputFormat(Defines.Output outputFormat) {
+        this.outputFormat = outputFormat;
+    }
 
     public enum Result {FAILED, SUCCEEDED}
 
@@ -53,12 +61,12 @@ public class Flags {
 
             switch (flags[count]) {
                 case "-o": {
-                    if (output_format != OUTPUT_NONE)
+                    if (outputFormat != OUTPUT_NONE)
                         return Result.FAILED;
-                    output_format = OUTPUT_OBJECT;
+                    outputFormat = OUTPUT_OBJECT;
                     if (count + 1 < flagc) {
                         /* set output */
-                        final_name = flags[count + 1];
+                        finalName = flags[count + 1];
                     } else
                         return Result.FAILED;
 
@@ -67,12 +75,12 @@ public class Flags {
                 }
 
                 case "-l": {
-                    if (output_format != OUTPUT_NONE)
-                        throw new RuntimeException(output_format + " != OUTPUT_NONE");
-                    output_format = OUTPUT_LIBRARY;
+                    if (outputFormat != OUTPUT_NONE)
+                        throw new RuntimeException(outputFormat + " != OUTPUT_NONE");
+                    outputFormat = OUTPUT_LIBRARY;
                     if (count + 1 < flagc) {
                         /* set output */
-                        final_name = flags[count + 1];
+                        finalName = flags[count + 1];
                     } else {
                         throw new RuntimeException("parse error");
                     }
@@ -112,21 +120,21 @@ public class Flags {
                     break;
                 }
                 case "-i": {
-                    listfile_data = true;
+                    listFileData = true;
                     break;
                 }
                 case "-v": {
-                    verbose_mode = true;
+                    verboseMode = true;
                     break;
                 }
                 case "-t": {
-                    test_mode = true;
+                    testMode = true;
                     break;
                 }
                 case "-M": {
-                    makefile_rules = true;
-                    test_mode = true;
-                    verbose_mode = false;
+                    makefileRules = true;
+                    testMode = true;
+                    verboseMode = false;
                     quiet = true;
                     break;
                 }
@@ -135,12 +143,12 @@ public class Flags {
                     break;
                 }
                 case "-x": {
-                    extra_definitions = true;
+                    extraDefinitions = true;
                     break;
                 }
                 default: {
                     if (count == flags.length-1) {
-                        asm_name = (flags[count]);
+                        asmName = (flags[count]);
                         count++;
                         asm_name_def++;
                     } else {
@@ -183,8 +191,8 @@ public class Flags {
             name = flag;
 
 
-            ext_incdir = name + File.separatorChar;
-            use_incdir = true;
+            extIncDir = name + File.separatorChar;
+            useExtIncDir = true;
 
             return Result.SUCCEEDED;
         } catch (Exception e) {
@@ -242,11 +250,17 @@ public class Flags {
 
     }
 
-    private void add_a_new_definition(String key, double doubleValue, String stringVal, Defines.DefinitionType type) {
+    public void redefine(String key, double doubleValue, String stringVal, Defines.DefinitionType type) {
+            //Originally had two, now just have one
+            add_a_new_definition(key, doubleValue, stringVal, type);
+    }
+
+    public void add_a_new_definition(String key, double doubleValue, String stringVal, Defines.DefinitionType type) {
         var definition = definitions.get(key);
-        if (definition != null) {
-            throw new RuntimeException(key + " already defined");
-        }
+        //Original code has a null check here, but this is Java we don't care about strings and memeory
+//        if (definition != null) {
+//            throw new RuntimeException(key + " already defined");
+//        }
 
         switch (type) {
 
@@ -264,5 +278,51 @@ public class Flags {
 
     }
 
+    public Map<String, Definition> getDefinitions() {
+        return definitions;
+    }
 
+    public Defines.Output getOutputFormat() {
+        return outputFormat;
+    }
+
+    public String getFinalName() {
+        return finalName;
+    }
+
+    public String getExtIncDir() {
+        return extIncDir;
+    }
+
+    public boolean isUseExtIncDir() {
+        return useExtIncDir;
+    }
+
+    public boolean isListFileData() {
+        return listFileData;
+    }
+
+    public boolean isVerboseMode() {
+        return verboseMode;
+    }
+
+    public boolean isTestMode() {
+        return testMode;
+    }
+
+    public boolean isMakefileRules() {
+        return makefileRules;
+    }
+
+    public boolean isQuiet() {
+        return quiet;
+    }
+
+    public boolean isExtraDefinitions() {
+        return extraDefinitions;
+    }
+
+    public String getAsmName() {
+        return asmName;
+    }
 }
