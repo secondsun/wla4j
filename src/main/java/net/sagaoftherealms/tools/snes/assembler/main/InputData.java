@@ -155,7 +155,7 @@ public class InputData {
             /* preprocess */
             preprocess_file(include_in_tmp, buffer, full_name);
 
-            buffer.append((char)0xA);
+            buffer.append((char) 0xA);
             buffer.append('.');
             buffer.append('E');
             buffer.append(' ');
@@ -231,7 +231,7 @@ public class InputData {
     /* the mystery preprocessor - touch it and prepare for trouble ;) the preprocessor
   removes as much white space as possible from the source file. this is to make
   the parsing of the file, that follows, simpler. */
-    private static void preprocess_file(CharBuffer inputString, CharBuffer out_buffer, String file_name) {
+    private static void preprocess_file(String inputString, StringBuilder out_buffer, String file_name) {
 
         /* this is set to 1 when the parser finds a non white space symbol on the line it's parsing */
         int got_chars_on_line = 0;
@@ -249,93 +249,78 @@ public class InputData {
         int inputIndex = 0;
         int outputIndex = 0;
 
-        char *output = out_buffer;
+        char inputArray[] = inputString.toCharArray();
+        int input_end = inputArray.length;
 
-
-        for (char inputTest : inputString.toCharArray()) {
-            switch (inputTest){
+        for (int input = 0; input < inputArray.length; ) {
+            char inputTest = inputArray[input];
+            switch (inputTest) {
                 case ';':
                     /* clear a commented line */
                     input++;
-                    for (; input < input_end && *input != 0x0A && *input != 0x0D;
-                    input++)
-                    ;
-                    output--;
-                    for (; output > out_buffer && *output == ' ';output--)
-                    ;
-                    if (output < out_buffer)
-                        output = out_buffer;
-                    else if (*output != ' ')
-                    output++;
+                    for (; input < input_end && inputArray[input] != 0x0A && inputArray[input] != 0x0D;
+                         input++) {
+                    }
+
                     break;
                 case '*':
                     if (got_chars_on_line == 0) {
                         /* clear a commented line */
-                        input++;
-                        for (; input < input_end && *input != 0x0A && *input != 0x0D;
-                        input++)
-                        ;
+                        for (; input < input_end && inputArray[input] != 0x0A && inputArray[input] != 0x0D;
+                             input++) {
+                        }
+
                     } else {
                         /* multiplication! */
                         input++;
-	                    *output = '*';
-                        output++;
+                        out_buffer.append("*");
                     }
                     break;
                 case '/':
-                    if (*(input + 1) == '*'){
-                    /* remove an ANSI C -style block comment */
-                    got_chars_on_line = 0;
-                    input += 2;
-                    while (got_chars_on_line == 0) {
-                        for (; input < input_end && *input != '/' && *input != 0x0A;
-                        input++)
-                        ;
-                        if (input >= input_end) {
-                            sprintf(emsg, "Comment wasn't terminated properly in file \"%s\".\n", file_name);
-                            print_error(emsg, ERROR_INC);
-                            return FAILED;
+                    if (inputArray[input + 1] == '*') {
+                        /* remove an ANSI C -style block comment */
+                        got_chars_on_line = 0;
+                        input += 2;
+                        while (got_chars_on_line == 0) {
+                            for (; input < input_end && inputArray[input] != '/' && inputArray[input] != 0x0A;
+                                 input++)
+                                ;
+                            if (input >= input_end) {
+                                throw new RuntimeException(String.format("Comment wasn't terminated properly in file \"%s\".\n", file_name));
+
+                            }
+                            if (inputArray[input] == 0x0A) {
+                                out_buffer.append((char) 0x0A);
+                            }
+
+                            if (inputArray[input] == '/' && inputArray[input - 1] == '*') {
+                                got_chars_on_line = 1;
+                            }
+                            input++;
                         }
-                        if (*input == 0x0A){
-	                        *output = 0x0A;
-                            output++;
-                        }
-                        if (*input == '/' && *(input - 1) == '*'){
-                            got_chars_on_line = 1;
-                        }
+
+                    } else {
                         input++;
+                        out_buffer.append("/");
+                        got_chars_on_line = 1;
                     }
-                    output--;
-                    for (; output > out_buffer && *output == ' ';
-                    output--)
-                    ;
-                    if (output < out_buffer)
-                        output = out_buffer;
-                    else if (*output != ' ')
-                    output++;
-                } else {
-                    input++;
-	                *output = '/';
-                    output++;
-                    got_chars_on_line = 1;
-                }
-                break;
+                    break;
                 case ':':
                     /* finding a label resets the counters */
                     input++;
-                    *output = ':';
-                    output++;
+                    out_buffer.append(":");
                     got_chars_on_line = 0;
                     break;
                 case 0x09:
                 case ' ':
                     /* remove extra white space */
                     input++;
-                    *output = ' ';
-                    output++;
-                    for (; input < input_end && ( * input == ' ' || *input == 0x09);
-                    input++)
-                    ;
+                    out_buffer.append(' ');
+
+                    for (; input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09); input++) {
+
+                    }
+
                     got_chars_on_line = 1;
                     if (z == 1)
                         z = 2;
@@ -343,11 +328,9 @@ public class InputData {
                 case 0x0A:
                     /* take away white space from the end of the line */
                     input++;
-                    output--;
-                    for (; output > out_buffer && *output == ' '; output--);
-                    output++;
-                    *output = 0x0A;
-                    output++;
+
+                    out_buffer.append((char) 0x0A);
+
                     /* moving on to a new line */
                     got_chars_on_line = 0;
                     z = 0;
@@ -358,78 +341,75 @@ public class InputData {
                     input++;
                     break;
                 case '\'':
-                    if (*(input + 2) == '\'') {
-	                *output = '\'';
-                    input++;
-                    output++;
-	                *output = *input;
-                    input++;
-                    output++;
-                    *output = '\'';
-                    input++;
-                    output++;
-                } else {
-	                *output = '\'';
-                    input++;
-                    output++;
-                }
-                got_chars_on_line = 1;
-                break;
+                    if (inputArray[input + 2] == '\'') {
+                        out_buffer.append('\'');
+                        input++;
+                        out_buffer.append(inputArray[input]);
+
+                        input++;
+
+                        out_buffer.append('\'');
+                        input++;
+
+                    } else {
+                        out_buffer.append('\'');
+                        input++;
+
+                    }
+                    got_chars_on_line = 1;
+                    break;
                 case '"':
                     /* don't touch strings */
-                    *output = '"';
+                    out_buffer.append('"');
                     input++;
-                    output++;
+
                     got_chars_on_line = 1;
-                    while (1) {
-                        for (; input < input_end && *input != '"' && *input != 0x0A && *input != 0x0D; ) {
-	                        *output = *input;
+                    while (true) {
+                        for (; input < input_end && inputArray[input] != '"' && inputArray[input] != 0x0A && inputArray[input] != 0x0D; ) {
+                            out_buffer.append(inputArray[input]);
                             input++;
-                            output++;
+
                         }
 
                         if (input >= input_end)
                             break;
-                        else if (*input == 0x0A || *input == 0x0D) {
+                        else if (inputArray[input] == 0x0A || inputArray[input] == 0x0D) {
                             /* process 0x0A/0x0D as usual, and later when we try to input a string, the parser will fail as 0x0A comes before a " */
                             break;
-                        } else if (*input == '"' && *(input - 1) != '\\') {
-	                        *output = '"';
+                        } else if (inputArray[input] == '"' && inputArray[input - 1] != '\\') {
+                            out_buffer.append('"');
                             input++;
-                            output++;
+
                             break;
                         } else {
-	                        *output = '"';
+                            out_buffer.append('"');
                             input++;
-                            output++;
                         }
                     }
                     break;
 
                 case '(':
-                    *output = '(';
+                    out_buffer.append('(');
                     input++;
-                    output++;
-                    for (; input < input_end && ( * input == ' ' || *input == 0x09);
-                    input++)
-                    ;
+
+                    for (; input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09); input++) {
+                    }
                     got_chars_on_line = 1;
                     break;
 
                 case ')':
                     /* go back? */
-                    if (got_chars_on_line == 1 && *(output - 1) == ' ')
-                    output--;
-                    *output = ')';
+                    if (got_chars_on_line == 1 && out_buffer.charAt(out_buffer.length() - 1) == ' '){
+                        out_buffer.deleteCharAt(out_buffer.length() - 1);
+                    }
+                    out_buffer.append(')') ;
                     input++;
-                    output++;
                     got_chars_on_line = 1;
                     break;
 
                 case '[':
-                    *output = *input;
+                    out_buffer.append(inputArray[input]);
                     input++;
-                    output++;
                     got_chars_on_line = 1;
                     square_bracket_open = 1;
                     break;
@@ -438,27 +418,26 @@ public class InputData {
                 case '+':
                 case '-':
                     if (got_chars_on_line == 0) {
-                        for (; input < input_end && ( * input == '+' || *input == '-'); input++, output++){
-	                        *output = *input;
+                        for (; input < input_end && ( inputArray[input] == '+' || inputArray[input] == '-');input++){
+	                        out_buffer.append(inputArray[input]);
                         }
                         got_chars_on_line = 1;
                     } else {
 
                         /* go back? */
-                        if (*(output - 1) == ' ' && square_bracket_open == 1){
-                            output--;
+                        if (out_buffer.charAt(out_buffer.length() - 1) == ' ' && square_bracket_open == 1){
+                            out_buffer.deleteCharAt(out_buffer.length() - 1);
                         }
-                        *output = *input;
+                        out_buffer.append(inputArray[input]);
                         input++;
-                        output++;
-                        for (; input < input_end && ( * input == ' ' || *input == 0x09); input++);
+                        for (; input < input_end && ( inputArray[input] == ' ' || inputArray[input] == 0x09);input++){}
                         got_chars_on_line = 1;
                     }
                     break;
                 default:
-                    *output = *input;
+                    out_buffer.append(inputArray[input]);
                     input++;
-                    output++;
+
                     got_chars_on_line = 1;
 
                     /* mode changes... */
@@ -469,8 +448,6 @@ public class InputData {
                     break;
             }
         }
-
-        *out_size = output - out_buffer;
 
         return;
     }
