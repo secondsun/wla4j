@@ -71,22 +71,22 @@ public class Main65816 {
 
             InputData data = new InputData(flags);
             data.includeFile(flags.getAsmName());
-
-
-            if (pass_1() == FAILED)
-
-                if (pass_2() == FAILED)
-                    return 1;
-            if (pass_3() == FAILED)
-                return 1;
-            if (flags.listfile_data == YES) {
-                if (listfile_collect() == FAILED)
-                    return 1;
-            }
-            if (pass_4() == FAILED)
-                return 1;
-
-            return 0;
+//
+//
+//            if (pass_1() == FAILED)
+//
+//                if (pass_2() == FAILED)
+//                    return 1;
+//            if (pass_3() == FAILED)
+//                return 1;
+//            if (flags.listfile_data == YES) {
+//                if (listfile_collect() == FAILED)
+//                    return 1;
+//            }
+//            if (pass_4() == FAILED)
+//                return 1;
+//
+//            return 0;
 
 
         } catch (IOException e) {

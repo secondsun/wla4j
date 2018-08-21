@@ -84,7 +84,7 @@ public class InputData {
         }
 
         if (f == null) {
-            throw new RuntimeException(String.format("Error opening file \"%s\".\n", full_name))
+            throw new RuntimeException(String.format("Error opening file \"%s\".\n", full_name));
         }
 
         if (id == 1) {
@@ -145,15 +145,17 @@ public class InputData {
             file_name_id++;
         }
 
-        CharBuffer include_in_tmp = CharBuffer.wrap(FileUtils.readFileToString(f, "UTF-8"));
+        String include_in_tmp = (FileUtils.readFileToString(f, "UTF-8"));
 
 
         if (buffer.capacity() == 0) {
             buffer = CharBuffer.allocate(file_size + 4);
-
+            StringBuilder fileBuilder = new StringBuilder();
 
             /* preprocess */
-            preprocess_file(include_in_tmp, buffer, full_name);
+            preprocess_file(include_in_tmp, fileBuilder, full_name);
+
+            buffer.append(fileBuilder.toString());
 
             buffer.append((char) 0xA);
             buffer.append('.');
@@ -161,9 +163,11 @@ public class InputData {
             buffer.append(' ');
 
             open_files++;
+            System.out.println(buffer.toString());
             return;
-        } else {
-
+        }
+        else {
+/**
             tmp_b = malloc(sizeof( char) *(size + file_size + 4));
             if (tmp_b == NULL) {
                 sprintf(emsg, "Out of memory while trying to expand the project to incorporate file \"%s\".\n", full_name);
@@ -171,7 +175,7 @@ public class InputData {
                 return FAILED;
             }
 
-            /* reallocate tmp_a */
+   //         /* reallocate tmp_a
             if (tmp_a_size < file_size + 4) {
                 if (tmp_a != NULL)
                     free(tmp_a);
@@ -186,7 +190,7 @@ public class InputData {
                 tmp_a_size = file_size + 4;
             }
 
-            /* preprocess */
+            // preprocess
             inz = 0;
             preprocess_file(include_in_tmp, include_in_tmp + file_size, tmp_a, & inz, full_name);
 
@@ -205,12 +209,12 @@ public class InputData {
 
             size += inz;
             buffer = tmp_b;
-
+*/
             return;
         }
     }
 
-    private static String get_file_name(int id) {
+    private String get_file_name(int id) {
 
 
         FileNameInfo fni = file_name_info_first;
@@ -219,6 +223,8 @@ public class InputData {
                 return fni.getFileName();
             fni = fni.getNext();
         }
+
+        return fni.getFileName();
 
     }
 
