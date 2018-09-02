@@ -1,18 +1,17 @@
 package net.sagaoftherealms.tools.snes.assembler.main;
 
 import net.sagaoftherealms.tools.snes.assembler.ActiveFileInfo;
-import net.sagaoftherealms.tools.snes.assembler.FileNameInfo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.CharBuffer;
-import java.nio.charset.Charset;
+import java.util.LinkedList;
 
 import static net.sagaoftherealms.tools.snes.assembler.Defines.DefinitionType.DEFINITION_TYPE_STRING;
-import static net.sagaoftherealms.tools.snes.assembler.main.Flags.Result.FAILED;
-import static net.sagaoftherealms.tools.snes.assembler.main.Flags.Result.SUCCEEDED;
 
 /**
  * This class is the "object" which is all of the input files.  It is mutable and has a few convenience functions
@@ -20,16 +19,16 @@ import static net.sagaoftherealms.tools.snes.assembler.main.Flags.Result.SUCCEED
  */
 public class InputData {
 
+    public static final String FILE_END_MARK = ((char) 0xA) + ".E ";
+
     CharBuffer buffer = CharBuffer.allocate(0);
     final Flags flags;
 
 
-    private FileNameInfo file_name_info, file_name_info_first;
-    private String include_dir;
+    private String defaultIncludeDirectory = "." + File.pathSeparator;
 
-    private ActiveFileInfo active_file_info_last;
-    private ActiveFileInfo active_file_info_first;
-    private FileNameInfo file_name_info_last;
+    private LinkedList<ActiveFileInfo> activeFileInfoList = new LinkedList<>();
+
     private static int file_name_id = 1;
     private static int size = 0;
 
@@ -39,199 +38,139 @@ public class InputData {
         this.flags = flags;
     }
 
-    public void includeFile(String name) throws IOException {
+    public void includeFile(InputStream fileStream, String fileName) {
         int file_size;
-        int id;
-        String tmp_b, n;
-        File f;
-
-        String tmp_c, full_name;
-
-
-        /* create the full output file name */
-        if (flags.isUseExtIncDir())
-            tmp_c = flags.getExtIncDir();
-        else
-            tmp_c = include_dir;
-
-        full_name = create_full_name(tmp_c, name);
-
-        f = new File(full_name);
-        id = 0;
-
-        if ((!f.isFile() || !f.exists()) && (tmp_c == null || tmp_c.isEmpty())) {
-            throw new RuntimeException(String.format("Error opening file \"%s\".", name));
-        }
-
-        /* if not found in ext_incdir silently try the include directory */
-        if ((!f.isFile() || !f.exists()) && flags.isUseExtIncDir()) {
-            full_name = create_full_name(include_dir, name);
-
-            f = new File(full_name);
-            id = 0;
-
-            if (f == null && (include_dir == null || include_dir.isEmpty())) {
-                throw new RuntimeException(String.format("Error opening file \"%s\".", name));
-            }
-        }
-
-        /* if failed try to find the file in the current directory */
-        if (!f.isFile() || !f.exists()) {
-            System.err.println(String.format("%s:%d: ", get_file_name(active_file_info_last.filename_id), active_file_info_last.line_current));
-            System.err.println(String.format("INCLUDE_FILE: Could not open \"%s\", trying \"%s\"... ", full_name, name));
-            f = new File(name);
-            id = 1;
-        }
-
-        if (f == null) {
-            throw new RuntimeException(String.format("Error opening file \"%s\".\n", full_name));
-        }
-
-        if (id == 1) {
-            full_name = name;
-        }
-
 
         if (flags.isExtraDefinitions()) {
-            flags.redefine("WLA_FILENAME", 0.0, name, DEFINITION_TYPE_STRING);
-            flags.redefine("wla_filename", 0.0, name, DEFINITION_TYPE_STRING);
+            flags.redefine("WLA_FILENAME", 0.0, fileName, DEFINITION_TYPE_STRING);
+            flags.redefine("wla_filename", 0.0, fileName, DEFINITION_TYPE_STRING);
         }
 
-        file_size = (int) f.length();
+        ActiveFileInfo currentFileInfo = new ActiveFileInfo();
 
-        ActiveFileInfo active_file_info_tmp = new ActiveFileInfo();
+        activeFileInfoList.add(currentFileInfo);
 
-
-        if (active_file_info_first == null) {
-            active_file_info_first = active_file_info_tmp;
-            active_file_info_last = active_file_info_tmp;
-            active_file_info_tmp.prev = null;
-        } else {
-            active_file_info_tmp.prev = active_file_info_last;
-            active_file_info_last.next = active_file_info_tmp;
-            active_file_info_last = active_file_info_tmp;
-        }
-
-        active_file_info_tmp.line_current = 1;
-
+        currentFileInfo.line_current = 1;
         /* name */
-        FileNameInfo file_name_info_tmp = file_name_info_first;
-        id = 0;
-        while (file_name_info_tmp != null) {
-            if (file_name_info_tmp.getFileName().equals(full_name)) {
-                id = file_name_info_tmp.getId();
-                active_file_info_tmp.filename_id = id;
-                break;
-            }
-            file_name_info_tmp = file_name_info_tmp.getNext();
+        currentFileInfo.filename_id = file_name_id;
+        file_name_id++;
+
+        String fileContents = null;
+
+        try {
+            fileContents = IOUtils.toString(fileStream, "UTF-8");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
-        if (id == 0) {
-            file_name_info_tmp = new FileNameInfo();
-            n = full_name;
-
-            if (file_name_info_first == null) {
-                file_name_info_first = file_name_info_tmp;
-                file_name_info_last = file_name_info_tmp;
-            } else {
-                file_name_info_last.setNext(file_name_info_tmp);
-                file_name_info_last = file_name_info_tmp;
-            }
-
-
-            file_name_info_tmp.fileName = n;
-            active_file_info_tmp.filename_id = file_name_id;
-            file_name_info_tmp.id = file_name_id;
-            file_name_id++;
-        }
-
-        String include_in_tmp = (FileUtils.readFileToString(f, "UTF-8"));
-
-
+        file_size = fileContents.length();
         if (buffer.capacity() == 0) {
-            buffer = CharBuffer.allocate(file_size + 4);
+
             StringBuilder fileBuilder = new StringBuilder();
 
             /* preprocess */
-            preprocess_file(include_in_tmp, fileBuilder, full_name);
+            preprocess_file(fileContents, fileBuilder, fileName);
+            String preprocessedFile = fileBuilder.toString();
+            buffer = CharBuffer.allocate(preprocessedFile.length() + 4);
+            buffer.append(preprocessedFile);
 
-            buffer.append(fileBuilder.toString());
-
-            buffer.append((char) 0xA);
-            buffer.append('.');
-            buffer.append('E');
-            buffer.append(' ');
+            buffer.append(FILE_END_MARK);
 
             open_files++;
-            System.out.println(buffer.toString());
+            
+            return;
+        } else {
+            /**
+             tmp_b = malloc(sizeof( char) *(size + file_size + 4));
+             if (tmp_b == NULL) {
+             sprintf(emsg, "Out of memory while trying to expand the project to incorporate file \"%s\".\n", full_name);
+             print_error(emsg, ERROR_INC);
+             return FAILED;
+             }
+
+             //         /* reallocate tmp_a
+             if (tmp_a_size < file_size + 4) {
+             if (tmp_a != NULL)
+             free(tmp_a);
+
+             tmp_a = malloc(sizeof( char) *(file_size + 4));
+             if (tmp_a == NULL) {
+             sprintf(emsg, "Out of memory while allocating new room for \"%s\".\n", full_name);
+             print_error(emsg, ERROR_INC);
+             return FAILED;
+             }
+
+             tmp_a_size = file_size + 4;
+             }
+
+             // preprocess
+             inz = 0;
+             preprocess_file(include_in_tmp, include_in_tmp + file_size, tmp_a, & inz, full_name);
+
+             tmp_a[inz++] = 0xA;
+             tmp_a[inz++] = '.';
+             tmp_a[inz++] = 'E';
+             tmp_a[inz++] = ' ';
+
+             open_files++;
+
+             memcpy(tmp_b, buffer, i);
+             memcpy(tmp_b + i, tmp_a, inz);
+             memcpy(tmp_b + i + inz, buffer + i, size - i);
+
+             free(buffer);
+
+             size += inz;
+             buffer = tmp_b;
+             */
             return;
         }
-        else {
-/**
-            tmp_b = malloc(sizeof( char) *(size + file_size + 4));
-            if (tmp_b == NULL) {
-                sprintf(emsg, "Out of memory while trying to expand the project to incorporate file \"%s\".\n", full_name);
-                print_error(emsg, ERROR_INC);
-                return FAILED;
-            }
 
-   //         /* reallocate tmp_a
-            if (tmp_a_size < file_size + 4) {
-                if (tmp_a != NULL)
-                    free(tmp_a);
+    }
 
-                tmp_a = malloc(sizeof( char) *(file_size + 4));
-                if (tmp_a == NULL) {
-                    sprintf(emsg, "Out of memory while allocating new room for \"%s\".\n", full_name);
-                    print_error(emsg, ERROR_INC);
-                    return FAILED;
-                }
+    public void includeFile(String name) throws IOException {
 
-                tmp_a_size = file_size + 4;
-            }
+        File f;
 
-            // preprocess
-            inz = 0;
-            preprocess_file(include_in_tmp, include_in_tmp + file_size, tmp_a, & inz, full_name);
+        String includeDirectory, fullName;
 
-            tmp_a[inz++] = 0xA;
-            tmp_a[inz++] = '.';
-            tmp_a[inz++] = 'E';
-            tmp_a[inz++] = ' ';
-
-            open_files++;
-
-            memcpy(tmp_b, buffer, i);
-            memcpy(tmp_b + i, tmp_a, inz);
-            memcpy(tmp_b + i + inz, buffer + i, size - i);
-
-            free(buffer);
-
-            size += inz;
-            buffer = tmp_b;
-*/
-            return;
+        if (name == null) {
+            name = "";
         }
+
+        /* create the full output file name */
+        if (flags.useExternalIncludesDirectory())
+            includeDirectory = flags.getExternalIncludesDirectory();
+        else
+            includeDirectory = defaultIncludeDirectory;
+
+        fullName = createFullName(includeDirectory, name);
+
+        f = new File(fullName);
+
+        /* if failed then try to find the file in the current directory */
+        if (!f.isFile() || !f.exists()) {
+            if (activeFileInfoList.getLast() != null) {
+                System.err.println(String.format("%s:%d: ", activeFileInfoList.getLast().filename, activeFileInfoList.getLast().line_current));
+            }
+
+            throw new RuntimeException(String.format("Error opening file \"%s\".\n", fullName));
+        }
+
+        includeFile(new FileInputStream(f), fullName);
+
     }
 
     private String get_file_name(int id) {
-
-
-        FileNameInfo fni = file_name_info_first;
-        while (fni != null) {
-            if (id == fni.getId())
-                return fni.getFileName();
-            fni = fni.getNext();
+        if (activeFileInfoList.get(id) != null) {
+            return activeFileInfoList.get(id).filename;
+        } else {
+            return null;
         }
-
-        return fni.getFileName();
-
     }
 
-    private static String create_full_name(String tmp_c, String name) {
-        tmp_c = tmp_c == null ? ("." + File.pathSeparator) : tmp_c;
-        name = name == null ? "" : name;
-        return tmp_c + name;
+    private static String createFullName(String path, String fileName) {
+        return path + fileName;
     }
 
     /* the mystery preprocessor - touch it and prepare for trouble ;) the preprocessor
@@ -252,8 +191,6 @@ public class InputData {
 
 
         int square_bracket_open = 0;
-        int inputIndex = 0;
-        int outputIndex = 0;
 
         char inputArray[] = inputString.toCharArray();
         int input_end = inputArray.length;
@@ -335,6 +272,14 @@ public class InputData {
                     /* take away white space from the end of the line */
                     input++;
 
+                    if (out_buffer.length() > 0 ) {
+                        int endIndex = out_buffer.length() - 1;
+
+                        while (out_buffer.charAt(endIndex) == ' ' && endIndex >= 0) {
+                            out_buffer.deleteCharAt(endIndex);
+                            endIndex = out_buffer.length() - 1;
+                        }
+                    }
                     out_buffer.append((char) 0x0A);
 
                     /* moving on to a new line */
@@ -405,10 +350,10 @@ public class InputData {
 
                 case ')':
                     /* go back? */
-                    if (got_chars_on_line == 1 && out_buffer.charAt(out_buffer.length() - 1) == ' '){
+                    if (got_chars_on_line == 1 && out_buffer.charAt(out_buffer.length() - 1) == ' ') {
                         out_buffer.deleteCharAt(out_buffer.length() - 1);
                     }
-                    out_buffer.append(')') ;
+                    out_buffer.append(')');
                     input++;
                     got_chars_on_line = 1;
                     break;
@@ -424,19 +369,20 @@ public class InputData {
                 case '+':
                 case '-':
                     if (got_chars_on_line == 0) {
-                        for (; input < input_end && ( inputArray[input] == '+' || inputArray[input] == '-');input++){
-	                        out_buffer.append(inputArray[input]);
+                        for (; input < input_end && (inputArray[input] == '+' || inputArray[input] == '-'); input++) {
+                            out_buffer.append(inputArray[input]);
                         }
                         got_chars_on_line = 1;
                     } else {
 
                         /* go back? */
-                        if (out_buffer.charAt(out_buffer.length() - 1) == ' ' && square_bracket_open == 1){
+                        if (out_buffer.charAt(out_buffer.length() - 1) == ' ' && square_bracket_open == 1) {
                             out_buffer.deleteCharAt(out_buffer.length() - 1);
                         }
                         out_buffer.append(inputArray[input]);
                         input++;
-                        for (; input < input_end && ( inputArray[input] == ' ' || inputArray[input] == 0x09);input++){}
+                        for (; input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09); input++) {
+                        }
                         got_chars_on_line = 1;
                     }
                     break;

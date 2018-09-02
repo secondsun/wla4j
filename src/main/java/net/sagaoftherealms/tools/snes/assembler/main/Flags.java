@@ -57,7 +57,7 @@ public class Flags {
         StringBuilder str_build = null;
         int flagc = flags.length;
 
-        for (count = 1; count < flags.length; count++) {
+        for (count = 0; count < flags.length; count++) {
 
             switch (flags[count]) {
                 case "-o": {
@@ -290,11 +290,11 @@ public class Flags {
         return finalName;
     }
 
-    public String getExtIncDir() {
+    public String getExternalIncludesDirectory() {
         return extIncDir;
     }
 
-    public boolean isUseExtIncDir() {
+    public boolean useExternalIncludesDirectory() {
         return useExtIncDir;
     }
 
