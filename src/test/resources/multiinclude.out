@@ -5,6 +5,39 @@
 
 
 .INCLUDE "defines.i"
+
+
+
+
+.INCLUDE "snes_memory.i"
+
+
+
+.MEMORYMAP
+SLOTSIZE $10000
+DEFAULTSLOT 0
+SLOT 0 $0000
+.ENDME
+
+.E 
+
+.ROMBANKMAP
+BANKSTOTAL 2
+BANKSIZE $10000
+BANKS 2
+.ENDRO
+
+.EMPTYFILL 0
+.NAME "1234567890abcdefghijk"
+.SMC
+
+.SNESHEADER
+HIROM
+FASTROM
+SRAMSIZE 1
+.ENDSNES
+
+.E 
 .DEFINE TESA $fe
 
 
@@ -245,3 +278,5 @@ tests: .db "ASCIITest\0\0\0\0ASCIITest","\x0a\x10\xbb\x11ASCIITest"
 
 .ends
 
+
+.E 

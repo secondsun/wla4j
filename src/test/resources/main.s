@@ -244,3 +244,4 @@ tests:	.db "ASCIITest\0\0\0\0ASCIITest", "\x0a\x10\xbb\x11ASCIITest"
 	.db ".DLTest"
 
 .ends
+

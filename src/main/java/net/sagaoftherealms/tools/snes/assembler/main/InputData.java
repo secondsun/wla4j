@@ -39,7 +39,6 @@ public class InputData {
     }
 
     public void includeFile(InputStream fileStream, String fileName) {
-        int file_size;
 
         if (flags.isExtraDefinitions()) {
             flags.redefine("WLA_FILENAME", 0.0, fileName, DEFINITION_TYPE_STRING);
@@ -63,7 +62,6 @@ public class InputData {
             throw new RuntimeException(e);
         }
 
-        file_size = fileContents.length();
         if (buffer.capacity() == 0) {
 
             StringBuilder fileBuilder = new StringBuilder();
@@ -77,52 +75,30 @@ public class InputData {
             buffer.append(FILE_END_MARK);
 
             open_files++;
-            
+
             return;
         } else {
-            /**
-             tmp_b = malloc(sizeof( char) *(size + file_size + 4));
-             if (tmp_b == NULL) {
-             sprintf(emsg, "Out of memory while trying to expand the project to incorporate file \"%s\".\n", full_name);
-             print_error(emsg, ERROR_INC);
-             return FAILED;
-             }
 
-             //         /* reallocate tmp_a
-             if (tmp_a_size < file_size + 4) {
-             if (tmp_a != NULL)
-             free(tmp_a);
+            int position = buffer.position();
+            buffer.position(0);
 
-             tmp_a = malloc(sizeof( char) *(file_size + 4));
-             if (tmp_a == NULL) {
-             sprintf(emsg, "Out of memory while allocating new room for \"%s\".\n", full_name);
-             print_error(emsg, ERROR_INC);
-             return FAILED;
-             }
 
-             tmp_a_size = file_size + 4;
-             }
+            StringBuilder fileBuilder = new StringBuilder();
 
-             // preprocess
-             inz = 0;
-             preprocess_file(include_in_tmp, include_in_tmp + file_size, tmp_a, & inz, full_name);
+            preprocess_file(fileContents, fileBuilder, fileName);
+            CharBuffer newBuffer = CharBuffer.allocate(buffer.capacity() + fileBuilder.toString().length() + FILE_END_MARK.length());
+            fileBuilder.append(FILE_END_MARK);
 
-             tmp_a[inz++] = 0xA;
-             tmp_a[inz++] = '.';
-             tmp_a[inz++] = 'E';
-             tmp_a[inz++] = ' ';
+            open_files++;
 
-             open_files++;
+            newBuffer.append(buffer.subSequence(0, position).toString());
+            newBuffer.append(fileBuilder.toString());
+            newBuffer.append(buffer.subSequence(position, buffer.length()).toString());
 
-             memcpy(tmp_b, buffer, i);
-             memcpy(tmp_b + i, tmp_a, inz);
-             memcpy(tmp_b + i + inz, buffer + i, size - i);
 
-             free(buffer);
-
-             size += inz;
-             buffer = tmp_b;
-             */
+            size += newBuffer.length();
+            buffer = newBuffer;
+            buffer.position(position);
             return;
         }
 
@@ -272,7 +248,7 @@ public class InputData {
                     /* take away white space from the end of the line */
                     input++;
 
-                    if (out_buffer.length() > 0 ) {
+                    if (out_buffer.length() > 0) {
                         int endIndex = out_buffer.length() - 1;
 
                         while (out_buffer.charAt(endIndex) == ' ' && endIndex >= 0) {
