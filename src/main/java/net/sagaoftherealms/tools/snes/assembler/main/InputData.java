@@ -21,7 +21,7 @@ public class InputData {
 
     public static final String FILE_END_MARK = ((char) 0xA) + ".E ";
 
-    CharBuffer buffer = CharBuffer.allocate(0);
+    public CharBuffer buffer = CharBuffer.allocate(0);
     final Flags flags;
 
 
