@@ -5,45 +5,57 @@
  */
 package net.sagaoftherealms.tools.snes.assembler.pass;
 
+import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.pass.macro.MacroRuntime;
 import net.sagaoftherealms.tools.snes.assembler.pass.macro.MacroStatic;
 
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
+import java.io.PrintStream;
+
+import static net.sagaoftherealms.tools.snes.assembler.Defines.Output.OUTPUT_LIBRARY;
 
 /**
- *
  * @author summers
  */
 public class Pass1 {
 
     private final InputData data;
+    private final Flags flags;
     Slot slots[] = new Slot[256];
-    
-    
-    public Pass1(InputData data) {
+    private boolean newline_beginning;
+    private boolean line_count_status;
+    private boolean listfile_data;
+    private OutputStream output = System.out;
+
+
+    public Pass1(InputData data, Flags flags) {
         this.data = data;
+        this.flags = flags;
     }
-    
-    public void pass(OutputStream output) {
+
+    public void pass() {
         MacroStatic m;
         MacroRuntime mrt;
-        
-        for (int i = 0; i< 256; i++) {
-            slots[i] = new Slot(0,0);
-        }
-        
-        data.buffer.rewind();
-        /*
-        * /* output the file id * /
-        fprintf(file_out_ptr, "f%d ", active_file_info_tmp->filename_id);
 
-        /* BANK 0 SLOT 0 ORG 0 * /
-        if (output_format != OUTPUT_LIBRARY)
-            fprintf(file_out_ptr, "B%d %d O%d", 0, 0, 0);
+
+        int slotIndex = 0;
+
+        for (slotIndex = 0; slotIndex < 256; slotIndex++) {
+            slots[slotIndex] = new Slot(0, 0);
+        }
+
+        data.buffer.rewind();
+
+
+        /* output the file id */
+        ((PrintStream) output).print(String.format("f%d ", data.getActiveFile().filename_id));
+
+
+        /* BANK 0 SLOT 0 ORG 0 */
+        if (flags.getOutputFormat() != OUTPUT_LIBRARY) {
+            ((PrintStream) output).print(String.format("B%d %d O%d", 0, 0, 0));
+        }
 
         while ((t = get_next_token()) == SUCCEEDED) {
             q = evaluate_token();
@@ -51,9 +63,9 @@ public class Pass1 {
             if (q == SUCCEEDED)
                 continue;
             else if (q == EVALUATE_TOKEN_EOP) {
-                /*write_log_summers(buffer, size);* /
+                /*write_log_summers(buffer, size);*/
                 return SUCCEEDED;
-            }
+            }/*
             else if (q == EVALUATE_TOKEN_NOT_IDENTIFIED) {
                 /* check if it is of the form "LABEL:XYZ" * /
                 for (q = 0; q < ss; q++)
@@ -191,6 +203,110 @@ public class Pass1 {
         return FAILED;
         * 
         * */
+        }
     }
-    
+
+    int get_next_token() {
+
+        char nextChar = data.buffer.get();
+
+        while (true) {
+            if (data.buffer.length() == data.buffer.position()) {
+                break;
+            } else if (nextChar == ' ') {
+                newline_beginning = false;
+                continue;
+            }
+            if (nextChar == 0xA) {
+                next_line();
+                continue;
+            }
+            break;
+        }
+
+        if (buffer[i] == '"') {
+            for (ss = 0, i++; buffer[i] != 0xA && buffer[i] != '"'; ) {
+                if (buffer[i] == '\\' && buffer[i + 1] == '"') {
+                    tmp[ss++] = '"';
+                    i += 2;
+                } else
+                    tmp[ss++] = buffer[i++];
+            }
+
+            if (buffer[i] == 0xA) {
+                print_error("GET_NEXT_TOKEN: String wasn't terminated properly.\n", ERROR_NONE);
+                return FAILED;
+            }
+            tmp[ss] = 0;
+            i++;
+
+            /* expand e.g., \1 and \@ */
+            if (macro_active != 0) {
+                if (expand_macro_arguments(tmp) == FAILED)
+                    return FAILED;
+                ss = strlen(tmp);
+            }
+
+            return GET_NEXT_TOKEN_STRING;
+        }
+
+        if (buffer[i] == '.') {
+            tmp[0] = '.';
+            i++;
+            for (ss = 1; buffer[i] != 0x0A && buffer[i] != ' ' && ss < MAX_NAME_LENGTH; ) {
+                tmp[ss] = buffer[i];
+                cp[ss - 1] = toupper((int) buffer[i]);
+                i++;
+                ss++;
+            }
+            cp[ss - 1] = 0;
+        } else if (buffer[i] == '=' || buffer[i] == '>' || buffer[i] == '<' || buffer[i] == '!') {
+            for (ss = 0; buffer[i] != 0xA && (buffer[i] == '=' || buffer[i] == '!' || buffer[i] == '<' || buffer[i] == '>')
+                    && ss < MAX_NAME_LENGTH; tmp[ss++] = buffer[i++])
+                ;
+        } else {
+            for (ss = 0; buffer[i] != 0xA && buffer[i] != ',' && buffer[i] != ' ' && ss < MAX_NAME_LENGTH; ) {
+                tmp[ss] = buffer[i];
+                ss++;
+                i++;
+            }
+            if (buffer[i] == ',')
+                i++;
+        }
+
+        if (ss >= MAX_NAME_LENGTH) {
+            print_error("GET_NEXT_TOKEN: Too long for a token.\n", ERROR_NONE);
+            return FAILED;
+        }
+
+        tmp[ss] = 0;
+
+        /* expand e.g., \1 and \@ */
+        if (macro_active != 0) {
+            if (expand_macro_arguments(tmp) == FAILED)
+                return FAILED;
+            ss = strlen(tmp);
+        }
+
+        return SUCCEEDED;
+    }
+
+    private void next_line() {
+        newline_beginning = true;
+
+        if (line_count_status == false) {
+            return;
+        }
+
+        /* output the file number for list file structure building */
+        if (listfile_data == true) {
+            ((PrintStream) output).print(String.format("k%d ", active_file_info_last.));
+        }
+
+        if (active_file_info_last != NULL) {
+            active_file_info_last -> line_current++;
+        }
+    }
+
+
 }

@@ -30,6 +30,12 @@ public class InputData {
     private LinkedList<ActiveFileInfo> activeFileInfoList = new LinkedList<>();
 
     private static int file_name_id = 1;
+
+    public ActiveFileInfo getActiveFile() {
+        return activeFile;
+    }
+
+    private ActiveFileInfo activeFile;
     private static int size = 0;
 
     private static int open_files = 0;
@@ -45,13 +51,13 @@ public class InputData {
             flags.redefine("wla_filename", 0.0, fileName, DEFINITION_TYPE_STRING);
         }
 
-        ActiveFileInfo currentFileInfo = new ActiveFileInfo();
+        activeFile = new ActiveFileInfo();
 
-        activeFileInfoList.add(currentFileInfo);
+        activeFileInfoList.add(activeFile);
 
-        currentFileInfo.line_current = 1;
+        activeFile.line_current = 1;
         /* name */
-        currentFileInfo.filename_id = file_name_id;
+        activeFile.filename_id = file_name_id;
         file_name_id++;
 
         String fileContents = null;
