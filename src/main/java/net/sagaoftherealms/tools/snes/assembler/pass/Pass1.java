@@ -45,27 +45,28 @@ public class Pass1 {
             slots[slotIndex] = new Slot(0, 0);
         }
 
-        data.buffer.rewind();
+        //data.buffer.rewind();
 
 
         /* output the file id */
-        ((PrintStream) output).print(String.format("f%d ", data.getActiveFile().filename_id));
+        //((PrintStream) output).print(String.format("f%d ", data.getActiveFile().filename_id));
 
 
         /* BANK 0 SLOT 0 ORG 0 */
         if (flags.getOutputFormat() != OUTPUT_LIBRARY) {
             ((PrintStream) output).print(String.format("B%d %d O%d", 0, 0, 0));
         }
-
-        while ((t = get_next_token()) == SUCCEEDED) {
-            q = evaluate_token();
-
-            if (q == SUCCEEDED)
-                continue;
-            else if (q == EVALUATE_TOKEN_EOP) {
-                /*write_log_summers(buffer, size);*/
-                return SUCCEEDED;
-            }/*
+//
+//        while ((t = get_next_token()) == SUCCEEDED) {
+//            q = evaluate_token();
+//
+//            if (q == SUCCEEDED)
+//                continue;
+//            else if (q == EVALUATE_TOKEN_EOP) {
+//                /*write_log_summers(buffer, size);*/
+//                return SUCCEEDED;
+//            }
+            /*
             else if (q == EVALUATE_TOKEN_NOT_IDENTIFIED) {
                 /* check if it is of the form "LABEL:XYZ" * /
                 for (q = 0; q < ss; q++)
@@ -203,92 +204,94 @@ public class Pass1 {
         return FAILED;
         * 
         * */
-        }
+        //}
     }
 
-    int get_next_token() {
-
-        char nextChar = data.buffer.get();
-
-        while (true) {
-            if (data.buffer.length() == data.buffer.position()) {
-                break;
-            } else if (nextChar == ' ') {
-                newline_beginning = false;
-                continue;
-            }
-            if (nextChar == 0xA) {
-                next_line();
-                continue;
-            }
-            break;
-        }
-
-        if (buffer[i] == '"') {
-            for (ss = 0, i++; buffer[i] != 0xA && buffer[i] != '"'; ) {
-                if (buffer[i] == '\\' && buffer[i + 1] == '"') {
-                    tmp[ss++] = '"';
-                    i += 2;
-                } else
-                    tmp[ss++] = buffer[i++];
-            }
-
-            if (buffer[i] == 0xA) {
-                print_error("GET_NEXT_TOKEN: String wasn't terminated properly.\n", ERROR_NONE);
-                return FAILED;
-            }
-            tmp[ss] = 0;
-            i++;
-
-            /* expand e.g., \1 and \@ */
-            if (macro_active != 0) {
-                if (expand_macro_arguments(tmp) == FAILED)
-                    return FAILED;
-                ss = strlen(tmp);
-            }
-
-            return GET_NEXT_TOKEN_STRING;
-        }
-
-        if (buffer[i] == '.') {
-            tmp[0] = '.';
-            i++;
-            for (ss = 1; buffer[i] != 0x0A && buffer[i] != ' ' && ss < MAX_NAME_LENGTH; ) {
-                tmp[ss] = buffer[i];
-                cp[ss - 1] = toupper((int) buffer[i]);
-                i++;
-                ss++;
-            }
-            cp[ss - 1] = 0;
-        } else if (buffer[i] == '=' || buffer[i] == '>' || buffer[i] == '<' || buffer[i] == '!') {
-            for (ss = 0; buffer[i] != 0xA && (buffer[i] == '=' || buffer[i] == '!' || buffer[i] == '<' || buffer[i] == '>')
-                    && ss < MAX_NAME_LENGTH; tmp[ss++] = buffer[i++])
-                ;
-        } else {
-            for (ss = 0; buffer[i] != 0xA && buffer[i] != ',' && buffer[i] != ' ' && ss < MAX_NAME_LENGTH; ) {
-                tmp[ss] = buffer[i];
-                ss++;
-                i++;
-            }
-            if (buffer[i] == ',')
-                i++;
-        }
-
-        if (ss >= MAX_NAME_LENGTH) {
-            print_error("GET_NEXT_TOKEN: Too long for a token.\n", ERROR_NONE);
-            return FAILED;
-        }
-
-        tmp[ss] = 0;
+    String get_next_token() {
+return null;
+//        StringBuilder nextToken = new StringBuilder();
+//
+//        char nextChar = data.buffer.get();
+//
+//        while (true) {
+//            if (data.buffer.length() == data.buffer.position()) {
+//                break;
+//            } else if (nextChar == ' ') {
+//                newline_beginning = false;
+//                continue;
+//            }
+//            if (nextChar == 0xA) {
+//                next_line();
+//                continue;
+//            }
+//            break;
+//        }
+//
+//        if (buffer[i] == '"') {
+//            for (ss = 0, i++; buffer[i] != 0xA && buffer[i] != '"'; ) {
+//                if (buffer[i] == '\\' && buffer[i + 1] == '"') {
+//                    tmp[ss++] = '"';
+//                    i += 2;
+//                } else
+//                    tmp[ss++] = buffer[i++];
+//            }
+//
+//            if (buffer[i] == 0xA) {
+//                print_error("GET_NEXT_TOKEN: String wasn't terminated properly.\n", ERROR_NONE);
+//                return FAILED;
+//            }
+//            tmp[ss] = 0;
+//            i++;
+//
+//            /* expand e.g., \1 and \@ */
+//            if (macro_active != 0) {
+//                if (expand_macro_arguments(tmp) == FAILED)
+//                    return FAILED;
+//                ss = strlen(tmp);
+//            }
+//
+//            return GET_NEXT_TOKEN_STRING;
+//        }
+//
+//        if (buffer[i] == '.') {
+//            tmp[0] = '.';
+//            i++;
+//            for (ss = 1; buffer[i] != 0x0A && buffer[i] != ' ' && ss < MAX_NAME_LENGTH; ) {
+//                tmp[ss] = buffer[i];
+//                cp[ss - 1] = toupper((int) buffer[i]);
+//                i++;
+//                ss++;
+//            }
+//            cp[ss - 1] = 0;
+//        } else if (buffer[i] == '=' || buffer[i] == '>' || buffer[i] == '<' || buffer[i] == '!') {
+//            for (ss = 0; buffer[i] != 0xA && (buffer[i] == '=' || buffer[i] == '!' || buffer[i] == '<' || buffer[i] == '>')
+//                    && ss < MAX_NAME_LENGTH; tmp[ss++] = buffer[i++])
+//                ;
+//        } else {
+//            for (ss = 0; buffer[i] != 0xA && buffer[i] != ',' && buffer[i] != ' ' && ss < MAX_NAME_LENGTH; ) {
+//                tmp[ss] = buffer[i];
+//                ss++;
+//                i++;
+//            }
+//            if (buffer[i] == ',')
+//                i++;
+//        }
+//
+//        if (ss >= MAX_NAME_LENGTH) {
+//            print_error("GET_NEXT_TOKEN: Too long for a token.\n", ERROR_NONE);
+//            return FAILED;
+//        }
+//
+//        tmp[ss] = 0;
 
         /* expand e.g., \1 and \@ */
-        if (macro_active != 0) {
-            if (expand_macro_arguments(tmp) == FAILED)
-                return FAILED;
-            ss = strlen(tmp);
-        }
-
-        return SUCCEEDED;
+//        if (macro_active != 0) {
+//            if (expand_macro_arguments(tmp) == FAILED)
+//                return FAILED;
+//            ss = strlen(tmp);
+//        }
+//
+//        return SUCCEEDED;
     }
 
     private void next_line() {
@@ -299,13 +302,13 @@ public class Pass1 {
         }
 
         /* output the file number for list file structure building */
-        if (listfile_data == true) {
-            ((PrintStream) output).print(String.format("k%d ", active_file_info_last.));
-        }
-
-        if (active_file_info_last != NULL) {
-            active_file_info_last -> line_current++;
-        }
+//        if (listfile_data == true) {
+//            ((PrintStream) output).print(String.format("k%d ", active_file_info_last.));
+//        }
+//
+//        if (active_file_info_last != NULL) {
+//            active_file_info_last -> line_current++;
+//        }
     }
 
 

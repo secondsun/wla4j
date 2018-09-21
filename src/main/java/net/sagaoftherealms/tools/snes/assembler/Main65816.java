@@ -72,7 +72,7 @@ public class Main65816 {
 
             InputData data = new InputData(flags);
             data.includeFile(flags.getAsmName());
-            new Pass1(data).pass();
+//            new Pass1(data).pass();
 //
 //
 //            if (pass_1() == FAILED)
