@@ -29,7 +29,7 @@ public class InputData {
         this.flags = flags;
     }
 
-    public void includeFile(InputStream fileStream, String fileName) {
+    public void includeFile(InputStream fileStream, String fileName, int includeAt) {
 
         if (flags.isExtraDefinitions()) {
             flags.redefine("WLA_FILENAME", 0.0, fileName, DEFINITION_TYPE_STRING);
@@ -44,37 +44,10 @@ public class InputData {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        /* preprocess */
+        SourceFileDataMap preprocessedDataMap = preprocess_file(fileContents, fileName);
+        buffer.addMapAt(preprocessedDataMap, includeAt);
 
-        if (buffer.isEmpty()) {
-
-            /* preprocess */
-            preprocess_file(fileContents, buffer, fileName);
-
-            return;
-        } else {
-
-//            int position = buffer.position();
-//            buffer.position(0);
-//
-//
-//            StringBuilder fileBuilder = new StringBuilder();
-//
-//            preprocess_file(fileContents, fileBuilder, fileName);
-//            CharBuffer newBuffer = CharBuffer.allocate(buffer.capacity() + fileBuilder.toString().length() + FILE_END_MARK.length());
-//            fileBuilder.append(FILE_END_MARK);
-//
-//            open_files++;
-//
-//            newBuffer.append(buffer.subSequence(0, position).toString());
-//            newBuffer.append(fileBuilder.toString());
-//            newBuffer.append(buffer.subSequence(position, buffer.length()).toString());
-//
-//
-//            size += newBuffer.length();
-//            buffer = newBuffer;
-//            buffer.position(position);
-            return;
-        }
 
     }
 
@@ -103,21 +76,23 @@ public class InputData {
             throw new RuntimeException(String.format("Error opening file \"%s\".\n", fullName));
         }
 
-        includeFile(new FileInputStream(f), fullName);
+        includeFile(new FileInputStream(f), fullName,0);
 
     }
 
-    private static String createFullName(String path, String fileName) {
+    private String createFullName(String path, String fileName) {
         return path + fileName;
     }
 
     /* the mystery preprocessor - touch it and prepare for trouble ;) the preprocessor
   removes as much white space as possible from the source file. this is to make
   the parsing of the file, that follows, simpler. */
-    private static void preprocess_file(String inputString, SourceFileDataMap out_buffer, String file_name) {
+    private SourceFileDataMap preprocess_file(String inputString, String file_name) {
 
-        //Is the preprocessor consuming a C style /*..*/ multiline comment?
-        boolean consumingMultiLineComment = false;
+        SourceFileDataMap buffer = new SourceFileDataMap();
+
+        //We're going to try and keep the lines in sync so the source file and the preprocessed text have a link.
+        int sourceFileLine = 1;
 
         /* this is set to 1 when the parser finds a non white space symbol on the line it's parsing */
         int got_chars_on_line = 0;
@@ -130,81 +105,214 @@ public class InputData {
          3 - again 1+ characters follow */
         int z = 0;
 
-        int lineCount = 0;
 
         int square_bracket_open = 0;
 
-        inputString = inputString.replace("\r\n", "\n"); //Turn windows line endings into unix line endings
-        inputString = inputString.replace("\r", "\n"); // turn mac line endings into unix line endings
-        String[] lines = inputString.split("\n"); // split into lines
-        for (String line : lines) {
-            lineCount++;
+        char inputArray[] = inputString.toCharArray();
+        int input_end = inputArray.length;
 
+        for (int input = 0; input < inputArray.length; ) {
+            char inputTest = inputArray[input];
+            switch (inputTest) {
+                case ';':
+                    /* clear a commented line */
+                    input++;
+                    for (; input < input_end && inputArray[input] != 0x0A && inputArray[input] != 0x0D;
+                         input++) {
+                    }
 
-            //If we are consuming a comment continue or move along.
-            //You might think "can't we just gobble up the lines"
-            //we can, but I didn't want to keep the source lines updated in that
-            //sorry not sorry
-            if (consumingMultiLineComment) {
-                if (line.contains("*/")) {
-                    line = line.split("\\*/")[1];//Everything after the comment isn't a comment
-                    consumingMultiLineComment = false;
-                } else {
-                    continue;
-                }
-            } else {
-                if (line.startsWith("*")) {// * on as the first character is a line comment.
-                    continue;
-                }
-            }
+                    break;
+                case '*':
+                    if (got_chars_on_line == 0) {
+                        /* clear a commented line */
+                        for (; input < input_end && inputArray[input] != 0x0A && inputArray[input] != 0x0D;
+                             input++) {
+                        }
 
-            char[] chars = line.toCharArray();
-            StringBuilder lineBuilder = new StringBuilder();
-            for (int index = 0; index < chars.length;index++) {
-                boolean inString = false;
-                //Handle multi line comments
-                if (consumingMultiLineComment && !inString) {
-                    if (chars[index] != '*') {
-                        continue;
                     } else {
-                        if (peekFor(chars, index+1,'/')) {
-                            index++;
-                            consumingMultiLineComment = false;
+                        /* multiplication! */
+                        input++;
+                        buffer.append('*');
+                    }
+                    break;
+                case '/':
+                    if (inputArray[input + 1] == '*') {
+                        /* remove an ANSI C -style block comment */
+                        got_chars_on_line = 0;
+                        input += 2;
+                        while (got_chars_on_line == 0) {
+                            for (; input < input_end && inputArray[input] != '/' && inputArray[input] != 0x0A;
+                                 input++) {}
+
+                            if (input >= input_end) {
+                                throw new RuntimeException(String.format("Comment wasn't terminated properly in file \"%s\".\n", file_name));
+
+                            }
+                            if (inputArray[input] == 0x0A) {
+                                buffer.append((char) 0x0A);
+
+                                buffer.addLine(file_name, ++sourceFileLine, "");
+                            }
+
+                            if (inputArray[input] == '/' && inputArray[input - 1] == '*') {
+                                got_chars_on_line = 1;
+                            }
+                            input++;
+                        }
+
+                    } else {
+                        input++;
+                        buffer.append('/');
+                        got_chars_on_line = 1;
+                    }
+                    break;
+                case ':':
+                    /* finding a label resets the counters */
+                    input++;
+                    buffer.append(':');
+                    got_chars_on_line = 0;
+                    break;
+                case 0x09:
+                case ' ':
+                    /* remove extra white space */
+                    input++;
+                    buffer.append(' ');
+
+                    for (; input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09); input++) {
+
+                    }
+
+                    got_chars_on_line = 1;
+                    if (z == 1)
+                        z = 2;
+                    break;
+                case 0x0A:
+                    /* take away white space from the end of the line */
+                    input++;
+                    buffer.addLine(file_name, ++sourceFileLine, "");
+
+                    /* moving on to a new line */
+                    got_chars_on_line = 0;
+                    z = 0;
+                    square_bracket_open = 0;
+
+                    break;
+                case 0x0D:
+                    input++;
+                    break;
+                case '\'':
+                    if (inputArray[input + 2] == '\'') {
+                        buffer.append('\'');
+                        input++;
+                        buffer.append(inputArray[input]);
+
+                        input++;
+
+                        buffer.append('\'');
+                        input++;
+
+                    } else {
+                        buffer.append('\'');
+                        input++;
+
+                    }
+                    got_chars_on_line = 1;
+                    break;
+                case '"':
+                    /* don't touch strings */
+                    buffer.append('"');
+                    input++;
+
+                    got_chars_on_line = 1;
+                    while (true) {
+                        for (; input < input_end && inputArray[input] != '"' && inputArray[input] != 0x0A && inputArray[input] != 0x0D; ) {
+                            buffer.append(inputArray[input]);
+                            input++;
+
+                        }
+
+                        if (input >= input_end)
+                            break;
+                        else if (inputArray[input] == 0x0A || inputArray[input] == 0x0D) {
+                            /* process 0x0A/0x0D as usual, and later when we try to input a string, the parser will fail as 0x0A comes before a " */
+                            break;
+                        } else if (inputArray[input] == '"' && inputArray[input - 1] != '\\') {
+                            buffer.append('"');
+                            input++;
+
+                            break;
+                        } else {
+                            buffer.append('"');
+                            input++;
                         }
                     }
-                }
+                    break;
+
+                case '(':
+                    buffer.append('(');
+                    input++;
+
+                    for (; input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09); input++) {
+                    }
+                    got_chars_on_line = 1;
+                    break;
+
+                case ')':
+
+                    buffer.append(')');
+                    input++;
+                    got_chars_on_line = 1;
+                    break;
+
+                case '[':
+                    buffer.append(inputArray[input]);
+                    input++;
+                    got_chars_on_line = 1;
+                    square_bracket_open = 1;
+                    break;
+
+                case ',':
+                case '+':
+                case '-':
+                    if (got_chars_on_line == 0) {
+                        for (; input < input_end && (inputArray[input] == '+' || inputArray[input] == '-'); input++) {
+                            buffer.append(inputArray[input]);
+                        }
+                        got_chars_on_line = 1;
+                    } else {
+
+                        buffer.append(inputArray[input]);
+                        input++;
+                        for (; input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09); input++) {
+                        }
+                        got_chars_on_line = 1;
+                    }
+                    break;
+                default:
+                    buffer.append(inputArray[input]);
+                    input++;
+
+                    got_chars_on_line = 1;
+
+                    /* mode changes... */
+                    if (z == 0)
+                        z = 1;
+                    else if (z == 2)
+                        z = 3;
+                    break;
             }
-
-            line = line.split(";")[0];//Remove line comment
-
-            if (line.contains("/*")) {
-                consumingMultiLineComment = true;
-                line = line.split("/\\*")[0];
-            }
-
-            line = line.trim(); //remove extra whitespace
-
-            //Skip empty lines
-            if (line.isEmpty()) {
-                continue;
-            }
-
-
         }
+
+        buffer.compress();
+
+        return buffer;
     }
 
     /**
-     * This method will look for s at i in chars in a array safe way
-     * @param chars source characters
-     * @param i index to check
-     * @param s character to check for
+     * Pretty prints the processed source
      * @return
      */
-    private static boolean peekFor(char[] chars, int i, char s) {
-        if (i >= chars.length) {
-            return false;
-        }
-        return chars[i] == s;
+    public String prettyPrint() {
+        return buffer.toString();
     }
-
 }

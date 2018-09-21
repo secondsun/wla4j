@@ -2,6 +2,7 @@ package net.sagaoftherealms.tools.snes.assembler.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This file is the the {@link net.sagaoftherealms.tools.snes.assembler.main.InputData} data and mapping to the original source files.
@@ -36,5 +37,43 @@ public class SourceFileDataMap {
      */
     public boolean isEmpty() {
         return lines.isEmpty();
+    }
+
+    /**
+     * Adds a character to the last line of the file.
+     * @param s to add.  Ignored if a newline.
+     */
+    public void append(char s) {
+        if (s != '\n') {
+            SourceDataLine line = lines.get(lines.size() - 1);
+            if (line == null) {
+                throw new IllegalStateException("You must call addLine before append.");
+            } else {
+                line.append(s);
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        lines.stream().filter(it->!it.getDataLine().isEmpty()).forEach(it -> builder.append(it.getDataLine()).append('\n'));
+        return builder.toString();
+    }
+
+    /**
+     * Adds a new file starting on line includeAt
+     * @param preprocessedDataMap preprocessed file
+     * @param includeAt line to add at.
+     */
+    public void addMapAt(SourceFileDataMap preprocessedDataMap, int includeAt) {
+        lines.addAll(includeAt, preprocessedDataMap.lines);
+    }
+
+    /**
+     * Removes empty lines, extra white space etc.
+     */
+    public void compress() {
+        lines = lines.stream().filter(it -> !it.getDataLine().isEmpty()).collect(Collectors.toList());
     }
 }

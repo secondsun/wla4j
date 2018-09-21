@@ -1,282 +1,179 @@
-
-
-
-
-
-
 .INCLUDE "defines.i"
-
-
-
-
 .INCLUDE "snes_memory.i"
-
-
-
 .MEMORYMAP
 SLOTSIZE $10000
 DEFAULTSLOT 0
 SLOT 0 $0000
 .ENDME
-
-.E 
-
 .ROMBANKMAP
 BANKSTOTAL 2
 BANKSIZE $10000
 BANKS 2
 .ENDRO
-
 .EMPTYFILL 0
 .NAME "1234567890abcdefghijk"
 .SMC
-
 .SNESHEADER
 HIROM
 FASTROM
 SRAMSIZE 1
 .ENDSNES
-
-.E 
 .DEFINE TESA $fe
-
-
-
-
-
 .BANK 0 SLOT 0
 .org $1000
-
-
-
-
-
-
-
-
-
- rep #$30
- lda #Table
-
- sep #$20
-
-
-
-
- lda.w List,x
-
- stp
-
- trb 10
- trb 10.b
- trb 10.w
-
- sty 10,X
- sty 10,x
-
- Table:
- .DB "Blah..."
-
- .org $1600
- List:
- .DB 0,9,8,1 +1 -0+1
+rep #$30
+lda #Table
+sep #$20
+lda.w List,x
+stp
+trb 10
+trb 10.b
+trb 10.w
+sty 10,X
+sty 10,x
+Table:
+.DB "Blah..."
+.org $1600
+List:
+.DB 0,9,8,1 +1 -0+1
 ---
 -
 ++
 +++++++
 +
-
 .ORG 0
 .BASE $0
-
- stz MAIN+1,x
- adc $12.l
-
- lda #$04
- ldy #$ffff.w
- pha
-
- .db 1,1,1,1
- ldy #$00.w
- .db 1,1,1,1
+stz MAIN+1,x
+adc $12.l
+lda #$04
+ldy #$ffff.w
+pha
+.db 1,1,1,1
+ldy #$00.w
+.db 1,1,1,1
 joopa:
-
-
 .db $aa~$ff
 .db $ff~(%0+$ff-1)<<1
 .dw TESB~$ffff
 PER.W joopa
-
 lda.b #$10
 lda.w #$10
-
 sep #$20
-
 lda #$12
-
-
-
 lda $1234
-
-
-
-
 rep #$20
-
 lda #$1234
-
-
-
 lda $1234
-
-
-
 .sym SAFiiRi
-
 .section "pois pois" free
 .ends
-
-
 .BANK 1 SLOT 0
 .ORG 0
 .BASE $80
-
-
 .SECTION "Beginning"
-
 MAIN: NOP
- JMP MORE_ACTION
- LDA.L 1+TRIFORCE
- .symbol TIMANGI
+JMP MORE_ACTION
+LDA.L 1+TRIFORCE
+.symbol TIMANGI
 .ENDS
-
 .SECTION "Tester"
- .DB $FF,$FF,$FF,$FF,$FF
- JSL MAIN+(-(1-1)+1)
- .DB $FF,$FF,$FF,$FF,$FF
- JSL MAIN
- .DB $FF,$FF,$FF,$FF,$FF
+.DB $FF,$FF,$FF,$FF,$FF
+JSL MAIN+(-(1-1)+1)
+.DB $FF,$FF,$FF,$FF,$FF
+JSL MAIN
+.DB $FF,$FF,$FF,$FF,$FF
 JOO: BEQ JOO
 .ENDS
-
-
 .SECTION "Action" SEMIFREE
-
 MORE_ACTION:
- AND #%10101010
- AND %10101010
- AND $1234
- AND $123456
- AND ($12)
- AND [$12]
- AND $12,X
- AND $1234,X
- AND $123456,X
- AND $1234,Y
- AND $12,S
- AND ($12,X)
- AND ($12),Y
- AND ($12,S),Y
- AND [$12],Y
- LDX #DATA
- LDA $0000,X
- LDA.B $00,X
- LDA.W $00,X
- LDA.L $00+TRIFORCE,X
- LDA.L $12
- BRK
- JSL 10
-
+AND #%10101010
+AND %10101010
+AND $1234
+AND $123456
+AND ($12)
+AND [$12]
+AND $12,X
+AND $1234,X
+AND $123456,X
+AND $1234,Y
+AND $12,S
+AND ($12,X)
+AND ($12),Y
+AND ($12,S),Y
+AND [$12],Y
+LDX #DATA
+LDA $0000,X
+LDA.B $00,X
+LDA.W $00,X
+LDA.L $00+TRIFORCE,X
+LDA.L $12
+BRK
+JSL 10
 DATA: .DB 1,2,3
-
 .ENDS
-
-
 .ORG $100
 .SECTION "Testing" FORCE
 .16BIT
- AND XYZ+1
+AND XYZ+1
 .8BIT
 .ENDS
-
-
 .ORG $120
- AND $665544
+AND $665544
 .ORG $130
 .24BIT
- AND $100000+XYZ
+AND $100000+XYZ
 .8BIT
-
-
 .ORG $140
- ADC #$A
- LDX #$A
- REP #%00010000
- ADC #$A
- LDX #$A
- NOP
- .8BIT
- STX $12,Y
- STY $56,X
- STZ $9abc,X
- .16BIT
- STX $de,Y
- STY $12,x
- STZ $5678,X
- .DW DATA
- .DB TRIFORCE+1
- .DW label01
- .dw label03
-
+ADC #$A
+LDX #$A
+REP #%00010000
+ADC #$A
+LDX #$A
+NOP
+.8BIT
+STX $12,Y
+STY $56,X
+STZ $9abc,X
+.16BIT
+STX $de,Y
+STY $12,x
+STZ $5678,X
+.DW DATA
+.DB TRIFORCE+1
+.DW label01
+.dw label03
 .DEFINE TRIFORCE 10
 .EXPORT TRIFORCE
-
 .ORG $600
 hk_sininen:
- .DB SEPI+TEPI
+.DB SEPI+TEPI
 .DEFINE SEPI 10
 .EXPORT SEPI
-
-
 .ENUM 100
 sdfoj db
 sdf: ds 10
 .ENDE
-
-
 .RAMSECTION "huuhaa" BANK 0 SLOT 0
 label01: db
 label02: dw
 label03 ds 10
 label04 db
 .ENDS
-
 .EXPORT sdf
-
 .RAMSECTION "Some of my variables" BANK 0 SLOT 0
 vbi_counter: db
 player_lives: db
 .ENDS
-
-
 .section asciitest namespace asciitest
-
 tests: .db "ASCIITest\0\0\0\0ASCIITest","\x0a\x10\xbb\x11ASCIITest"
- .db "\\\\0123456789"
-
+.db "\\\\0123456789"
 .ends
-
 .section dltest namespace dltest
-
- .db ".DLTest"
- .dl asciitest.tests
- .db ".DLTest"
- .dl $123456,$ab,$1122
- .db ".DLTest"
- .dl $1000 +$100 +$10 +$1 +$220000
- .db ".DLTest"
-
+.db ".DLTest"
+.dl asciitest.tests
+.db ".DLTest"
+.dl $123456,$ab,$1122
+.db ".DLTest"
+.dl $1000 +$100 +$10 +$1 +$220000
+.db ".DLTest"
 .ends
-
-
-.E 

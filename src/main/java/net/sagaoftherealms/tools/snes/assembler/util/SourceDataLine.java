@@ -58,7 +58,7 @@ public class SourceDataLine {
      * @return the text of a line of data
      */
     public String getDataLine() {
-        return dataLine;
+        return dataLine.trim();
     }
 
     /**
@@ -82,5 +82,13 @@ public class SourceDataLine {
     @Override
     public int hashCode() {
         return Objects.hash(fileName, sourceLineNumber, dataLine);
+    }
+
+    /**
+     * Adds the character s to the line
+     * @param s character to add
+     */
+    public void append(char s) {
+        dataLine += s;
     }
 }
