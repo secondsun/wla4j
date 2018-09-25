@@ -10,6 +10,7 @@ public class SourceDataLine {
     private int sourceLineNumber;
     private String dataLine;
 
+
     public SourceDataLine(String sourceFileName, int sourceLineNumber, String sourceCode) {
         fileName = sourceFileName;
         this.sourceLineNumber = sourceLineNumber;
@@ -91,4 +92,14 @@ public class SourceDataLine {
     public void append(char s) {
         dataLine += s;
     }
+
+    /**
+     * This will hash the file name.  The reason is that in the original WLA tools each file had an id which was used to find
+     * the file name of the section of bytecode in the wla tmp file.  We don't assign file names ids, so this is a workaround.
+     * @return the hash of the file name to be used as a integer lookup later
+     */
+    public int getFileId() {
+        return fileName.hashCode();
+    }
+
 }

@@ -1,16 +1,13 @@
 package net.sagaoftherealms.tools.snes.assembler.main;
 
-import net.sagaoftherealms.tools.snes.assembler.ActiveFileInfo;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceFileDataMap;
-import org.apache.commons.io.FileUtils;
+import net.sagaoftherealms.tools.snes.assembler.util.SourceReader;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.CharBuffer;
-import java.util.LinkedList;
 
 import static net.sagaoftherealms.tools.snes.assembler.Defines.DefinitionType.DEFINITION_TYPE_STRING;
 
@@ -23,7 +20,7 @@ public class InputData {
     final Flags flags;
     private String defaultIncludeDirectory = "." + File.pathSeparator;
 
-    private SourceFileDataMap buffer = new SourceFileDataMap();
+    private SourceFileDataMap combinedSourceFile = new SourceFileDataMap();
 
     public InputData(Flags flags) {
         this.flags = flags;
@@ -46,7 +43,7 @@ public class InputData {
         }
         /* preprocess */
         SourceFileDataMap preprocessedDataMap = preprocess_file(fileContents, fileName);
-        buffer.addMapAt(preprocessedDataMap, includeAt);
+        combinedSourceFile.addMapAt(preprocessedDataMap, includeAt);
 
 
     }
@@ -313,6 +310,11 @@ public class InputData {
      * @return
      */
     public String prettyPrint() {
-        return buffer.toString();
+        return combinedSourceFile.toString();
     }
+
+    public SourceReader startRead() {
+        return new SourceReader(combinedSourceFile);
+    }
+
 }

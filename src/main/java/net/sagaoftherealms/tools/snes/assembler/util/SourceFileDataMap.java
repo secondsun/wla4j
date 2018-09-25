@@ -17,7 +17,6 @@ public class SourceFileDataMap {
      */
     private List<SourceDataLine> lines = new ArrayList<>();
 
-
     /**
      *
      * @param dataLineNumber the line in the combined data file
