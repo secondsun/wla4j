@@ -1,11 +1,13 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
-@RunWith(JUnit4.class)
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+@DisplayName("Source File Metatadata is retained")
 public class SourceFileDataMapTest {
 
     @Test
@@ -19,18 +21,18 @@ public class SourceFileDataMapTest {
         line.setFileName("testfile.s");
         line.setSourceLineNumber(2);
 
-        Assert.assertEquals(line, datamap.getLine(2));
+        assertEquals(line, datamap.getLine(2));
     }
 
     @Test
     public void emptyFile() {
         SourceFileDataMap datamap = new SourceFileDataMap();
-        Assert.assertTrue(datamap.isEmpty());
+        assertTrue(datamap.isEmpty());
 
         datamap.addLine("testfile.s", 1, ".INCLUDE \"defines.i\"");
         datamap.addLine("testfile.s", 2, ".DEFINE TESA $fe");
 
-        Assert.assertFalse(datamap.isEmpty());
+        assertFalse(datamap.isEmpty());
 
 
     }

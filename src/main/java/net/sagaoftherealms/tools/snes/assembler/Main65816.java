@@ -4,7 +4,6 @@ package net.sagaoftherealms.tools.snes.assembler;
 import com.google.common.base.Strings;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
-import net.sagaoftherealms.tools.snes.assembler.pass.Pass1;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 

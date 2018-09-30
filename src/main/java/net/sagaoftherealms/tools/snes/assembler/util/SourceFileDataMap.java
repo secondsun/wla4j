@@ -1,5 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
+import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +57,7 @@ public class SourceFileDataMap {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        lines.stream().filter(it->!it.getDataLine().isEmpty()).forEach(it -> builder.append(it.getDataLine()).append('\n'));
+        lines.stream().filter(it->!it.getDataLine().isEmpty()).forEach(it -> builder.append(it.getDataLine()).append(System.lineSeparator()));
         return builder.toString();
     }
 
