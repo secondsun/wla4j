@@ -108,6 +108,8 @@ public class InputData {
         char inputArray[] = inputString.toCharArray();
         int input_end = inputArray.length;
 
+        buffer.addLine(file_name, sourceFileLine, "");//Start on Line one
+
         for (int input = 0; input < inputArray.length; ) {
             char inputTest = inputArray[input];
             switch (inputTest) {

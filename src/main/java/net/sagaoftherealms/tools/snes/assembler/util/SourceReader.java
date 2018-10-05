@@ -1,6 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
-import net.sagaoftherealms.tools.snes.assembler.pass.Token;
+import net.sagaoftherealms.tools.snes.assembler.token.Token;
 
 /**
  * A stateful object that is used to read data from a {@link SourceFileDataMap}
@@ -25,6 +25,6 @@ public class SourceReader {
 
 
     public Token getNextToken() {
-        return null;
+        return new Token();
     }
 }
