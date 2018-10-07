@@ -1,7 +1,7 @@
 package net.sagaoftherealms.tools.snes.assembler.main;
 
 import net.sagaoftherealms.tools.snes.assembler.util.SourceFileDataMap;
-import net.sagaoftherealms.tools.snes.assembler.util.SourceReader;
+import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -315,8 +315,8 @@ public class InputData {
         return combinedSourceFile.toString();
     }
 
-    public SourceReader startRead() {
-        return new SourceReader(combinedSourceFile);
+    public SourceScanner startRead() {
+        return new SourceScanner(combinedSourceFile);
     }
 
 }

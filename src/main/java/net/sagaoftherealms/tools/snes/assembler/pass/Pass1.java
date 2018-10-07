@@ -10,7 +10,7 @@
 //import net.sagaoftherealms.tools.snes.assembler.pass.macro.MacroRuntime;
 //import net.sagaoftherealms.tools.snes.assembler.pass.macro.MacroStatic;
 //import net.sagaoftherealms.tools.snes.assembler.util.SourceDataLine;
-//import net.sagaoftherealms.tools.snes.assembler.util.SourceReader;
+//import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
 //
 //import java.io.OutputStream;
 //import java.io.PrintStream;
@@ -40,7 +40,7 @@
 //    public void pass() {
 //        MacroStatic m;
 //        MacroRuntime mrt;
-//        SourceReader reader = data.startRead();
+//        SourceScanner reader = data.startRead();
 //        SourceDataLine line = reader.getNextLine();
 //
 //        int slotIndex = 0;
