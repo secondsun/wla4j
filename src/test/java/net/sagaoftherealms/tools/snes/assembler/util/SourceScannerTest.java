@@ -49,8 +49,6 @@ public class SourceScannerTest {
         var scanner = data.startRead();
 
         Assertions.assertThrows(IllegalStateException.class, ()->scanner.getNextToken());
-
-        
     }
     
     @Test
@@ -68,7 +66,10 @@ public class SourceScannerTest {
      * @param expectedDirective the expected directive sourceLine parses to.
      */
     @ParameterizedTest
-    @CsvSource({".IF, IF"})
+    @CsvSource({".IF, IF",
+                ".ELSE, ELSE,",
+                ".8BIT, 8BIT,",
+                ".ELSEIF, ELSEIF"})
     public void testSimpleParseDirectiveToken(String sourceLine, String expectedDirective) {
         final String outfile = "test.out";
         final String inputFile = "test.s";
@@ -84,8 +85,22 @@ public class SourceScannerTest {
         assertEquals(TokenTypes.DIRECTIVE, token.getType());
         assertEquals("." + expectedDirective, token.getString());
         
-        
     }
+
+    @Test()
+    public void emptyDirectiveThrowsException() {
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($(". Crash"), inputFile,lineNumber);
+
+        var scanner = data.startRead();
+
+        Assertions.assertThrows(IllegalStateException.class, ()->scanner.getNextToken());
+    }
+
 
     @Test
     public void testParseRamsectionToken() {

@@ -51,14 +51,29 @@ public class SourceScanner {
         if (character == '"') {
             return createStringToken(sourceString);
         } else if (character == '.') {
-            return directiveToken();
+            return directiveToken(sourceString);
         }
         
         return null;
     }
 
-    private String directiveToken() {
-        return ".IF";
+    private String directiveToken(String sourceString) {
+        StringBuilder builder = new StringBuilder().append(".");
+        if (!(Character.isAlphabetic(sourceString.charAt(linePosition)) || Character.isDigit(sourceString.charAt(linePosition)))) {
+            //TODO: Real Error Handling
+            throw new IllegalStateException("Empty directive at " + sourceString);
+        } 
+        char character;
+        do {
+            if (linePosition >= sourceString.length() ) {
+                break;
+            }
+            character = sourceString.charAt(linePosition);
+            linePosition++;
+            builder.append(character);
+        } while (Character.isAlphabetic(character) || Character.isDigit(character));
+        return builder.toString();
+        
     }
 
     private String createStringToken(String sourceString) {
