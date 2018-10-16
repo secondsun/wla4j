@@ -7,10 +7,12 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -19,14 +21,14 @@ public class SourceScannerTest {
 
     @ParameterizedTest
     @CsvSource({"\"This is a String Token\"",
-                "\"This is another String Token\""})
+            "\"This is another String Token\""})
     public void firstStringToken(String sourceLine) {
         final String outfile = "test.out";
         final String inputFile = "test.s";
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile($(sourceLine), inputFile,lineNumber);
+        data.includeFile($(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead();
 
@@ -34,7 +36,7 @@ public class SourceScannerTest {
 
         assertEquals(TokenTypes.STRING, token.getType());
         //The string of the token should be sourceLine minue quotes
-        assertEquals(sourceLine.replace('"',' ').trim(), token.getString());
+        assertEquals(sourceLine.replace('"', ' ').trim(), token.getString());
     }
 
     @Test()
@@ -44,13 +46,47 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile($("\"This should crash"), inputFile,lineNumber);
+        data.includeFile($("\"This should crash"), inputFile, lineNumber);
 
         var scanner = data.startRead();
 
-        Assertions.assertThrows(IllegalStateException.class, ()->scanner.getNextToken());
+        Assertions.assertThrows(IllegalStateException.class, () -> scanner.getNextToken());
     }
-    
+
+    @ParameterizedTest
+    @CsvSource({"0",//dec
+            "1",//dec
+            "0.0",//dec
+            "0.1",//dec
+            "0ah",//Hex
+            "0AH",//Hex
+            "$100",//Hex
+            "'x'", //Char
+            "%0101"//binary
+    })
+    public void numberTokens(String sourceLine) {
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($(sourceLine), inputFile, lineNumber);
+
+        var scanner = data.startRead();
+
+        var token = scanner.getNextToken();
+
+        assertEquals(TokenTypes.NUMBER, token.getType());
+        //The string of the token should be sourceLine minue quotes
+        assertEquals(sourceLine.replace('"', ' ').trim(), token.getString());
+    }
+
+    @Test
+    public void labelVsHexNumber() {
+        //test that ah is treated as label and not a number
+        fail();
+    }
+
     @Test
     public void firstStringTokenWithExpandedMacro() {
         fail("See pass_1.c#649");
@@ -59,32 +95,63 @@ public class SourceScannerTest {
 
     /**
      * This test tests single directive tokens and makes sure that we can match them.
-     * 
+     * <p>
      * Validation directives is another test.
-     * 
-     * @param sourceLine the source code line
+     *
+     * @param sourceLine        the source code line
      * @param expectedDirective the expected directive sourceLine parses to.
      */
     @ParameterizedTest
     @CsvSource({".IF, IF",
-                ".ELSE, ELSE,",
-                ".8BIT, 8BIT,",
-                ".ELSEIF, ELSEIF"})
+            ".ELSE, ELSE,",
+            ".8BIT, 8BIT,",
+            ".ELSEIF, ELSEIF",
+    })
     public void testSimpleParseDirectiveToken(String sourceLine, String expectedDirective) {
         final String outfile = "test.out";
         final String inputFile = "test.s";
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile($(sourceLine), inputFile,lineNumber);
-        
+        data.includeFile($(sourceLine), inputFile, lineNumber);
+
         var scanner = data.startRead();
 
         var token = scanner.getNextToken();
-        
+
         assertEquals(TokenTypes.DIRECTIVE, token.getType());
         assertEquals("." + expectedDirective, token.getString());
-        
+
+    }
+
+    /**
+     * This test tests single directive tokens and makes sure that we can match them.
+     * <p>
+     * Validation directives is another test.
+     *
+     * @param sourceLine        the source code line
+     * @param expectedDirective the expected directive sourceLine parses to.
+     */
+    @ParameterizedTest
+    @CsvSource({"'.DBCOS 0.2, 10, 3.2, 120, 1.3', DBCOS, '[.2,10,3.2,120,1.3]'"
+    })
+    public void testParseDirectiveWithArgumentsToken(String sourceLine, String expectedDirective, @ConvertWith(DoubleArrayConverter.class) List<Double> arguments) {
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($(sourceLine), inputFile, lineNumber);
+
+        var scanner = data.startRead();
+
+        var token = scanner.getNextToken();
+
+        assertEquals(TokenTypes.DIRECTIVE, token.getType());
+        assertEquals("." + expectedDirective, token.getString());
+        //This is going to fail for a while.  Basically tokens shouldn't have argument info.
+        //I will need to rewrite this as a "Node" that is exported during parsing.
+        assertEquals(arguments.size(), token.getArgumentsCount());
     }
 
     @Test()
@@ -94,16 +161,16 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile($(". Crash"), inputFile,lineNumber);
+        data.includeFile($(". Crash"), inputFile, lineNumber);
 
         var scanner = data.startRead();
 
-        Assertions.assertThrows(IllegalStateException.class, ()->scanner.getNextToken());
+        Assertions.assertThrows(IllegalStateException.class, () -> scanner.getNextToken());
     }
 
 
     @Test
-    public void testParseRamsectionToken() {
+    public void testParseRamSectionToken() {
         fail();//see pass_1.c#776
     }
 
@@ -113,9 +180,18 @@ public class SourceScannerTest {
         fail();
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({
+            "label", //basic label, no :
+            "label:", //basic label with colon
+            "_label", //underscore label IE local label (see https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)
+            "@label", //Child label
+            "@@@@label",//Deeply nested child label
+            "--", //unnamed reverse jump label
+            "++",//unnamed forward jump label
+    })
     public void testBasicLabel() {
-        fail("See pass_1.c#783");
+        fail("See https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels");
     }
 
     @Test
@@ -158,6 +234,6 @@ public class SourceScannerTest {
     private static InputStream $(String inputString) {
         return IOUtils.toInputStream(inputString, Charset.defaultCharset());
     }
-    
-    
+
+
 }

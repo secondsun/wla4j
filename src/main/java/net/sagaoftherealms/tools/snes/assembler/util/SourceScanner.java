@@ -72,7 +72,7 @@ public class SourceScanner {
             linePosition++;
             builder.append(character);
         } while (Character.isAlphabetic(character) || Character.isDigit(character));
-        return builder.toString();
+        return builder.toString().trim();
         
     }
 

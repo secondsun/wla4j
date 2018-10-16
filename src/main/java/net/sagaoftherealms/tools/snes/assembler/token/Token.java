@@ -7,8 +7,6 @@ public class Token {
 
     public Token(String tokenString) {
 
-        
-
         if (tokenString.startsWith("\"")) {
             type = TokenTypes.STRING;
             //trim quotes;
@@ -29,5 +27,9 @@ public class Token {
 
     public String getString() {
         return string;
+    }
+
+    public int getArgumentsCount() {
+        return 0;
     }
 }
