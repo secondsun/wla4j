@@ -59,9 +59,30 @@ public class SourceScanner {
             return numberToken(sourceString, character);
         } else if (character == '\'') {
             return characterToken(sourceString);
+        } else if (Character.isAlphabetic(character) || character =='_' || character == '@' || character == '-' || character == '+') {
+            return labelToken(sourceString, character);
         }
 
         return null;
+    }
+
+    private String labelToken(String sourceString, char character) {
+
+        StringBuilder builder = new StringBuilder();
+
+        do {
+            builder.append(character);
+
+            if (linePosition >= sourceString.length()) {
+                break;
+            }
+
+            character = sourceString.charAt(linePosition);
+            linePosition++;
+
+        } while (!Character.isWhitespace(character));
+
+        return builder.toString().trim();
     }
 
     private String characterToken(String sourceString) {

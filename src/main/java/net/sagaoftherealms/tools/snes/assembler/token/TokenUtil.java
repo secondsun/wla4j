@@ -77,4 +77,17 @@ public final class TokenUtil {
 
         return (int)Double.parseDouble(token.getString());//This looks wrong, but at the moment it makes a test pass so TDD!
     }
+
+    public static String getLabelName(Token token) {
+        if (token.getType() != TokenTypes.LABEL) {
+            throw new IllegalArgumentException("Token argument was not a label type");
+        }
+        String labelString = token.getString();
+        if (labelString.matches("\\-+") || labelString.matches("\\++") ) {
+            return "";
+        }
+
+        return labelString.replace("@", "").replace("_", "").replace(":","");
+
+    }
 }

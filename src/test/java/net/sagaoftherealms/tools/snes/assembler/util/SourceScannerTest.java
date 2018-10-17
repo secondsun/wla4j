@@ -183,16 +183,31 @@ public class SourceScannerTest {
 
     @ParameterizedTest
     @CsvSource({
-            "label", //basic label, no :
-            "label:", //basic label with colon
-            "_label", //underscore label IE local label (see https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)
-            "@label", //Child label
-            "@@@@label",//Deeply nested child label
-            "--", //unnamed reverse jump label
-            "++",//unnamed forward jump label
+            "label, label", //basic label, no :
+            "label2:, label2", //basic label with colon
+            "_label, label", //underscore label IE local label (see https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)
+            "@label, label", //Child label
+            "@@@@label, label",//Deeply nested child label
+            "--, ''", //unnamed reverse jump label
+            "++, ''",//unnamed forward jump label
     })
-    public void testBasicLabel() {
-        fail("See https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels");
+    public void testBasicLabel(String sourceLine, String labelName) {
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($(sourceLine), inputFile, lineNumber);
+
+        var scanner = data.startRead();
+
+        var token = scanner.getNextToken();
+
+        assertEquals(TokenTypes.LABEL, token.getType());
+        assertEquals(sourceLine, token.getString());
+        assertEquals(labelName, TokenUtil.getLabelName(token));
+
+
     }
 
     @Test
