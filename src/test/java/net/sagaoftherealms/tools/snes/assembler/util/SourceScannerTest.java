@@ -3,6 +3,7 @@ package net.sagaoftherealms.tools.snes.assembler.util;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.token.TokenTypes;
+import net.sagaoftherealms.tools.snes.assembler.token.TokenUtil;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -54,17 +55,16 @@ public class SourceScannerTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"0",//dec
-            "1",//dec
-            "0.0",//dec
-            "0.1",//dec
-            "0ah",//Hex
-            "0AH",//Hex
-            "$100",//Hex
-            "'x'", //Char
-            "%0101"//binary
+    @CsvSource({"0, 0",//dec
+            "1, 1",//dec
+            "0.0, 0.0",//dec
+            "0.1, 0.1",//dec
+            "0ah, 10",//Hex
+            "$100, 256",//Hex
+            "'''x''', 120", //Char
+            "%0101, 5"//binary
     })
-    public void numberTokens(String sourceLine) {
+    public void numberTokens(String sourceLine, double value) {
         final String outfile = "test.out";
         final String inputFile = "test.s";
         final int lineNumber = 0;
@@ -77,8 +77,9 @@ public class SourceScannerTest {
         var token = scanner.getNextToken();
 
         assertEquals(TokenTypes.NUMBER, token.getType());
-        //The string of the token should be sourceLine minue quotes
-        assertEquals(sourceLine.replace('"', ' ').trim(), token.getString());
+        assertEquals(sourceLine, token.getString());
+        assertEquals(value, TokenUtil.getDouble(token));
+        assertEquals((int)value, TokenUtil.getInt(token));
     }
 
     @Test
