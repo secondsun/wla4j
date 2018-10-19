@@ -40,6 +40,58 @@ public class SourceScannerTest {
         assertEquals(sourceLine.replace('"', ' ').trim(), token.getString());
     }
 
+    @ParameterizedTest
+    @CsvSource({
+            "',', COMMA",
+            "|, OR",
+            "&, AND",
+            "^, POWER",
+            "+, PLUS",
+            "-, MINUS",
+            "'#', MODULO",
+            "~, XOR",
+            "'/ ', DIVIDE",
+            "<, LT",
+            ">, GT",
+            "[, LEFT_BRACKET",
+            "], RIGHT_BRACKET",
+            "(, LEFT_PAREN",
+            "), RIGHT_PAREN"})
+    public void testOperators(String sourceLine, String tokenType) {
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($(sourceLine), inputFile, lineNumber);
+
+        var scanner = data.startRead();
+
+        var token = scanner.getNextToken();
+
+        assertEquals(TokenTypes.valueOf(tokenType), token.getType());
+        assertEquals(sourceLine.trim(), token.getString());
+    }
+
+    //Multiply gets a special test because it begins a comment
+    @Test
+    public void testMultiplyToken()
+    {
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($("42 *"), inputFile, lineNumber);
+
+        var scanner = data.startRead();
+        scanner.getNextToken(); //Skip 42
+        var token = scanner.getNextToken();
+
+        assertEquals(TokenTypes.MULTIPLY, token.getType());
+        assertEquals("*", token.getString());
+    }
+
     @Test()
     public void unterminatedStringThrowsException() {
         final String outfile = "test.out";
@@ -79,7 +131,7 @@ public class SourceScannerTest {
         assertEquals(TokenTypes.NUMBER, token.getType());
         assertEquals(sourceLine, token.getString());
         assertEquals(value, TokenUtil.getDouble(token));
-        assertEquals((int)value, TokenUtil.getInt(token));
+        assertEquals((int) value, TokenUtil.getInt(token));
     }
 
     @Test

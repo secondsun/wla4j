@@ -34,6 +34,8 @@ public class SourceScanner {
 
     private String getNextTokenString() {
 
+        final List<Character> operators = Arrays.asList(new Character[]{',','|','&','^','+','-','#','~','*','/','<','>','[',']','(',')'});
+
         if (lineNumber == 0) {
             getNextLine();
         }
@@ -59,8 +61,10 @@ public class SourceScanner {
             return numberToken(sourceString, character);
         } else if (character == '\'') {
             return characterToken(sourceString);
-        } else if (Character.isAlphabetic(character) || character =='_' || character == '@' || character == '-' || character == '+') {
+        } else if (Character.isAlphabetic(character) || character =='_' || character == '@' ) {
             return labelToken(sourceString, character);
+        } else if (operators.contains(character)) {
+            return ""+character;
         }
 
         return null;
