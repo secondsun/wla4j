@@ -76,4 +76,8 @@ public class SourceFileDataMap {
     public void compress() {
         lines = lines.stream().filter(it -> !it.getDataLine().isEmpty()).collect(Collectors.toList());
     }
+
+    public int lineCount() {
+        return lines.size();
+    }
 }

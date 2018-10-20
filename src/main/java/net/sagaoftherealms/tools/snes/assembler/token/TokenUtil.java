@@ -11,8 +11,8 @@ public final class TokenUtil {
     private TokenUtil() {}
 
     public static final String DECIMAL_NUMBER_REGEX = "\\d+.{0,1}\\d*";
-    public static final String HEX_NUMBER_REGEX_0 = "0[a-f0-9]+h";
-    public static final String HEX_NUMBER_REGEX_$ = "\\$[a-f0-9]+";
+    public static final String HEX_NUMBER_REGEX_0 = "0[A-Fa-f0-9]+h";
+    public static final String HEX_NUMBER_REGEX_$ = "\\$[A-Fa-f0-9]+";
     public static final String BINARY_NUMBER_REGEX = "\\%[01]+";
 
     public static double getDouble(Token token) {

@@ -57,4 +57,50 @@ public class SourceParserTest {
         assertEquals(arguments.size(), token.getArgumentsCount());
     }
 
+    @Test
+    public void testLabelFailsIfOutputLibrary() {
+        fail("See pass_1.c#788");
+    }
+
+    @Test
+    public void testLabelFailsIfNoMemoryPosition() {
+        fail("See pass_1.c#792");
+    }
+
+    @Test
+    public void testLabelFailsIfInBankHeaderSection() {
+        fail("See pass_1.c#802");
+    }
+
+
+    @Test
+    public void testLabelInActiveMacro() {
+        fail("See pass_1.c#807");
+    }
+
+
+    @Test
+    public void testDecodeOtherArchOpcodeToken() {
+        fail("This will deal with checking types and such on opcodes");
+    }
+
+
+    @Test
+    public void testParseRamSectionToken() {
+        fail("This test should test that the ramsection directive starts a statement style block that respects ramsections.");//see pass_1.c#776
+    }
+
+
+    @Test
+    public void firstStringTokenWithExpandedMacro() {
+        fail("See pass_1.c#649");
+    }
+
+
+    @Test
+    public void testParseEnumToken() {
+        //see pass_1.c#776
+        fail("This test should test that the enum directive starts a statement style block that respects enums.");
+    }
+
 }

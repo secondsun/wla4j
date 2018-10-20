@@ -2,6 +2,7 @@ package net.sagaoftherealms.tools.snes.assembler.util;
 
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
+import net.sagaoftherealms.tools.snes.assembler.main.Test65816IncludeData;
 import net.sagaoftherealms.tools.snes.assembler.opcodes.defines.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.token.TokenUtil;
@@ -114,6 +115,7 @@ public class SourceScannerTest {
             "0.1, 0.1",//dec
             "0ah, 10",//Hex
             "$100, 256",//Hex
+            "$100.w, 256",//Hex with size
             "'''x''', 120", //Char
             "%0101, 5"//binary
     })
@@ -130,7 +132,7 @@ public class SourceScannerTest {
         var token = scanner.getNextToken();
 
         assertEquals(TokenTypes.NUMBER, token.getType());
-        assertEquals(sourceLine, token.getString());
+
         assertEquals(value, TokenUtil.getDouble(token));
         assertEquals((int) value, TokenUtil.getInt(token));
     }
@@ -152,11 +154,6 @@ public class SourceScannerTest {
 
         assertEquals(TokenTypes.LABEL, token.getType());
 
-    }
-
-    @Test
-    public void firstStringTokenWithExpandedMacro() {
-        fail("See pass_1.c#649");
     }
 
 
@@ -191,6 +188,31 @@ public class SourceScannerTest {
 
     }
 
+    @ParameterizedTest
+    @CsvSource({"10.b, NUMBER, '10', .b",
+            "'$20.w', NUMBER, '$20', .w",
+            "test.l, LABEL, test, .l, ",
+    })
+    public void testValueSizeTypeToken(String sourceLine, String valueTokenType, String valueTokenString, String expectedValueSize) {
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($(sourceLine), inputFile, lineNumber);
+
+        var scanner = data.startRead(Opcodes65816.opt_table);
+
+        var valueToken = scanner.getNextToken();
+        var typeToken = scanner.getNextToken();
+
+        assertEquals(TokenTypes.valueOf(valueTokenType), valueToken.getType());
+        assertEquals(valueTokenString, valueToken.getString());
+        assertEquals(TokenTypes.SIZE, typeToken.getType());
+        assertEquals(expectedValueSize, typeToken.getString());
+
+    }
+
 
 
     @Test()
@@ -208,23 +230,13 @@ public class SourceScannerTest {
     }
 
 
-    @Test
-    public void testParseRamSectionToken() {
-        fail();//see pass_1.c#776
-    }
-
-    @Test
-    public void testParseEnumToken() {
-        //see pass_1.c#776
-        fail();
-    }
 
     @ParameterizedTest
     @CsvSource({
             "label, label", //basic label, no :
             "label2:, label2", //basic label with colon
             "_label, label", //underscore label IE local label (see https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)
-            "@label, label", //Child label
+            "@label.b, label", //Child label
             "@@@@label, label",//Deeply nested child label
     })
     public void testBasicLabel(String sourceLine, String labelName) {
@@ -240,46 +252,9 @@ public class SourceScannerTest {
         var token = scanner.getNextToken();
 
         assertEquals(TokenTypes.LABEL, token.getType());
-        assertEquals(sourceLine, token.getString());
         assertEquals(labelName, TokenUtil.getLabelName(token));
     }
 
-    @Test
-    public void testLabelFailsIfOutputLibrary() {
-        fail("See pass_1.c#788");
-    }
-
-    @Test
-    public void testLabelFailsIfNoMemoryPosition() {
-        fail("See pass_1.c#792");
-    }
-
-    @Test
-    public void testLabelFailsIfInBankHeaderSection() {
-        fail("See pass_1.c#802");
-    }
-
-
-    @Test
-    public void testLabelInActiveMacro() {
-        fail("See pass_1.c#807");
-    }
-
-
-    @Test
-    public void testOpcodeToken() {
-        fail("See pass_1.c#819");
-    }
-
-    @Test
-    public void testDecode65816OpcodeToken() {
-        fail("See decode_65816.c");
-    }
-
-    @Test
-    public void testDecodeOtherArchOpcodeToken() {
-        fail("Look, you're going to have to take apart the switch statements starting at pass_1.c#863.  There are many");
-    }
 
     @ParameterizedTest
     @MethodSource({"opcodeGenerator"})
@@ -300,9 +275,33 @@ public class SourceScannerTest {
 
     }
 
+    @Test
+    public void testCanScanWholeFileAndNotCrash() {
+        InputData data = new InputData(new Flags(" test.out "));
+        data.includeFile(Test65816IncludeData.class.getClassLoader().getResourceAsStream("main.s"), "main.s", 0);
+        data.includeFile(Test65816IncludeData.class.getClassLoader().getResourceAsStream("defines.i"), "defines.i", 1);
+        data.includeFile(Test65816IncludeData.class.getClassLoader().getResourceAsStream("snes_memory.i"), "snes_memeory.i",2);
+        var scanner = data.startRead(Opcodes65816.opt_table);
+
+        var token = scanner.getNextToken();
+        while(token != null) {
+            System.out.println(token);
+            if (scanner.endOfInput()) {
+                break;
+            }
+            token = scanner.getNextToken();
+        }
+
+    }
+
+
+    @Test
+    public void testAllDirectives() {
+        fail("Write a directive list like the opcodes");
+    }
     public static Stream<Arguments> opcodeGenerator() {
         return Arrays.stream(Opcodes65816.opt_table).map(opcode -> {
-            var code = opcode.getOp().split(" ")[0];
+            var code = opcode.getOp().split(" ")[0].split("\\.")[0];
             var sourceLine = opcode.getOp();
             sourceLine = sourceLine.replace("x", "0ah");
             sourceLine = sourceLine.replace("?", "0ah");

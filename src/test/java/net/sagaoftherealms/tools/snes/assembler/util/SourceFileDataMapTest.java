@@ -4,9 +4,8 @@ package net.sagaoftherealms.tools.snes.assembler.util;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
 @DisplayName("Source File Metatadata is retained")
 public class SourceFileDataMapTest {
 
@@ -35,6 +34,11 @@ public class SourceFileDataMapTest {
         assertFalse(datamap.isEmpty());
 
 
+    }
+
+    @Test
+    public void testAddingFilePerformsIncludes() {
+        fail("Summers, implement includes at the file load step");
     }
 
 }

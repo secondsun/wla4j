@@ -21,4 +21,12 @@ public class Token {
     public int getArgumentsCount() {
         return 0;
     }
+
+    @Override
+    public String toString() {
+        return "Token{" +
+                "type=" + type +
+                ", string='" + string + '\'' +
+                '}';
+    }
 }

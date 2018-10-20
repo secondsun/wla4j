@@ -28,6 +28,7 @@ public class SourceScanner {
     }
 
     public SourceDataLine getNextLine() {
+        linePosition = 0;
         return source.getLine(++lineNumber);
     }
 
@@ -40,11 +41,14 @@ public class SourceScanner {
         String tokenString = getNextTokenString();
         TokenTypes type;
         final List<Character> operators = Arrays.asList(new Character[]{',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')'});
+        final List<String> sizeTokens = Arrays.asList(new String[]{".b", ".w", ".l",".B", ".W", ".L"});
 
         if (tokenString.startsWith("\"")) {
             type = TokenTypes.STRING;
             //trim quotes;
             tokenString = tokenString.substring(1, tokenString.length() - 1);
+        } else if (sizeTokens.contains(tokenString)) {
+            type = TokenTypes.SIZE;
         } else if (tokenString.startsWith(".")) {
             type = TokenTypes.DIRECTIVE;
         } else if (tokenString.matches(TokenUtil.DECIMAL_NUMBER_REGEX) || tokenString.matches(TokenUtil.HEX_NUMBER_REGEX_0) || tokenString.matches(TokenUtil.HEX_NUMBER_REGEX_$) || tokenString.matches(TokenUtil.CHARACTER_NUMBER_REGEX) || tokenString.matches(TokenUtil.BINARY_NUMBER_REGEX)) {
@@ -77,6 +81,12 @@ public class SourceScanner {
         //get line where we left off reading
         var line = getCurrentLine();
         var sourceString = line.getDataLine();
+
+        while (linePosition >= sourceString.length()) {
+            getNextLine();
+            line = getCurrentLine();
+            sourceString = line.getDataLine();
+        }
 
         char character = sourceString.charAt(linePosition);
         linePosition++;
@@ -118,7 +128,11 @@ public class SourceScanner {
             character = sourceString.charAt(linePosition);
             linePosition++;
 
-        } while (!Character.isWhitespace(character));
+        } while (!Character.isWhitespace(character) && character != '.');
+
+        if (character == '.') {
+            linePosition--;
+        }
 
         return builder.toString().trim();
     }
@@ -148,16 +162,33 @@ public class SourceScanner {
     }
 
     private String numberToken(String sourceString, char character) {
-        var chars = new Character[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'h', '.', '$', '%'};
+        var chars = new Character[]{'A', 'B', 'C', 'D', 'E', 'F', 'H','0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'h', '.', '$', '%'};
         final List<Character> allowedCharacters = Arrays.asList(chars);
         StringBuilder builder = new StringBuilder().append(character);
 
         do {
+
+            if (!allowedCharacters.contains(character)) {
+                linePosition--;
+                break;
+            }
+
             if (linePosition >= sourceString.length()) {
                 break;
             }
             character = sourceString.charAt(linePosition);
             linePosition++;
+            if (character == '.') {
+                //Handle optional size
+                if (!Character.isDigit(sourceString.charAt(linePosition))) {//character is not a digit, may be size.
+                    linePosition--;
+                    return builder.toString().trim();
+                }
+            }
+            if (!allowedCharacters.contains(character)) {
+                linePosition--;
+                break;
+            }
             builder.append(character);
         } while (allowedCharacters.contains(character));
 
@@ -239,4 +270,11 @@ public class SourceScanner {
     }
 
 
+    public boolean endOfInput() {
+        var currentLine = getCurrentLine();
+        if (linePosition >= currentLine.getDataLine().length()) {
+            return lineNumber >= source.lineCount();
+        }
+        return lineNumber > source.lineCount();
+    }
 }
