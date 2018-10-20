@@ -2,19 +2,20 @@ package net.sagaoftherealms.tools.snes.assembler.util;
 
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
+import net.sagaoftherealms.tools.snes.assembler.opcodes.defines.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.token.TokenUtil;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.converter.ConvertWith;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -31,7 +32,7 @@ public class SourceScannerTest {
         var data = new InputData(new Flags(outfile));
         data.includeFile($(sourceLine), inputFile, lineNumber);
 
-        var scanner = data.startRead();
+        var scanner = data.startRead(Opcodes65816.opt_table);
 
         var token = scanner.getNextToken();
 
@@ -65,7 +66,7 @@ public class SourceScannerTest {
         var data = new InputData(new Flags(outfile));
         data.includeFile($(sourceLine), inputFile, lineNumber);
 
-        var scanner = data.startRead();
+        var scanner = data.startRead(Opcodes65816.opt_table);
 
         var token = scanner.getNextToken();
 
@@ -84,7 +85,7 @@ public class SourceScannerTest {
         var data = new InputData(new Flags(outfile));
         data.includeFile($("42 *"), inputFile, lineNumber);
 
-        var scanner = data.startRead();
+        var scanner = data.startRead(Opcodes65816.opt_table);
         scanner.getNextToken(); //Skip 42
         var token = scanner.getNextToken();
 
@@ -101,7 +102,7 @@ public class SourceScannerTest {
         var data = new InputData(new Flags(outfile));
         data.includeFile($("\"This should crash"), inputFile, lineNumber);
 
-        var scanner = data.startRead();
+        var scanner = data.startRead(Opcodes65816.opt_table);
 
         Assertions.assertThrows(IllegalStateException.class, () -> scanner.getNextToken());
     }
@@ -124,7 +125,7 @@ public class SourceScannerTest {
         var data = new InputData(new Flags(outfile));
         data.includeFile($(sourceLine), inputFile, lineNumber);
 
-        var scanner = data.startRead();
+        var scanner = data.startRead(Opcodes65816.opt_table);
 
         var token = scanner.getNextToken();
 
@@ -134,10 +135,23 @@ public class SourceScannerTest {
         assertEquals((int) value, TokenUtil.getInt(token));
     }
 
+    //test that ah is treated as label and not a number
     @Test
     public void labelVsHexNumber() {
-        //test that ah is treated as label and not a number
-        fail();
+
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($("ah"), inputFile, lineNumber);
+
+        var scanner = data.startRead(Opcodes65816.opt_table);
+
+        var token = scanner.getNextToken();
+
+        assertEquals(TokenTypes.LABEL, token.getType());
+
     }
 
     @Test
@@ -168,7 +182,7 @@ public class SourceScannerTest {
         var data = new InputData(new Flags(outfile));
         data.includeFile($(sourceLine), inputFile, lineNumber);
 
-        var scanner = data.startRead();
+        var scanner = data.startRead(Opcodes65816.opt_table);
 
         var token = scanner.getNextToken();
 
@@ -177,35 +191,7 @@ public class SourceScannerTest {
 
     }
 
-    /**
-     * This test tests single directive tokens and makes sure that we can match them.
-     * <p>
-     * Validation directives is another test.
-     *
-     * @param sourceLine        the source code line
-     * @param expectedDirective the expected directive sourceLine parses to.
-     */
-    @ParameterizedTest
-    @CsvSource({"'.DBCOS 0.2, 10, 3.2, 120, 1.3', DBCOS, '[.2,10,3.2,120,1.3]'"
-    })
-    public void testParseDirectiveWithArgumentsToken(String sourceLine, String expectedDirective, @ConvertWith(DoubleArrayConverter.class) List<Double> arguments) {
-        final String outfile = "test.out";
-        final String inputFile = "test.s";
-        final int lineNumber = 0;
 
-        var data = new InputData(new Flags(outfile));
-        data.includeFile($(sourceLine), inputFile, lineNumber);
-
-        var scanner = data.startRead();
-
-        var token = scanner.getNextToken();
-
-        assertEquals(TokenTypes.DIRECTIVE, token.getType());
-        assertEquals("." + expectedDirective, token.getString());
-        //This is going to fail for a while.  Basically tokens shouldn't have argument info.
-        //I will need to rewrite this as a "Node" that is exported during parsing.
-        assertEquals(arguments.size(), token.getArgumentsCount());
-    }
 
     @Test()
     public void emptyDirectiveThrowsException() {
@@ -216,7 +202,7 @@ public class SourceScannerTest {
         var data = new InputData(new Flags(outfile));
         data.includeFile($(". Crash"), inputFile, lineNumber);
 
-        var scanner = data.startRead();
+        var scanner = data.startRead(Opcodes65816.opt_table);
 
         Assertions.assertThrows(IllegalStateException.class, () -> scanner.getNextToken());
     }
@@ -240,8 +226,6 @@ public class SourceScannerTest {
             "_label, label", //underscore label IE local label (see https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)
             "@label, label", //Child label
             "@@@@label, label",//Deeply nested child label
-            "--, ''", //unnamed reverse jump label
-            "++, ''",//unnamed forward jump label
     })
     public void testBasicLabel(String sourceLine, String labelName) {
         final String outfile = "test.out";
@@ -251,15 +235,13 @@ public class SourceScannerTest {
         var data = new InputData(new Flags(outfile));
         data.includeFile($(sourceLine), inputFile, lineNumber);
 
-        var scanner = data.startRead();
+        var scanner = data.startRead(Opcodes65816.opt_table);
 
         var token = scanner.getNextToken();
 
         assertEquals(TokenTypes.LABEL, token.getType());
         assertEquals(sourceLine, token.getString());
         assertEquals(labelName, TokenUtil.getLabelName(token));
-
-
     }
 
     @Test
@@ -299,9 +281,34 @@ public class SourceScannerTest {
         fail("Look, you're going to have to take apart the switch statements starting at pass_1.c#863.  There are many");
     }
 
-    private static InputStream $(String inputString) {
-        return IOUtils.toInputStream(inputString, Charset.defaultCharset());
+    @ParameterizedTest
+    @MethodSource({"opcodeGenerator"})
+    public void testOpcode(String sourceLine, String opCode) {
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($(sourceLine), inputFile, lineNumber);
+
+        var scanner = data.startRead(Opcodes65816.opt_table);
+
+        var token = scanner.getNextToken();
+
+        assertEquals(TokenTypes.OPCODE, token.getType());
+        assertEquals(opCode, token.getString());
+
     }
 
+    public static Stream<Arguments> opcodeGenerator() {
+        return Arrays.stream(Opcodes65816.opt_table).map(opcode -> {
+            var code = opcode.getOp().split(" ")[0];
+            var sourceLine = opcode.getOp();
+            sourceLine = sourceLine.replace("x", "0ah");
+            sourceLine = sourceLine.replace("?", "0ah");
+            sourceLine = sourceLine.replace("&", "0ah");
+            return Arguments.of(sourceLine, code);
+        });
+    }
 
 }

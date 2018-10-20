@@ -1,5 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler.main;
 
+import net.sagaoftherealms.tools.snes.assembler.opcodes.OpCode;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceFileDataMap;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
 import org.apache.commons.io.IOUtils;
@@ -315,8 +316,14 @@ public class InputData {
         return combinedSourceFile.toString();
     }
 
-    public SourceScanner startRead() {
-        return new SourceScanner(combinedSourceFile);
+    /**
+     * Creates a scanner that uses a provide table of opcodes for the OpCode token type.
+     *
+     * @param opTable Array of opcodes
+     * @return a scanner which tokenizes
+     */
+    public SourceScanner startRead(OpCode[] opTable) {
+        return new SourceScanner(combinedSourceFile, opTable);
     }
 
 }
