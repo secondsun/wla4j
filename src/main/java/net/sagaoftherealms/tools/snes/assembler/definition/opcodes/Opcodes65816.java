@@ -1,6 +1,6 @@
-package net.sagaoftherealms.tools.snes.assembler.opcodes.defines;
+package net.sagaoftherealms.tools.snes.assembler.definition.opcodes;
 
-import net.sagaoftherealms.tools.snes.assembler.opcodes.OpCode65816;
+import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode65816;
 
 public class Opcodes65816 {
     public static final OpCode65816 opt_table[] = {

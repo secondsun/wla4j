@@ -1,6 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler.main;
 
-import net.sagaoftherealms.tools.snes.assembler.opcodes.OpCode;
+import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceFileDataMap;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
 import org.apache.commons.io.IOUtils;

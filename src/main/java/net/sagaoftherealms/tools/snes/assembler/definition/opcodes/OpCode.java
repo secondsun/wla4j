@@ -1,4 +1,4 @@
-package net.sagaoftherealms.tools.snes.assembler.opcodes;
+package net.sagaoftherealms.tools.snes.assembler.definition.opcodes;
 
 public abstract class OpCode {
     private final String op;

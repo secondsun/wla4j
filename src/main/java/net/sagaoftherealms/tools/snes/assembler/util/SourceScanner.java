@@ -1,6 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
-import net.sagaoftherealms.tools.snes.assembler.opcodes.OpCode;
+import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
 import net.sagaoftherealms.tools.snes.assembler.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.token.TokenUtil;

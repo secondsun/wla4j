@@ -1,9 +1,10 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
+import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirective;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.main.Test65816IncludeData;
-import net.sagaoftherealms.tools.snes.assembler.opcodes.defines.Opcodes65816;
+import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.token.TokenUtil;
 import org.junit.jupiter.api.Assertions;
@@ -297,6 +298,7 @@ public class SourceScannerTest {
 
     @Test
     public void testAllDirectives() {
+        AllDirective[] directives = AllDirective.ALL_DIRECTIVES;
         fail("Write a directive list like the opcodes");
     }
     public static Stream<Arguments> opcodeGenerator() {
@@ -308,6 +310,21 @@ public class SourceScannerTest {
             sourceLine = sourceLine.replace("&", "0ah");
             return Arguments.of(sourceLine, code);
         });
+    }
+
+    @Test
+    public void scanEnumAndRamsectionTypes() {
+        fail("See https://wla-dx.readthedocs.io/en/latest/asmdiv.html#enum-c000 and #ramsection-vars-bank-0-slot-1-align-4.  Enum can have information in its types");
+    }
+
+    @Test
+    public void scanMacroEscapes() {
+        fail("See https://wla-dx.readthedocs.io/en/latest/asmdiv.html#macro-test.  Need to identity the \\1 and \\@ and \\!");
+    }
+
+    @Test
+    public void scanIfOperators() {
+        fail("See https://wla-dx.readthedocs.io/en/latest/asmdiv.html#if-debug-2.  Need to identity <=, ==, != , etc");
     }
 
 }
