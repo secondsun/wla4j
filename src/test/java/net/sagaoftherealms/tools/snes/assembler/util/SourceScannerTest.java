@@ -297,6 +297,25 @@ public class SourceScannerTest {
 
 
     @Test
+    public void testCanScanFerris() {
+        InputData data = new InputData(new Flags(" test.out "));
+        data.includeFile(Test65816IncludeData.class.getClassLoader().getResourceAsStream("ferris-kefren.s"), "ferris-kefren.s", 0);
+        
+        var scanner = data.startRead(Opcodes65816.opt_table);
+
+        var token = scanner.getNextToken();
+        while(token != null) {
+            System.out.println(token);
+            if (scanner.endOfInput()) {
+                break;
+            }
+            token = scanner.getNextToken();
+        }
+
+    }
+
+
+    @Test
     public void testAllDirectives() {
         AllDirective[] directives = AllDirective.ALL_DIRECTIVES;
         fail("Write a directive list like the opcodes");
