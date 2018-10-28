@@ -1,10 +1,14 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
 
+import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
-import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
-import net.sagaoftherealms.tools.snes.assembler.token.TokenTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.AddressNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
@@ -117,12 +121,13 @@ public class SourceParserTest {
         var scanner = data.startRead(Opcodes65816.opt_table);
 
         SourceParser parser = new SourceParser(scanner);
-        Node enumnode = parser.nextNode();
+        Node enumNode = parser.nextNode();
         Node addressnode = parser.nextNode();
         Node endenumnode = parser.nextNode();
 
         assertEquals(NodeTypes.ENUM, enumNode.getType());
-        assertEquals(NodeTypes.ADDRESS_NUMBER, ((AddressNode)addressnode.getAddress()));
+        assertEquals(NodeTypes.ADDRESS_NUMBER, (addressnode.getType()));
+        assertEquals(0xc000, ((AddressNode)addressnode).getAddress());
         assertEquals(NodeTypes.END_ENUM, endenumnode.getType());
 
 

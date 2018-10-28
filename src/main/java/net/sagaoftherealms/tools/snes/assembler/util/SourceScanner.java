@@ -1,9 +1,9 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
-import net.sagaoftherealms.tools.snes.assembler.token.Token;
-import net.sagaoftherealms.tools.snes.assembler.token.TokenTypes;
-import net.sagaoftherealms.tools.snes.assembler.token.TokenUtil;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
 import java.util.Arrays;
 import java.util.List;

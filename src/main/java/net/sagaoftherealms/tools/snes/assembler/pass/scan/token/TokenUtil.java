@@ -1,4 +1,4 @@
-package net.sagaoftherealms.tools.snes.assembler.token;
+package net.sagaoftherealms.tools.snes.assembler.pass.scan.token;
 
 /**
  * Utilities for transforming a token into typed values
