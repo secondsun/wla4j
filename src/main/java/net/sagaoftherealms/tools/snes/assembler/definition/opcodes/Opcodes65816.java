@@ -1,7 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.definition.opcodes;
 
-import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode65816;
-
 public class Opcodes65816 {
     public static final OpCode65816 opt_table[] = {
             new OpCode65816("ADC #x", 0x69, 4, 0),

@@ -1,6 +1,7 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirective;
+import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeSpc700;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.main.Test65816IncludeData;
@@ -258,7 +259,7 @@ public class SourceScannerTest {
 
 
     @ParameterizedTest
-    @MethodSource({"opcodeGenerator"})
+    @MethodSource({"opcodeGenerator65816"})
     public void testOpcode(String sourceLine, String opCode) {
         final String outfile = "test.out";
         final String inputFile = "test.s";
@@ -268,6 +269,26 @@ public class SourceScannerTest {
         data.includeFile($(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
+
+        var token = scanner.getNextToken();
+
+        assertEquals(TokenTypes.OPCODE, token.getType());
+        assertEquals(opCode, token.getString());
+
+    }
+
+
+    @ParameterizedTest
+    @MethodSource({"opcodeGeneratorSPC700"})
+    public void testOpcodeSPc700(String sourceLine, String opCode) {
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($(sourceLine), inputFile, lineNumber);
+
+        var scanner = data.startRead(OpCodeSpc700.OPCODES);
 
         var token = scanner.getNextToken();
 
@@ -320,7 +341,7 @@ public class SourceScannerTest {
         AllDirective[] directives = AllDirective.ALL_DIRECTIVES;
         fail("Write a directive list like the opcodes");
     }
-    public static Stream<Arguments> opcodeGenerator() {
+    public static Stream<Arguments> opcodeGenerator65816() {
         return Arrays.stream(Opcodes65816.opt_table).map(opcode -> {
             var code = opcode.getOp().split(" ")[0].split("\\.")[0];
             var sourceLine = opcode.getOp();
@@ -330,6 +351,18 @@ public class SourceScannerTest {
             return Arguments.of(sourceLine, code);
         });
     }
+
+    public static Stream<Arguments> opcodeGeneratorSPC700() {
+        return Arrays.stream(OpCodeSpc700.OPCODES).map(opcode -> {
+            var code = opcode.getOp().split(" ")[0].split("\\.")[0];
+            var sourceLine = opcode.getOp();
+            sourceLine = sourceLine.replace("x", "0ah");
+            sourceLine = sourceLine.replace("?", "0ah");
+            sourceLine = sourceLine.replace("&", "0ah");
+            return Arguments.of(sourceLine, code);
+        });
+    }
+
 
     @Test
     public void scanEnumAndRamsectionTypes() {

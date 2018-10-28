@@ -103,4 +103,29 @@ public class SourceParserTest {
         fail("This test should test that the enum directive starts a statement style block that respects enums.");
     }
 
+    @Test
+    public void parseBasicEnum() {
+        final String enumSource = ".ENUM $C000\n" +
+                ".ENDE";
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($(enumSource), inputFile, lineNumber);
+
+        var scanner = data.startRead(Opcodes65816.opt_table);
+
+        SourceParser parser = new SourceParser(scanner);
+        Node enumnode = parser.nextNode();
+        Node addressnode = parser.nextNode();
+        Node endenumnode = parser.nextNode();
+
+        assertEquals(NodeTypes.ENUM, enumNode.getType());
+        assertEquals(NodeTypes.ADDRESS_NUMBER, ((AddressNode)addressnode.getAddress()));
+        assertEquals(NodeTypes.END_ENUM, endenumnode.getType());
+
+
+    }
+
 }
