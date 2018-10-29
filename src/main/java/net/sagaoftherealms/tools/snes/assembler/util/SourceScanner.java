@@ -38,10 +38,13 @@ public class SourceScanner {
 
 
     public Token getNextToken() {
+        if (endOfInput()) {
+            return null;
+        }
         String tokenString = getNextTokenString();
         TokenTypes type;
         final List<Character> operators = Arrays.asList(new Character[]{',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')'});
-        final List<String> sizeTokens = Arrays.asList(new String[]{".b", ".w", ".l",".B", ".W", ".L"});
+        final List<String> sizeTokens = Arrays.asList(new String[]{".b", ".w", ".l", ".B", ".W", ".L"});
 
         if (tokenString.startsWith("\"")) {
             type = TokenTypes.STRING;
@@ -162,7 +165,7 @@ public class SourceScanner {
     }
 
     private String numberToken(String sourceString, char character) {
-        var chars = new Character[]{'A', 'B', 'C', 'D', 'E', 'F', 'H','0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'h', '.', '$', '%'};
+        var chars = new Character[]{'A', 'B', 'C', 'D', 'E', 'F', 'H', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'h', '.', '$', '%'};
         final List<Character> allowedCharacters = Arrays.asList(chars);
         StringBuilder builder = new StringBuilder().append(character);
 
@@ -271,7 +274,16 @@ public class SourceScanner {
 
 
     public boolean endOfInput() {
-        var currentLine = getCurrentLine();
+        if (lineNumber > source.lineCount()) {
+            return true;
+        }
+        SourceDataLine currentLine;
+        if (lineNumber == 0) {
+            currentLine = source.getLine(1);
+        } else {
+            currentLine = getCurrentLine();
+        }
+        
         if (linePosition >= currentLine.getDataLine().length()) {
             return lineNumber >= source.lineCount();
         }

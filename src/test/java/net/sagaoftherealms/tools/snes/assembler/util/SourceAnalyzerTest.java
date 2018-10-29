@@ -10,4 +10,9 @@ public class SourceAnalyzerTest {
     public void testStructDefinesSizeOf() {
         fail("Struct should define a __sideof__.  See https://wla-dx.readthedocs.io/en/latest/asmdiv.html#struct-enemy-object");
     }
+    
+    @Test
+    public void testBankHeaderSection() {
+        fail("testing BANKHEADER see https://wla-dx.readthedocs.io/en/latest/asmdiv.html?highlight=BANKHEADER");
+    }
 }

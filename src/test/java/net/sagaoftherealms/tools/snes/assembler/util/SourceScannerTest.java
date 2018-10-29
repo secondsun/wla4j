@@ -1,6 +1,8 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirective;
+import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
+import net.sagaoftherealms.tools.snes.assembler.definition.directives.Directive;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeSpc700;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
@@ -79,8 +81,7 @@ public class SourceScannerTest {
 
     //Multiply gets a special test because it begins a comment
     @Test
-    public void testMultiplyToken()
-    {
+    public void testMultiplyToken() {
         final String outfile = "test.out";
         final String inputFile = "test.s";
         final int lineNumber = 0;
@@ -216,7 +217,6 @@ public class SourceScannerTest {
     }
 
 
-
     @Test()
     public void emptyDirectiveThrowsException() {
         final String outfile = "test.out";
@@ -230,7 +230,6 @@ public class SourceScannerTest {
 
         Assertions.assertThrows(IllegalStateException.class, () -> scanner.getNextToken());
     }
-
 
 
     @ParameterizedTest
@@ -302,11 +301,11 @@ public class SourceScannerTest {
         InputData data = new InputData(new Flags(" test.out "));
         data.includeFile(Test65816IncludeData.class.getClassLoader().getResourceAsStream("main.s"), "main.s", 0);
         data.includeFile(Test65816IncludeData.class.getClassLoader().getResourceAsStream("defines.i"), "defines.i", 1);
-        data.includeFile(Test65816IncludeData.class.getClassLoader().getResourceAsStream("snes_memory.i"), "snes_memeory.i",2);
+        data.includeFile(Test65816IncludeData.class.getClassLoader().getResourceAsStream("snes_memory.i"), "snes_memeory.i", 2);
         var scanner = data.startRead(Opcodes65816.opt_table);
 
         var token = scanner.getNextToken();
-        while(token != null) {
+        while (token != null) {
             System.out.println(token);
             if (scanner.endOfInput()) {
                 break;
@@ -321,11 +320,11 @@ public class SourceScannerTest {
     public void testCanScanFerris() {
         InputData data = new InputData(new Flags(" test.out "));
         data.includeFile(Test65816IncludeData.class.getClassLoader().getResourceAsStream("ferris-kefren.s"), "ferris-kefren.s", 0);
-        
+
         var scanner = data.startRead(Opcodes65816.opt_table);
 
         var token = scanner.getNextToken();
-        while(token != null) {
+        while (token != null) {
             System.out.println(token);
             if (scanner.endOfInput()) {
                 break;
@@ -338,9 +337,22 @@ public class SourceScannerTest {
 
     @Test
     public void testAllDirectives() {
-        AllDirective[] directives = AllDirective.ALL_DIRECTIVES;
-        fail("Write a directive list like the opcodes");
+        Arrays.stream(AllDirectives.values()).forEach(it -> {
+            var sourceLine = AllDirectives.generateDirectiveLine(it.getPattern(), true);
+            var data = new InputData(new Flags("main.s"));
+            data.includeFile($(sourceLine), "main.s", 0);
+
+            var scanner = data.startRead(OpCodeSpc700.OPCODES);
+
+            while(!scanner.endOfInput()){
+                System.out.print(scanner.getNextToken());
+                System.out.print(" ");
+            };
+            System.out.println(" ");
+        });
+        
     }
+
     public static Stream<Arguments> opcodeGenerator65816() {
         return Arrays.stream(Opcodes65816.opt_table).map(opcode -> {
             var code = opcode.getOp().split(" ")[0].split("\\.")[0];
