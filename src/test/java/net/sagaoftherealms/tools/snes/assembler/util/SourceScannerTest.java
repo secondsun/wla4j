@@ -1,5 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
+import com.google.common.base.Strings;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirective;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.Directive;
@@ -381,14 +382,35 @@ public class SourceScannerTest {
         fail("See https://wla-dx.readthedocs.io/en/latest/asmdiv.html#enum-c000 and #ramsection-vars-bank-0-slot-1-align-4.  Enum can have information in its types");
     }
 
-    @Test
-    public void scanMacroEscapes() {
-        fail("See https://wla-dx.readthedocs.io/en/latest/asmdiv.html#macro-test.  Need to identity the \\1 and \\@ and \\!");
-    }
 
-    @Test
-    public void scanIfOperators() {
-        fail("See https://wla-dx.readthedocs.io/en/latest/asmdiv.html#if-debug-2.  Need to identity <=, ==, != , etc");
+    @ParameterizedTest
+    @CsvSource({"!, NOT, ''",
+            "<=, LT, EQUAL",
+            ">=, GT, EQUAL",
+            "==, EQUAL, EQUAL",
+            "\\2, ESCAPE, NUMBER",
+            "\\!, ESCAPE, NOT",
+            "\\@, ESCAPE, AT",
+    })
+    public void scanIfAndMacroOperators(String sourceLine, String operator1, String operator2) {
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($(sourceLine), inputFile, lineNumber);
+
+        var scanner = data.startRead(OpCodeSpc700.OPCODES);
+
+        var token = scanner.getNextToken();
+
+        assertEquals(TokenTypes.valueOf(operator1), token.getType());
+        if (!Strings.isNullOrEmpty(operator2)) {
+            token = scanner.getNextToken();
+            assertEquals(TokenTypes.valueOf(operator2), token.getType());    
+        }
+
+
     }
 
 }

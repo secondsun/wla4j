@@ -43,7 +43,7 @@ public class SourceScanner {
         }
         String tokenString = getNextTokenString();
         TokenTypes type;
-        final List<Character> operators = Arrays.asList(new Character[]{',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')','!', '=','\\'});
+        final List<Character> operators = Arrays.asList(new Character[]{',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')','!', '=','\\','@'});
         final List<String> sizeTokens = Arrays.asList(new String[]{".b", ".w", ".l", ".B", ".W", ".L"});
 
         if (tokenString.startsWith("\"")) {
@@ -56,7 +56,7 @@ public class SourceScanner {
             type = TokenTypes.DIRECTIVE;
         } else if (tokenString.matches(TokenUtil.DECIMAL_NUMBER_REGEX) || tokenString.matches(TokenUtil.HEX_NUMBER_REGEX_0) || tokenString.matches(TokenUtil.HEX_NUMBER_REGEX_$) || tokenString.matches(TokenUtil.CHARACTER_NUMBER_REGEX) || tokenString.matches(TokenUtil.BINARY_NUMBER_REGEX)) {
             type = TokenTypes.NUMBER;
-        } else if (Character.isAlphabetic(tokenString.charAt(0)) || tokenString.charAt(0) == '_' || tokenString.charAt(0) == '@') {
+        } else if ((!tokenString.equals("@")) && (Character.isAlphabetic(tokenString.charAt(0)) || tokenString.charAt(0) == '_' || tokenString.charAt(0) == '@')) {
             if (opCodes.contains(tokenString)) {
                 type = TokenTypes.OPCODE;
             } else {
@@ -75,7 +75,7 @@ public class SourceScanner {
 
     private String getNextTokenString() {
 
-        final List<Character> operators = Arrays.asList(new Character[]{',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')','!','=','\\'});
+        final List<Character> operators = Arrays.asList(new Character[]{',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')','!','=','\\','@'});
 
         if (lineNumber == 0) {
             getNextLine();
@@ -273,6 +273,8 @@ public class SourceScanner {
                 return TokenTypes.EQUAL;
             case '\\':
                 return TokenTypes.ESCAPE;
+            case '@':
+                return TokenTypes.AT;                
         }
 
         throw new IllegalArgumentException("Unknown Operator Type");
