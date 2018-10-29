@@ -64,7 +64,7 @@ public enum AllDirectives {
     ORGA(new AllDirective(".ORGA c")),
     DS(new AllDirective(".DS x, x")),
     DSB(new AllDirective(".DSB x, x")),
-    DSTRUCT(new AllDirective(".DSTRUCT l ?INSTANCEOF l ?DATA []{xsf}")),
+    DSTRUCT(new AllDirective(".DSTRUCT l ?(INSTANCEOF) l ?(DATA) []{xsf}")),
     DSW(new AllDirective(".DSW x, x")),
     DB(new AllDirective(".DB []{xsf}")),
     BYT(new AllDirective(".BYT []{xsf}")),

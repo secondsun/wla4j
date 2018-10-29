@@ -343,7 +343,7 @@ public class SourceScannerTest {
             data.includeFile($(sourceLine), "main.s", 0);
 
             var scanner = data.startRead(OpCodeSpc700.OPCODES);
-
+            System.out.println(sourceLine);
             while(!scanner.endOfInput()){
                 System.out.print(scanner.getNextToken());
                 System.out.print(" ");

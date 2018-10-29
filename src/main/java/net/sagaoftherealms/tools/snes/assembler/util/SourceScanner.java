@@ -43,7 +43,7 @@ public class SourceScanner {
         }
         String tokenString = getNextTokenString();
         TokenTypes type;
-        final List<Character> operators = Arrays.asList(new Character[]{',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')'});
+        final List<Character> operators = Arrays.asList(new Character[]{',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')','!', '=','\\'});
         final List<String> sizeTokens = Arrays.asList(new String[]{".b", ".w", ".l", ".B", ".W", ".L"});
 
         if (tokenString.startsWith("\"")) {
@@ -75,7 +75,7 @@ public class SourceScanner {
 
     private String getNextTokenString() {
 
-        final List<Character> operators = Arrays.asList(new Character[]{',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')'});
+        final List<Character> operators = Arrays.asList(new Character[]{',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')','!','=','\\'});
 
         if (lineNumber == 0) {
             getNextLine();
@@ -267,6 +267,12 @@ public class SourceScanner {
                 return TokenTypes.RIGHT_PAREN;
             case '(':
                 return TokenTypes.LEFT_PAREN;
+            case '!':
+                return TokenTypes.NOT;
+            case '=':
+                return TokenTypes.EQUAL;
+            case '\\':
+                return TokenTypes.ESCAPE;
         }
 
         throw new IllegalArgumentException("Unknown Operator Type");
