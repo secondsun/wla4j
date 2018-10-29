@@ -11,7 +11,7 @@ public class SourceParser {
     }
 
     public Node nextNode() {
-        this.token = scanner.getNextToken();
+        advanceToken();
         switch (token.getType()) {
 
             case STRING:
@@ -62,7 +62,16 @@ public class SourceParser {
         return null;
     }
 
+    private void advanceToken() {
+        this.token = scanner.getNextToken();
+    }
+
+    private Token getCurrentToken() {
+        return this.token;
+    }
+
     private Node directive() {
-        return new DirectiveNode();
+
+        return new EnumNode(token);
     }
 }

@@ -1,6 +1,7 @@
 package net.sagaoftherealms.tools.snes.assembler.definition.directives;
 
 public class AllDirective extends Directive {
+
     //x = a whole number
     //f = a number with a decimal part
     //c = a character
@@ -150,7 +151,7 @@ public class AllDirective extends Directive {
     };
     private final String string;
 
-    public AllDirective(String s) {
+    private AllDirective(String s) {
         this.string = s;
     }
 }

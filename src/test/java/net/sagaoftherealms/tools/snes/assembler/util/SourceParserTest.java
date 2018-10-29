@@ -4,7 +4,7 @@ package net.sagaoftherealms.tools.snes.assembler.util;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.DirectiveNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
@@ -121,14 +121,11 @@ public class SourceParserTest {
         var scanner = data.startRead(Opcodes65816.opt_table);
 
         SourceParser parser = new SourceParser(scanner);
-        Node enumNode = parser.nextNode();
-        Node addressNode = parser.nextNode();
-        Node enumEndNode = parser.nextNode();
+        EnumNode enumNode = (EnumNode) parser.nextNode();
 
         assertEquals(NodeTypes.ENUM, enumNode.getType());
-        assertEquals(NodeTypes.ADDRESS_NUMBER, (addressNode.getType()));
-        assertEquals(0xc000, ((DirectiveNode)addressNode).getAddress());
-        assertEquals(NodeTypes.END_ENUM, enumEndNode.getType());
+        assertEquals("$C000", enumNode.getAddress().getString());
+
 
 
     }
