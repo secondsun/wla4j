@@ -1,5 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
 public enum NodeTypes {
-    ENUM
+    DIRECTIVE_ARGUMENTS, DIRECTIVE_BODY, ENUM
 }

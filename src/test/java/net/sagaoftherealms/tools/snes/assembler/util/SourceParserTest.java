@@ -4,11 +4,12 @@ package net.sagaoftherealms.tools.snes.assembler.util;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.EnumNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
@@ -124,8 +125,25 @@ public class SourceParserTest {
         EnumNode enumNode = (EnumNode) parser.nextNode();
 
         assertEquals(NodeTypes.ENUM, enumNode.getType());
-        assertEquals("$C000", enumNode.getAddress().getString());
+        assertEquals("49152", enumNode.getAddress());
 
+    }
+
+    @Test
+    public void exceptionIfNoEnde() {
+
+        final String enumSource = ".ENUM $C000\n";
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($(enumSource), inputFile, lineNumber);
+
+        var scanner = data.startRead(Opcodes65816.opt_table);
+
+        SourceParser parser = new SourceParser(scanner);
+        Assertions.assertThrows(ParseException.class, ()->parser.nextNode());
 
 
     }

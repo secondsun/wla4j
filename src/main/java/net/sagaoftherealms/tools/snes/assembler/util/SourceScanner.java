@@ -46,7 +46,9 @@ public class SourceScanner {
         final List<Character> operators = Arrays.asList(new Character[]{',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')','!', '=','\\','@'});
         final List<String> sizeTokens = Arrays.asList(new String[]{".b", ".w", ".l", ".B", ".W", ".L"});
 
-        if (tokenString.startsWith("\"")) {
+        if (tokenString.equals("\n")) {
+            type = TokenTypes.EOL;
+        } else if (tokenString.startsWith("\"")) {
             type = TokenTypes.STRING;
             //trim quotes;
             tokenString = tokenString.substring(1, tokenString.length() - 1);
@@ -89,6 +91,9 @@ public class SourceScanner {
             getNextLine();
             line = getCurrentLine();
             sourceString = line.getDataLine();
+            if (linePosition < sourceString.length()) {
+                return "\n";//collapse multiple newlines
+            }
         }
 
         char character = sourceString.charAt(linePosition);

@@ -257,6 +257,22 @@ public class SourceScannerTest {
         assertEquals(labelName, TokenUtil.getLabelName(token));
     }
 
+    @Test
+    public void testEndOfLineToken() {
+        var sourceLine = "Label1:\nLabel2";
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($(sourceLine), inputFile, lineNumber);
+
+        var scanner = data.startRead(Opcodes65816.opt_table);
+        scanner.getNextToken();
+
+        var token = scanner.getNextToken();
+        assertEquals(TokenTypes.EOL, token.getType());
+    }
 
     @ParameterizedTest
     @MethodSource({"opcodeGenerator65816"})

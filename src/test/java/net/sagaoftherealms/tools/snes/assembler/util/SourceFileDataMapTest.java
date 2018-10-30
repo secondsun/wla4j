@@ -36,9 +36,5 @@ public class SourceFileDataMapTest {
 
     }
 
-    @Test
-    public void testAddingFilePerformsIncludes() {
-        fail("Summers, implement includes at the file load step");
-    }
 
 }

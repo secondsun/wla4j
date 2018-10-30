@@ -1,5 +1,7 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.factory.DirectiveUtils;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
 
@@ -62,16 +64,29 @@ public class SourceParser {
         return null;
     }
 
-    private void advanceToken() {
+    public void advanceToken() {
         this.token = scanner.getNextToken();
     }
 
-    private Token getCurrentToken() {
+    public Token getCurrentToken() {
         return this.token;
     }
 
     private Node directive() {
+        advanceToken();//Clear the directive Name token
 
-        return new EnumNode(token);
+        var node = new EnumNode();
+        var nodeParser = DirectiveUtils.getParser(NodeTypes.ENUM);
+        node.setArguments(nodeParser.arguments(this));
+        node.setBody(nodeParser.body(this));
+        return node;
+    }
+
+    private Node body(NodeTypes nodeType) {
+        return null;
+    }
+
+    private Node arguments(NodeTypes nodeType) {
+        return null;
     }
 }

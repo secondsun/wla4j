@@ -4,16 +4,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class Node {
-    public NodeTypes getType() {
-        return NodeTypes.ENUM;
+public class Node {
+    private final NodeTypes type;
+    private final List<Node> children = new ArrayList<>();
+
+    public Node(NodeTypes nodeType) {
+        this.type = nodeType;
     }
 
-    List<Node> children = new ArrayList<>();
+    public final NodeTypes getType() {
+        return type;
+    }
 
     public List<Node> getChildren() {
         return Collections.unmodifiableList(children);
     }
 
-
+    public final Node addChild(Node childNode) {
+        children.add(childNode);
+        return this;
+    }
 }
