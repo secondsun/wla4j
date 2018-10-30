@@ -130,6 +130,12 @@ public class SourceParserTest {
     }
 
     @Test
+    public void parseBasicEnumBody() {
+        fail("implement this test.");
+    }
+
+
+    @Test
     public void exceptionIfNoEnde() {
 
         final String enumSource = ".ENUM $C000\n";
