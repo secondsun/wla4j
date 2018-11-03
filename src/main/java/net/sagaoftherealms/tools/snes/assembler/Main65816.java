@@ -1,17 +1,13 @@
 
 package net.sagaoftherealms.tools.snes.assembler;
 
-import com.google.common.base.Strings;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import static net.sagaoftherealms.tools.snes.assembler.Defines.DefinitionType.DEFINITION_TYPE_STRING;
 import static net.sagaoftherealms.tools.snes.assembler.Defines.Output.OUTPUT_NONE;
