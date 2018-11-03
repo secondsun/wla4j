@@ -393,12 +393,6 @@ public class SourceScannerTest {
     }
 
 
-    @Test
-    public void scanEnumAndRamsectionTypes() {
-        fail("See https://wla-dx.readthedocs.io/en/latest/asmdiv.html#enum-c000 and #ramsection-vars-bank-0-slot-1-align-4.  Enum can have information in its types");
-    }
-
-
     @ParameterizedTest
     @CsvSource({"!, NOT, ''",
             "<=, LT, EQUAL",
