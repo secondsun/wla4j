@@ -1,14 +1,20 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
+import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirective;
+import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.factory.DirectiveUtils;
 
-public abstract class DirectiveNode extends Node {
+public class DirectiveNode extends Node {
 
 
+    private final AllDirectives directive;
 
-    public DirectiveNode(NodeTypes nodeType) {
-        super(nodeType);
+    public DirectiveNode(AllDirectives directive) {
+
+        super(DirectiveUtils.getDirectiveNodeType(directive));
+        this.directive = directive;
     }
 
     public DirectiveArgumentsNode getArguments() {
@@ -35,5 +41,9 @@ public abstract class DirectiveNode extends Node {
             throw new IllegalStateException("Must set body only once only after you set arguments.");
         }
         addChild(body);
+    }
+
+    public AllDirectives getDirectiveType() {
+        return directive;
     }
 }

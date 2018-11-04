@@ -23,4 +23,7 @@ public class DirectiveArgumentsNode extends Node {
     }
 
 
+    public int size() {
+        return arguments.size();
+    }
 }

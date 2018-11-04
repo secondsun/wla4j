@@ -73,10 +73,11 @@ public class SourceParser {
     }
 
     private Node directive() {
+        var directiveName = token.getString();
         advanceToken();//Clear the directive Name token
 
-        var node = new EnumNode();
-        var nodeParser = DirectiveUtils.getParser(NodeTypes.ENUM);
+        var node = DirectiveUtils.createDirectiveNode(directiveName);
+        var nodeParser = DirectiveUtils.getParser(node.getDirectiveType());
         node.setArguments(nodeParser.arguments(this));
         node.setBody(nodeParser.body(this));
         return node;

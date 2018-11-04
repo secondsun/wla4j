@@ -5,10 +5,10 @@ import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.List;
 
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.toStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -49,17 +49,15 @@ public class SourceParserTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile($(sourceLine), inputFile, lineNumber);
+        data.includeFile(toStream(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
+        var parser = new SourceParser(scanner);
 
-        var token = scanner.getNextToken();
+        DirectiveNode node = (DirectiveNode) parser.nextNode();
 
-        assertEquals(TokenTypes.DIRECTIVE, token.getType());
-        assertEquals("." + expectedDirective, token.getString());
-        //This is going to fail for a while.  Basically tokens shouldn't have argument info.
-        //I will need to rewrite this as a "Node" that is exported during parsing.
-        assertEquals(arguments.size(), token.getArgumentsCount());
+
+        assertEquals(arguments.size(), node.getArguments().size());
     }
 
     @Test
@@ -117,7 +115,7 @@ public class SourceParserTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile($(enumSource), inputFile, lineNumber);
+        data.includeFile(toStream(enumSource), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 
@@ -150,7 +148,7 @@ public class SourceParserTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile($(enumSource), inputFile, lineNumber);
+        data.includeFile(toStream(enumSource), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 
