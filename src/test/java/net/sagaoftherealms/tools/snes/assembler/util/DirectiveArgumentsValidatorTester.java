@@ -99,6 +99,7 @@ public class DirectiveArgumentsValidatorTester {
         var scanner = toScanner(sourceLine);
         for (String type : typeArray) {
             var token = scanner.getNextToken();
+            System.out.println(token.toString());
             assertEquals(TokenTypes.valueOf(type.trim()), token.getType());
             assertTrue(validator.accept(token));
         }
@@ -107,19 +108,33 @@ public class DirectiveArgumentsValidatorTester {
 
     @ParameterizedTest
     @CsvSource({"4 + 4, 'NUMBER, PLUS, NUMBER'",
-                "8 * 4 + 2, 'NUMBER, MULTIPLY, NUMBER, PLUS, NUMBER'",})
-
+            "8 * 4 + 2, 'NUMBER, MULTIPLY, NUMBER, PLUS, NUMBER'",})
     public void validateNumericExpression(String sourceLine, String tokenTypes) {
         DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("e");
         String[] typeArray = tokenTypes.split(",");
         var scanner = toScanner(sourceLine);
         for (String type : typeArray) {
             var token = scanner.getNextToken();
-            assertEquals(TokenTypes.valueOf(type), token.getType());
+            assertEquals(TokenTypes.valueOf(type.trim()), token.getType());
             assertTrue(validator.accept(token));
         }
-
     }
+
+    @ParameterizedTest
+    @CsvSource({"4 + 4 FLOUR, 'NUMBER, PLUS, NUMBER, LABEL'",
+            "8 * 4 + 2 6+3, 'NUMBER, MULTIPLY, NUMBER, PLUS, NUMBER, NUMBER, PLUS, NUMBER'",})
+    public void validateComplexArguments(String sourceLine, String tokenTypes) {
+        DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("{elx} {elx}");
+        String[] typeArray = tokenTypes.split(",");
+        var scanner = toScanner(sourceLine);
+        for (String type : typeArray) {
+            var token = scanner.getNextToken();
+            System.out.println(type);
+            assertEquals(TokenTypes.valueOf(type.trim()), token.getType());
+            assertTrue(validator.accept(token));
+        }
+    }
+
 
 
     @Test

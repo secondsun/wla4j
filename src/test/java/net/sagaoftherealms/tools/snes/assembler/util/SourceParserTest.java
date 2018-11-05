@@ -9,6 +9,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNo
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,7 +18,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.List;
 
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.toStream;
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -49,7 +50,7 @@ public class SourceParserTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(sourceLine), inputFile, lineNumber);
+        data.includeFile($(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
         var parser = new SourceParser(scanner);
@@ -115,7 +116,7 @@ public class SourceParserTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(enumSource), inputFile, lineNumber);
+        data.includeFile($(enumSource), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 
@@ -148,7 +149,7 @@ public class SourceParserTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(enumSource), inputFile, lineNumber);
+        data.includeFile($(enumSource), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 

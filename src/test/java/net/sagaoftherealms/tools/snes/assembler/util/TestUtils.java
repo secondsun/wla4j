@@ -15,7 +15,7 @@ public class TestUtils {
      * @param inputString a string
      * @return a stream containing inputString
      */
-    public static InputStream toStream(String inputString) {
+    public static InputStream $(String inputString) {
         return IOUtils.toInputStream(inputString, Charset.defaultCharset());
     }
 
@@ -25,7 +25,7 @@ public class TestUtils {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(sourceLine), inputFile, lineNumber);
+        data.includeFile($(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
         return scanner;

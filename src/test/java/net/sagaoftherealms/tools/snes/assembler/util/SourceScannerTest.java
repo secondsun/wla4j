@@ -1,7 +1,9 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
 import com.google.common.base.Strings;
+import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirective;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
+import net.sagaoftherealms.tools.snes.assembler.definition.directives.Directive;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeSpc700;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
@@ -19,7 +21,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.toStream;
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -34,7 +36,7 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(sourceLine), inputFile, lineNumber);
+        data.includeFile($(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 
@@ -68,7 +70,7 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(sourceLine), inputFile, lineNumber);
+        data.includeFile($(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 
@@ -86,7 +88,7 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream("42 *"), inputFile, lineNumber);
+        data.includeFile($("42 *"), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
         scanner.getNextToken(); //Skip 42
@@ -103,7 +105,7 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream("\"This should crash"), inputFile, lineNumber);
+        data.includeFile($("\"This should crash"), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 
@@ -128,7 +130,7 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(sourceLine), inputFile, lineNumber);
+        data.includeFile($(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 
@@ -149,7 +151,7 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream("ah"), inputFile, lineNumber);
+        data.includeFile($("ah"), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 
@@ -180,7 +182,7 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(sourceLine), inputFile, lineNumber);
+        data.includeFile($(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 
@@ -202,7 +204,7 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(sourceLine), inputFile, lineNumber);
+        data.includeFile($(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 
@@ -224,7 +226,7 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(". Crash"), inputFile, lineNumber);
+        data.includeFile($(". Crash"), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 
@@ -246,7 +248,7 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(sourceLine), inputFile, lineNumber);
+        data.includeFile($(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 
@@ -264,7 +266,7 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(sourceLine), inputFile, lineNumber);
+        data.includeFile($(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
         scanner.getNextToken();
@@ -281,7 +283,7 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(sourceLine), inputFile, lineNumber);
+        data.includeFile($(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 
@@ -301,7 +303,7 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(sourceLine), inputFile, lineNumber);
+        data.includeFile($(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead(OpCodeSpc700.OPCODES);
 
@@ -356,7 +358,7 @@ public class SourceScannerTest {
         Arrays.stream(AllDirectives.values()).forEach(it -> {
             var sourceLine = AllDirectives.generateDirectiveLine(it.getPattern(), true);
             var data = new InputData(new Flags("main.s"));
-            data.includeFile(toStream(sourceLine), "main.s", 0);
+            data.includeFile($(sourceLine), "main.s", 0);
 
             var scanner = data.startRead(OpCodeSpc700.OPCODES);
             System.out.println(sourceLine);
@@ -407,7 +409,7 @@ public class SourceScannerTest {
         final int lineNumber = 0;
 
         var data = new InputData(new Flags(outfile));
-        data.includeFile(toStream(sourceLine), inputFile, lineNumber);
+        data.includeFile($(sourceLine), inputFile, lineNumber);
 
         var scanner = data.startRead(OpCodeSpc700.OPCODES);
 

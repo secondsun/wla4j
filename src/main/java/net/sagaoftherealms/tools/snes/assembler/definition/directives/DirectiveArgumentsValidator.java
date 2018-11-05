@@ -3,6 +3,8 @@ package net.sagaoftherealms.tools.snes.assembler.definition.directives;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 
+import java.util.EnumSet;
+
 public final class DirectiveArgumentsValidator {
 
     private final String pattern;
@@ -97,21 +99,42 @@ public final class DirectiveArgumentsValidator {
             case 's'://s = a String value (expands to "some text"
                 return matchString(token);
             case '{':
-                return oneOf(token);
+                beginOneOf();
+                return matches(token);
             case '[':
                 begingArray();
                 return matches(token);
             case '?':
                 throw new IllegalStateException("Optional Not Supported Yet");
             case 'e'://e = a integer expression
-                throw new IllegalStateException("Expressions Not Supported Yet");
+                beginNumericExpression();
+                return matches(token);
+
             case 't'://t = a boolean expression
                 throw new IllegalStateException("Expressions Not Supported Yet");
             default:
                 throw new IllegalStateException("Unknown pattern character " + chara);
         }
-
     }
+
+    private void beginOneOf() {
+        this.specialMatcher = new OneOfMatcher(oneOfPattern());
+    }
+
+    private String oneOfPattern() {
+        StringBuilder oneOfPatternBuilder = new StringBuilder();
+        patternIndex++;
+        while (pattern.charAt(patternIndex) != '}') {
+            oneOfPatternBuilder.append(pattern.charAt(patternIndex));
+            patternIndex++;
+        }
+        return oneOfPatternBuilder.toString();
+    }
+
+    private void beginNumericExpression() {
+        this.specialMatcher = new NumericExpressionMatcher();
+    }
+
 
     private boolean matchString(Token token) {
         return token.getType().equals(TokenTypes.STRING);
@@ -197,7 +220,6 @@ public final class DirectiveArgumentsValidator {
                     return false;
                 }
 
-
             }
 
             for (int arrayPatternIndex = 0; arrayPatternIndex < arrayPattern.length(); arrayPatternIndex++) {
@@ -250,6 +272,55 @@ public final class DirectiveArgumentsValidator {
         }
     }
 
+    private class NumericExpressionMatcher implements Matcher {
+        final EnumSet<TokenTypes> operatorsSet = EnumSet.of(TokenTypes.DIVIDE, TokenTypes.MULTIPLY, TokenTypes.PLUS, TokenTypes.MINUS);
+        private boolean symbolNext = false;
+        private boolean matched = false;
+        @Override
+        public boolean match(Token token) {
+            if (!symbolNext) {
+                if (token.getType().equals(TokenTypes.NUMBER) || token.getType().equals(TokenTypes.LABEL)) {
+                    matched = true;
+                    symbolNext = true;
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                if (operatorsSet.contains(token.getType())) {
+                    symbolNext = false;
+                    return true;
+                } else {
+                    return false;
+                }
+
+            }
+        }
+
+        @Override
+        public boolean shouldAdvance() {
+            return matched && symbolNext;
+        }
+    }
+
+    private class OneOfMatcher implements Matcher {
+        private final String oneOfPattern;
+        private boolean hasMatched = false;
+
+        public OneOfMatcher(String oneOfPattern) {
+            this.oneOfPattern = oneOfPattern;
+        }
+
+        @Override
+        public boolean match(Token token) {
+            return false;
+        }
+
+        @Override
+        public boolean shouldAdvance() {
+            return false;
+        }
+    }
 
     private boolean matchInt(Token token) {
         return token.getType().equals(TokenTypes.NUMBER) && token.getString().matches("^\\d+$");//any number of digits
