@@ -112,6 +112,8 @@ public final class DirectiveArgumentsValidator {
 
             case 't'://t = a boolean expression
                 throw new IllegalStateException("Expressions Not Supported Yet");
+            case ',':
+                return token.getString().equals(",");
             default:
                 throw new IllegalStateException("Unknown pattern character " + chara);
         }

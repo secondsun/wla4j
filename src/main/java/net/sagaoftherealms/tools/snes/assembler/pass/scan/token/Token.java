@@ -17,11 +17,7 @@ public class Token {
     public String getString() {
         return string;
     }
-
-    public int getArgumentsCount() {
-        return 0;
-    }
-
+    
     @Override
     public String toString() {
         return "Token{" +

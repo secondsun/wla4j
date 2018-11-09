@@ -3,22 +3,22 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DirectiveArgumentsNode extends Node {
-    private final Map<EnumParser.KEYS, String> arguments = new HashMap<>();
+    protected final List<String> arguments = new ArrayList<>();
 
     public DirectiveArgumentsNode() {
         super(NodeTypes.DIRECTIVE_ARGUMENTS);
     }
 
-    public String get(EnumParser.KEYS argumentKey) {
-        return arguments.get(argumentKey);
+    public String get(int index) {
+        return arguments.get(index);
     }
 
-    public DirectiveArgumentsNode put(EnumParser.KEYS argumentKey, String argumentValue) {
-        arguments.put(argumentKey, argumentValue);
+    public DirectiveArgumentsNode add(String argumentValue) {
+        arguments.add(argumentValue);
         return this;
     }
 

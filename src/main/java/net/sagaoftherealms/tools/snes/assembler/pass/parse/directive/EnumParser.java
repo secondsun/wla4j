@@ -18,7 +18,7 @@ public class EnumParser implements DirectiveParser {
 
     @Override
     public DirectiveArgumentsNode arguments(SourceParser parser) {
-        var arguments = new DirectiveArgumentsNode();
+        var arguments = new EnumArgumentsNode();
 
         var token = parser.getCurrentToken();
 

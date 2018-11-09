@@ -42,7 +42,7 @@ public class SourceParserTest {
      * @param expectedDirective the expected directive sourceLine parses to.
      */
     @ParameterizedTest
-    @CsvSource({"'.DBCOS 0.2, 10, 3.2, 120, 1.3', DBCOS, '[.2,10,3.2,120,1.3]'"
+    @CsvSource({"'.DBCOS 0.2, 10, 3.2, 120.0, 1.3', DBCOS, '[.2,10,3.2,120.0,1.3]'"
     })
     public void testParseDirectiveWithArgumentsToken(String sourceLine, String expectedDirective, @ConvertWith(DoubleArrayConverter.class) List<Double> arguments) {
         final String outfile = "test.out";

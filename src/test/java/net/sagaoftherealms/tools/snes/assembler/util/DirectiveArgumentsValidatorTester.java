@@ -67,6 +67,7 @@ public class DirectiveArgumentsValidatorTester {
     @ParameterizedTest
     @CsvSource({"4 'a', x c, 'NUMBER, NUMBER'",
                 "4 \"This is a String\", x s, 'NUMBER, STRING'",
+            "'4, \"This is a String\"', 'x, s', 'NUMBER, COMMA, STRING'",
                 })
     public void validateMultipleArgumentsPattern(String sourceLine, String pattern,  String tokenTypes) {
         DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator(pattern);

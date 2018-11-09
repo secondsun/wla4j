@@ -12,7 +12,7 @@ public class EnumNode extends DirectiveNode {
     }
 
     public String getAddress() {
-        return getArguments().get(EnumParser.KEYS.ADDRESS);
+        return ((EnumArgumentsNode)getArguments()).get(EnumParser.KEYS.ADDRESS);
     }
 
 }
