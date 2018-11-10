@@ -20,6 +20,7 @@ import java.util.List;
 
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class SourceParserTest {
@@ -33,6 +34,7 @@ public class SourceParserTest {
     public void testShiftVsGetByteNode() {
         fail("This test will test >,<, >>,<< are handled as get byte and bit shift nodes");
     }
+
     /**
      * This test tests single directive tokens and makes sure that we can match them.
      * <p>
@@ -60,6 +62,25 @@ public class SourceParserTest {
 
         assertEquals(arguments.size(), node.getArguments().size());
     }
+
+    @ParameterizedTest
+    @CsvSource({".DBCOS 0.2"
+    })
+    public void testParsingDirectivesFailWithTooFewArgumentsToken(String sourceLine) {
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($(sourceLine), inputFile, lineNumber);
+
+        var scanner = data.startRead(Opcodes65816.opt_table);
+        var parser = new SourceParser(scanner);
+
+        assertThrows(ParseException.class, ()->parser.nextNode());
+
+    }
+
 
     @Test
     public void testLabelFailsIfOutputLibrary() {
@@ -130,7 +151,27 @@ public class SourceParserTest {
 
     @Test
     public void parseBasicEnumBody() {
-        fail("implement this test.");
+        final String enumSource = ".ENUM $C000\n" +
+                "\tSEASON_SPRING\tdb ; $00\n" +
+                "\tSEASON_SUMMER\tdb ; $01\n" +
+                "\tSEASON_FALL\tdb ; $02\n" +
+                "\tSEASON_WINTER\tdb ; $03\n" +
+                ".ENDE";
+        final String outfile = "test.out";
+        final String inputFile = "test.s";
+        final int lineNumber = 0;
+
+        var data = new InputData(new Flags(outfile));
+        data.includeFile($(enumSource), inputFile, lineNumber);
+
+        var scanner = data.startRead(Opcodes65816.opt_table);
+
+        SourceParser parser = new SourceParser(scanner);
+        EnumNode enumNode = (EnumNode) parser.nextNode();
+
+        assertEquals(NodeTypes.ENUM, enumNode.getType());
+        assertEquals("49152", enumNode.getAddress());
+
     }
 
 

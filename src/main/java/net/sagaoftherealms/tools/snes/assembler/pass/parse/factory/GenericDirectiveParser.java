@@ -2,6 +2,7 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.factory;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.DirectiveArgumentsValidator;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
@@ -35,7 +36,7 @@ public class GenericDirectiveParser implements DirectiveParser {
                 }
             } else {
                 if (validator.checkHasMore()) {
-                    throw new RuntimeException("Invalid argument " + token);
+                    throw new ParseException("Invalid argument ", token);
                 }
             }
             parser.advanceToken();
@@ -43,7 +44,7 @@ public class GenericDirectiveParser implements DirectiveParser {
         }
         
         if (validator.checkHasMore()) {
-            throw new RuntimeException("There are more arguments");
+            throw new ParseException("Invalid argument ", token);
         }
         
         return argumentsNode;
