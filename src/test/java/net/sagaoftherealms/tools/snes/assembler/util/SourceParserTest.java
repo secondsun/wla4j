@@ -167,13 +167,28 @@ public class SourceParserTest {
         var scanner = data.startRead(Opcodes65816.opt_table);
 
         SourceParser parser = new SourceParser(scanner);
-        EnumNode enumNode = (EnumNode) parser.nextNode();
+        var enumNode = (EnumNode) parser.nextNode();
 
-        assertEquals(NodeTypes.ENUM, enumNode.getType());
-        assertEquals("49152", enumNode.getAddress());
+        var body = enumNode.getBody();
+        assertEquals(4, body.getChildren().size());
 
     }
 
+    @Test
+    public void parseEnumBodyWithIfDirective() {
+        fail("See pass_1.c#1137");
+    }
+
+    @Test
+    public void parseEnumBodyWithStructDefined() {
+        fail("https://wla-dx.readthedocs.io/en/latest/asmdiv.html#enum-c000");
+    }
+
+
+    @Test
+    public void parseEnumBodyWithDirectiveThrowsParseException() {
+        fail("See pass_1.c#1137");
+    }
 
     @Test
     public void parseEnumAndRamsectionTypes() {

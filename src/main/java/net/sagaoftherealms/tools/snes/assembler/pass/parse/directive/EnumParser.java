@@ -13,7 +13,25 @@ public class EnumParser implements DirectiveParser {
 
     @Override
     public DirectiveBodyNode body(SourceParser parser) {
-        return null;
+        var body = new DirectiveBodyNode();
+        var token = parser.getCurrentToken();
+        while (token!= null && !AllDirectives.ENDE.getName().equals(token.getString())) {//End on ENDE
+            //Expect the token to be the first label
+            if (token.getType() != TokenTypes.LABEL) {
+                throw new ParseException("Label expected in enum.", token);
+            }
+            var bodyNode = new EnumBodyNode(token.getString());
+
+            parser.advanceToken();
+            token = parser.getCurrentToken();
+
+            if (token == null || token.getType() != TokenTypes.LABEL) {
+                throw new ParseException("Expected a type", token);
+            }
+
+        }
+
+        return body;
     }
 
     @Override
