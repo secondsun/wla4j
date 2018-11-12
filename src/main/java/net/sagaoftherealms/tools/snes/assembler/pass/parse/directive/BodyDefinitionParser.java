@@ -15,8 +15,8 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
 /**
  * This class parses the body of directives which have definitions.
- * <p>
- * IE RAMSECTION, ENUM, and STRUCT
+ *
+ * <p>IE RAMSECTION, ENUM, and STRUCT
  */
 public abstract class BodyDefinitionParser extends GenericDirectiveParser {
 
@@ -46,8 +46,9 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
       token = parser.getCurrentToken();
     }
 
-    while (token != null && !endDirective.getPattern().startsWith(token.getString())) {//End on ENDE
-      //Expect the token to be the first label
+    while (token != null
+        && !endDirective.getPattern().startsWith(token.getString())) { // End on ENDE
+      // Expect the token to be the first label
       if (token.getType() != TokenTypes.LABEL) {
         throw new ParseException("Label expected in enum.", token);
       }
@@ -71,7 +72,6 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
           bodyNode.setSize(TokenUtil.getInt(token));
           break;
         case "DSW":
-
           token = nextTokenWithType(TokenTypes.NUMBER, parser);
 
           bodyNode.setSize(TokenUtil.getInt(token) * 2);
@@ -80,8 +80,9 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
           token = nextTokenWithType(TokenTypes.LABEL, parser);
           bodyNode.setStructName(TokenUtil.getLabelName(token));
           bodyNode.setSize(1);
-          token = nextTokenWithType(
-              EnumSet.of(TokenTypes.LABEL, TokenTypes.DIRECTIVE, TokenTypes.NUMBER), parser);
+          token =
+              nextTokenWithType(
+                  EnumSet.of(TokenTypes.LABEL, TokenTypes.DIRECTIVE, TokenTypes.NUMBER), parser);
           if (NUMBER.equals(token.getType())) {
             bodyNode.setSize(TokenUtil.getInt(token));
           }
@@ -90,8 +91,9 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
           throw new ParseException("Unexpected type.", token);
       }
 
-      token = nextTokenWithType(
-          EnumSet.of(TokenTypes.LABEL, TokenTypes.DIRECTIVE, TokenTypes.END_OF_INPUT), parser);
+      token =
+          nextTokenWithType(
+              EnumSet.of(TokenTypes.LABEL, TokenTypes.DIRECTIVE, TokenTypes.END_OF_INPUT), parser);
       body.addChild(bodyNode);
       if (token.getType().equals(END_OF_INPUT)) {
         break;
@@ -118,8 +120,5 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
     }
 
     return token;
-
   }
-
-
 }

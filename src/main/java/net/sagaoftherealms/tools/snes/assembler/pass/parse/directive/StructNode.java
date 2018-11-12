@@ -4,12 +4,11 @@ import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirecti
 
 public class StructNode extends DirectiveNode {
 
-    public StructNode() {
-        super(AllDirectives.STRUCT);
-    }
+  public StructNode() {
+    super(AllDirectives.STRUCT);
+  }
 
-    public String getName() {
-        return getArguments().get(0).trim();
-    }
-
+  public String getName() {
+    return getArguments().get(0).trim();
+  }
 }

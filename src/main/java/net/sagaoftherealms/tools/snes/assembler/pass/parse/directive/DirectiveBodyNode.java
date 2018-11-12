@@ -6,7 +6,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 
 public class DirectiveBodyNode extends Node {
 
-    public DirectiveBodyNode() {
-        super(DIRECTIVE_BODY);
-    }
+  public DirectiveBodyNode() {
+    super(DIRECTIVE_BODY);
+  }
 }

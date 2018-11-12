@@ -14,5 +14,4 @@ public class MacroRuntime {
   public int offset;
   public MacroIncludeBinary incbinData;
   public MacroArgument argumentData[];
-
 }

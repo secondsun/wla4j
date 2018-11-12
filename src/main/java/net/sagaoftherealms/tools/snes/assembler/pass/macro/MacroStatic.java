@@ -10,6 +10,4 @@ public class MacroStatic {
 
   public String argumentNames[];
   public MacroStatic next;
-
-
 }

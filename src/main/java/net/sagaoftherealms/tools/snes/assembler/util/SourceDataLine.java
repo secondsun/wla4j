@@ -2,15 +2,12 @@ package net.sagaoftherealms.tools.snes.assembler.util;
 
 import java.util.Objects;
 
-/**
- * This is a line in the InputData with metadata back to the original file.
- */
+/** This is a line in the InputData with metadata back to the original file. */
 public class SourceDataLine {
 
   private String fileName;
   private int sourceLineNumber;
   private String dataLine;
-
 
   public SourceDataLine(String sourceFileName, int sourceLineNumber, String sourceCode) {
     fileName = sourceFileName;
@@ -18,9 +15,7 @@ public class SourceDataLine {
     this.dataLine = sourceCode;
   }
 
-  public SourceDataLine() {
-
-  }
+  public SourceDataLine() {}
 
   /**
    * FileName is the original file name with the path.
@@ -59,9 +54,9 @@ public class SourceDataLine {
   }
 
   /**
-   * This is the actual source.  The preprocessor removes comments, white space etc.  Additionally
-   * the system may expand macros and things from a single line of source from a source file.
-   * Therefore multiple data lines may be generated from an original source line.
+   * This is the actual source. The preprocessor removes comments, white space etc. Additionally the
+   * system may expand macros and things from a single line of source from a source file. Therefore
+   * multiple data lines may be generated from an original source line.
    *
    * @return the text of a line of data
    */
@@ -70,9 +65,9 @@ public class SourceDataLine {
   }
 
   /**
-   * This is the actual source.  The preprocessor removes comments, white space etc.  Additionally
-   * the system may expand macros and things from a single line of source from a source file.
-   * Therefore multiple data lines may be generated from an original source line.
+   * This is the actual source. The preprocessor removes comments, white space etc. Additionally the
+   * system may expand macros and things from a single line of source from a source file. Therefore
+   * multiple data lines may be generated from an original source line.
    *
    * @param dataLine the text of a line of data
    */
@@ -89,9 +84,9 @@ public class SourceDataLine {
       return false;
     }
     SourceDataLine that = (SourceDataLine) o;
-    return sourceLineNumber == that.sourceLineNumber &&
-        Objects.equals(fileName, that.fileName) &&
-        Objects.equals(dataLine, that.dataLine);
+    return sourceLineNumber == that.sourceLineNumber
+        && Objects.equals(fileName, that.fileName)
+        && Objects.equals(dataLine, that.dataLine);
   }
 
   @Override
@@ -109,8 +104,8 @@ public class SourceDataLine {
   }
 
   /**
-   * This will hash the file name.  The reason is that in the original WLA tools each file had an id
-   * which was used to find the file name of the section of bytecode in the wla tmp file.  We don't
+   * This will hash the file name. The reason is that in the original WLA tools each file had an id
+   * which was used to find the file name of the section of bytecode in the wla tmp file. We don't
    * assign file names ids, so this is a workaround.
    *
    * @return the hash of the file name to be used as a integer lookup later
@@ -118,5 +113,4 @@ public class SourceDataLine {
   public int getFileId() {
     return fileName.hashCode();
   }
-
 }

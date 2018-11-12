@@ -5,9 +5,7 @@
  */
 package net.sagaoftherealms.tools.snes.assembler;
 
-/**
- * @author summers
- */
+/** @author summers */
 public class MacroStatic {
 
   String name;
@@ -15,5 +13,4 @@ public class MacroStatic {
 
   int start, calls, filename_id, start_line, nargument_names;
   MacroStatic next;
-
 }

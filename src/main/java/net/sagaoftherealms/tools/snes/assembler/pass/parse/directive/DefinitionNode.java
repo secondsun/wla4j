@@ -7,7 +7,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 /**
  * This class represents a label definition.
  *
- * Labels have a label (the name) and a size in bytes
+ * <p>Labels have a label (the name) and a size in bytes
  */
 public class DefinitionNode extends Node {
 

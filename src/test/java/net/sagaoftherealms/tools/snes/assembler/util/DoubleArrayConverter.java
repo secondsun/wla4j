@@ -19,6 +19,5 @@ public class DoubleArrayConverter extends SimpleArgumentConverter {
     }
 
     return Arrays.stream(doublesAsString).map(Double::parseDouble).collect(Collectors.toList());
-
   }
 }

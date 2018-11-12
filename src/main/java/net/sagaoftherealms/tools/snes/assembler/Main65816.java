@@ -13,12 +13,11 @@ import java.util.HashMap;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 
-/**
- * @author summers
- */
+/** @author summers */
 public class Main65816 {
 
-  private static final String wla_version = "65816 Macro Assembler for Java based on WLA 65816 Macro Assembler v9.8a.";
+  private static final String wla_version =
+      "65816 Macro Assembler for Java based on WLA 65816 Macro Assembler v9.8a.";
   private static HashMap defines_map;
   private static HashMap global_unique_label_map;
   private static HashMap namespace_map;
@@ -27,7 +26,6 @@ public class Main65816 {
   private static Flags flags;
   private static String finalName;
   private static File gba_tmp_file;
-
 
   public static void main(String... args) {
     try {
@@ -55,7 +53,6 @@ public class Main65816 {
 
       gba_tmp_file = File.createTempFile("wla", "tmp");
 
-
       /* small inits */
       if (flags.isExtraDefinitions()) {
         generate_extra_definitions();
@@ -67,23 +64,23 @@ public class Main65816 {
 
       InputData data = new InputData(flags);
       data.includeFile(flags.getAsmName());
-//            new Pass1(data).pass();
-//
-//
-//            if (pass_1() == FAILED)
-//
-//                if (pass_2() == FAILED)
-//                    return 1;
-//            if (pass_3() == FAILED)
-//                return 1;
-//            if (flags.listfile_data == YES) {
-//                if (listfile_collect() == FAILED)
-//                    return 1;
-//            }
-//            if (pass_4() == FAILED)
-//                return 1;
-//
-//            return 0;
+      //            new Pass1(data).pass();
+      //
+      //
+      //            if (pass_1() == FAILED)
+      //
+      //                if (pass_2() == FAILED)
+      //                    return 1;
+      //            if (pass_3() == FAILED)
+      //                return 1;
+      //            if (flags.listfile_data == YES) {
+      //                if (listfile_collect() == FAILED)
+      //                    return 1;
+      //            }
+      //            if (pass_4() == FAILED)
+      //                return 1;
+      //
+      //            return 0;
 
     } catch (IOException e) {
       e.printStackTrace();
@@ -91,7 +88,6 @@ public class Main65816 {
       proceduresAtExit();
     }
   }
-
 
   private static void generate_extra_definitions() {
     String dateString;
@@ -103,10 +99,7 @@ public class Main65816 {
     flags.add_a_new_definition("wla_time", 0.0, dateString, DEFINITION_TYPE_STRING);
     flags.add_a_new_definition("WLA_VERSION", 0.0, wla_version, DEFINITION_TYPE_STRING);
     flags.add_a_new_definition("wla_version", 0.0, wla_version, DEFINITION_TYPE_STRING);
-
-
   }
-
 
   private static void printDefaultMessage() {
     System.out.println("65816 Macro Assembler for Java based on ");
@@ -134,6 +127,4 @@ public class Main65816 {
       gba_tmp_file.deleteOnExit();
     }
   }
-
-
 }

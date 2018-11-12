@@ -5,6 +5,4 @@ public class ActiveFileInfo {
   public int filename_id;
   public String filename;
   public int line_current;
-
-
 }

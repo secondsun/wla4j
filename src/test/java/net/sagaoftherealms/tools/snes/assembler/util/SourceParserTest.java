@@ -1,6 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
-
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,16 +38,17 @@ public class SourceParserTest {
 
   /**
    * This test tests single directive tokens and makes sure that we can match them.
-   * <p>
-   * Validation directives is another test.
+   *
+   * <p>Validation directives is another test.
    *
    * @param sourceLine the source code line
    * @param expectedDirective the expected directive sourceLine parses to.
    */
   @ParameterizedTest
-  @CsvSource({"'.DBCOS 0.2, 10, 3.2, 120.0, 1.3', DBCOS, '[.2,10,3.2,120.0,1.3]'"
-  })
-  public void testParseDirectiveWithArgumentsToken(String sourceLine, String expectedDirective,
+  @CsvSource({"'.DBCOS 0.2, 10, 3.2, 120.0, 1.3', DBCOS, '[.2,10,3.2,120.0,1.3]'"})
+  public void testParseDirectiveWithArgumentsToken(
+      String sourceLine,
+      String expectedDirective,
       @ConvertWith(DoubleArrayConverter.class) List<Double> arguments) {
     final String outfile = "test.out";
     final String inputFile = "test.s";
@@ -66,8 +66,7 @@ public class SourceParserTest {
   }
 
   @ParameterizedTest
-  @CsvSource({".DBCOS 0.2"
-  })
+  @CsvSource({".DBCOS 0.2"})
   public void testParsingDirectivesFailWithTooFewArgumentsToken(String sourceLine) {
     final String outfile = "test.out";
     final String inputFile = "test.s";
@@ -80,9 +79,7 @@ public class SourceParserTest {
     var parser = new SourceParser(scanner);
 
     assertThrows(ParseException.class, () -> parser.nextNode());
-
   }
-
 
   @Test
   public void testLabelFailsIfOutputLibrary() {
@@ -99,43 +96,37 @@ public class SourceParserTest {
     fail("See pass_1.c#802");
   }
 
-
   @Test
   public void testLabelInActiveMacro() {
     fail("See pass_1.c#807");
   }
-
 
   @Test
   public void testDecodeOtherArchOpcodeToken() {
     fail("This will deal with checking types and such on opcodes");
   }
 
-
   @Test
   public void testParseRamSectionToken() {
     fail(
-        "This test should test that the ramsection directive starts a statement style block that respects ramsections.");//see pass_1.c#776
+        "This test should test that the ramsection directive starts a statement style block that respects ramsections."); // see pass_1.c#776
   }
-
 
   @Test
   public void firstStringTokenWithExpandedMacro() {
     fail("See pass_1.c#649");
   }
 
-
   @Test
   public void testParseEnumToken() {
-    //see pass_1.c#776
+    // see pass_1.c#776
     fail(
         "This test should test that the enum directive starts a statement style block that respects enums.");
   }
 
   @Test
   public void parseBasicEnum() {
-    final String enumSource = ".ENUM $C000\n" +
-        ".ENDE";
+    final String enumSource = ".ENUM $C000\n" + ".ENDE";
     final String outfile = "test.out";
     final String inputFile = "test.s";
     final int lineNumber = 0;
@@ -150,18 +141,18 @@ public class SourceParserTest {
 
     assertEquals(NodeTypes.ENUM, enumNode.getType());
     assertEquals("49152", enumNode.getAddress());
-
   }
 
   @Test
   public void parseBasicEnumBody() {
-    final String enumSource = ".ENUM $C000\n" +
-        " SEASON_SPRING db\n" +
-        "SEASON_SUMMER BYTE\n" +
-        "SEASON_SUMMER_2 dw\n" +
-        "SEASON_FALL DS 16\n" +
-        "SEASON_WINTER dsW 16\n" +
-        ".ENDE";
+    final String enumSource =
+        ".ENUM $C000\n"
+            + " SEASON_SPRING db\n"
+            + "SEASON_SUMMER BYTE\n"
+            + "SEASON_SUMMER_2 dw\n"
+            + "SEASON_FALL DS 16\n"
+            + "SEASON_WINTER dsW 16\n"
+            + ".ENDE";
     final String outfile = "test.out";
     final String inputFile = "test.s";
     final int lineNumber = 0;
@@ -197,10 +188,7 @@ public class SourceParserTest {
 
   @Test
   public void parseStruct() {
-    var source = ".STRUCT mon\n" +
-        "name ds 2\n" +
-        "age  db\n" +
-        ".ENDST";
+    var source = ".STRUCT mon\n" + "name ds 2\n" + "age  db\n" + ".ENDST";
 
     final String outfile = "test.out";
     final String inputFile = "test.s";
@@ -222,28 +210,30 @@ public class SourceParserTest {
     assertEquals("name", ((DefinitionNode) body.getChildren().get(0)).getLabel());
     assertEquals("age", ((DefinitionNode) body.getChildren().get(1)).getLabel());
     assertEquals("mon", structNode.getName());
-
   }
 
   @Test
   public void parseEnumBodyWithStructDefined() {
-    var source = ".STRUCT mon                ; check out the documentation on\n" +
-        "name ds 2                  ; .STRUCT\n" +
-        "age  db\n" +
-        ".ENDST\n" +
-        "\n" +
-        ".ENUM $A000\n" +
-        "_scroll_x DB               ; db  - define byte (byt and byte work also)\n" +
-        "_scroll_y DB\n" +
-        "player_x: DW               ; dw  - define word (word works also)\n" +
-        "player_y: DW\n" +
-        "map_01:   DS  16           ; ds  - define size (bytes)\n" +
-        "map_02    DSB 16           ; dsb - define size (bytes)\n" +
-        "map_03    DSW  8           ; dsw - define size (words)\n" +
-        "monster   INSTANCEOF mon 3 ; three instances of structure mon\n" +
-//7 = monster 8 = monster.name 12 = monster.1.age 17 = monster.3.name
-        "dragon    INSTANCEOF mon   ; one mon\n" + //21 dragon.age
-        ".ENDE";
+    var source =
+        ".STRUCT mon                ; check out the documentation on\n"
+            + "name ds 2                  ; .STRUCT\n"
+            + "age  db\n"
+            + ".ENDST\n"
+            + "\n"
+            + ".ENUM $A000\n"
+            + "_scroll_x DB               ; db  - define byte (byt and byte work also)\n"
+            + "_scroll_y DB\n"
+            + "player_x: DW               ; dw  - define word (word works also)\n"
+            + "player_y: DW\n"
+            + "map_01:   DS  16           ; ds  - define size (bytes)\n"
+            + "map_02    DSB 16           ; dsb - define size (bytes)\n"
+            + "map_03    DSW  8           ; dsw - define size (words)\n"
+            + "monster   INSTANCEOF mon 3 ; three instances of structure mon\n"
+            +
+            // 7 = monster 8 = monster.name 12 = monster.1.age 17 = monster.3.name
+            "dragon    INSTANCEOF mon   ; one mon\n"
+            + // 21 dragon.age
+            ".ENDE";
     final String outfile = "test.out";
     final String inputFile = "test.s";
     final int lineNumber = 0;
@@ -277,7 +267,6 @@ public class SourceParserTest {
     assertEquals("mon", ((DefinitionNode) enumBody.getChildren().get(8)).getStructName().get());
   }
 
-
   @Test
   public void parseEnumBodyWithDirectiveThrowsParseException() {
     fail("See pass_1.c#1137");
@@ -288,7 +277,6 @@ public class SourceParserTest {
     fail(
         "See https://wla-dx.readthedocs.io/en/latest/asmdiv.html#enum-c000 and #ramsection-vars-bank-0-slot-1-align-4.  Enum can have information in its types");
   }
-
 
   @Test
   public void exceptionIfNoEnde() {
@@ -305,8 +293,5 @@ public class SourceParserTest {
 
     SourceParser parser = new SourceParser(scanner);
     Assertions.assertThrows(ParseException.class, () -> parser.nextNode());
-
-
   }
-
 }

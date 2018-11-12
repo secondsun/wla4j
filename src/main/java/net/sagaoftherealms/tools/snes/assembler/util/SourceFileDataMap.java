@@ -8,14 +8,12 @@ import java.util.stream.Collectors;
  * This file is the the {@link net.sagaoftherealms.tools.snes.assembler.main.InputData} data and
  * mapping to the original source files.
  *
- * The way it works is InputData data contains the positioning and manipulating information and this
- * file is the underlying characters and mapping back to the original file.
+ * <p>The way it works is InputData data contains the positioning and manipulating information and
+ * this file is the underlying characters and mapping back to the original file.
  */
 public class SourceFileDataMap {
 
-  /**
-   * 1:1 mapping of listEntry to lines in the source file.
-   */
+  /** 1:1 mapping of listEntry to lines in the source file. */
   private List<SourceDataLine> lines = new ArrayList<>();
 
   /**
@@ -42,7 +40,7 @@ public class SourceFileDataMap {
   /**
    * Adds a character to the last line of the file.
    *
-   * @param s to add.  Ignored if a newline.
+   * @param s to add. Ignored if a newline.
    */
   public void append(char s) {
     if (s != '\n') {
@@ -58,7 +56,9 @@ public class SourceFileDataMap {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    lines.stream().filter(it -> !it.getDataLine().isEmpty())
+    lines
+        .stream()
+        .filter(it -> !it.getDataLine().isEmpty())
         .forEach(it -> builder.append(it.getDataLine()).append(System.lineSeparator()));
     return builder.toString();
   }
@@ -73,9 +73,7 @@ public class SourceFileDataMap {
     lines.addAll(includeAt, preprocessedDataMap.lines);
   }
 
-  /**
-   * Removes empty lines, extra white space etc.
-   */
+  /** Removes empty lines, extra white space etc. */
   public void compress() {
     lines = lines.stream().filter(it -> !it.getDataLine().isEmpty()).collect(Collectors.toList());
   }

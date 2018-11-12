@@ -12,7 +12,7 @@ import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
 import org.apache.commons.io.IOUtils;
 
 /**
- * This class is the "object" which is all of the input files.  It is mutable and has a few
+ * This class is the "object" which is all of the input files. It is mutable and has a few
  * convenience functions for the parsers.
  */
 public class InputData {
@@ -43,8 +43,6 @@ public class InputData {
     /* preprocess */
     SourceFileDataMap preprocessedDataMap = preprocess_file(fileContents, fileName);
     combinedSourceFile.addMapAt(preprocessedDataMap, includeAt);
-
-
   }
 
   public void includeFile(String name) throws IOException {
@@ -74,7 +72,6 @@ public class InputData {
     }
 
     includeFile(new FileInputStream(f), fullName, 0);
-
   }
 
   private String createFullName(String path, String fileName) {
@@ -82,24 +79,25 @@ public class InputData {
   }
 
   /* the mystery preprocessor - touch it and prepare for trouble ;) the preprocessor
-removes as much white space as possible from the source file. this is to make
-the parsing of the file, that follows, simpler. */
+  removes as much white space as possible from the source file. this is to make
+  the parsing of the file, that follows, simpler. */
   private SourceFileDataMap preprocess_file(String inputString, String file_name) {
 
     SourceFileDataMap buffer = new SourceFileDataMap();
 
-    //We're going to try and keep the lines in sync so the source file and the preprocessed text have a link.
+    // We're going to try and keep the lines in sync so the source file and the preprocessed text
+    // have a link.
     int sourceFileLine = 1;
 
     /* this is set to 1 when the parser finds a non white space symbol on the line it's parsing */
     int got_chars_on_line = 0;
 
-      /* values for z - z tells us the state of the preprocessor on the line it is processing
-         the value of z is 0 at the beginning of a new line, and can only grow: 0 -> 1 -> 2 -> 3
-         0 - new line
-         1 - 1+ characters on the line
-         2 - extra white space removed
-         3 - again 1+ characters follow */
+    /* values for z - z tells us the state of the preprocessor on the line it is processing
+    the value of z is 0 at the beginning of a new line, and can only grow: 0 -> 1 -> 2 -> 3
+    0 - new line
+    1 - 1+ characters on the line
+    2 - extra white space removed
+    3 - again 1+ characters follow */
     int z = 0;
 
     int square_bracket_open = 0;
@@ -107,7 +105,7 @@ the parsing of the file, that follows, simpler. */
     char inputArray[] = inputString.toCharArray();
     int input_end = inputArray.length;
 
-    buffer.addLine(file_name, sourceFileLine, "");//Start on Line one
+    buffer.addLine(file_name, sourceFileLine, ""); // Start on Line one
 
     for (int input = 0; input < inputArray.length; ) {
       char inputTest = inputArray[input];
@@ -115,17 +113,17 @@ the parsing of the file, that follows, simpler. */
         case ';':
           /* clear a commented line */
           input++;
-          for (; input < input_end && inputArray[input] != 0x0A && inputArray[input] != 0x0D;
-              input++) {
-          }
+          for (;
+              input < input_end && inputArray[input] != 0x0A && inputArray[input] != 0x0D;
+              input++) {}
 
           break;
         case '*':
           if (got_chars_on_line == 0) {
             /* clear a commented line */
-            for (; input < input_end && inputArray[input] != 0x0A && inputArray[input] != 0x0D;
-                input++) {
-            }
+            for (;
+                input < input_end && inputArray[input] != 0x0A && inputArray[input] != 0x0D;
+                input++) {}
 
           } else {
             /* multiplication! */
@@ -139,14 +137,14 @@ the parsing of the file, that follows, simpler. */
             got_chars_on_line = 0;
             input += 2;
             while (got_chars_on_line == 0) {
-              for (; input < input_end && inputArray[input] != '/' && inputArray[input] != 0x0A;
-                  input++) {
-              }
+              for (;
+                  input < input_end && inputArray[input] != '/' && inputArray[input] != 0x0A;
+                  input++) {}
 
               if (input >= input_end) {
-                throw new RuntimeException(String
-                    .format("Comment wasn't terminated properly in file \"%s\".\n", file_name));
-
+                throw new RuntimeException(
+                    String.format(
+                        "Comment wasn't terminated properly in file \"%s\".\n", file_name));
               }
               if (inputArray[input] == 0x0A) {
                 buffer.append((char) 0x0A);
@@ -178,10 +176,9 @@ the parsing of the file, that follows, simpler. */
           input++;
           buffer.append(' ');
 
-          for (; input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09);
-              input++) {
-
-          }
+          for (;
+              input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09);
+              input++) {}
 
           got_chars_on_line = 1;
           if (z == 1) {
@@ -216,7 +213,6 @@ the parsing of the file, that follows, simpler. */
           } else {
             buffer.append('\'');
             input++;
-
           }
           got_chars_on_line = 1;
           break;
@@ -227,11 +223,13 @@ the parsing of the file, that follows, simpler. */
 
           got_chars_on_line = 1;
           while (true) {
-            for (; input < input_end && inputArray[input] != '"' && inputArray[input] != 0x0A
-                && inputArray[input] != 0x0D; ) {
+            for (;
+                input < input_end
+                    && inputArray[input] != '"'
+                    && inputArray[input] != 0x0A
+                    && inputArray[input] != 0x0D; ) {
               buffer.append(inputArray[input]);
               input++;
-
             }
 
             if (input >= input_end) {
@@ -255,14 +253,13 @@ the parsing of the file, that follows, simpler. */
           buffer.append('(');
           input++;
 
-          for (; input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09);
-              input++) {
-          }
+          for (;
+              input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09);
+              input++) {}
           got_chars_on_line = 1;
           break;
 
         case ')':
-
           buffer.append(')');
           input++;
           got_chars_on_line = 1;
@@ -279,7 +276,8 @@ the parsing of the file, that follows, simpler. */
         case '+':
         case '-':
           if (got_chars_on_line == 0) {
-            for (; input < input_end && (inputArray[input] == '+' || inputArray[input] == '-');
+            for (;
+                input < input_end && (inputArray[input] == '+' || inputArray[input] == '-');
                 input++) {
               buffer.append(inputArray[input]);
             }
@@ -288,9 +286,9 @@ the parsing of the file, that follows, simpler. */
 
             buffer.append(inputArray[input]);
             input++;
-            for (; input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09);
-                input++) {
-            }
+            for (;
+                input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09);
+                input++) {}
             got_chars_on_line = 1;
           }
           break;
@@ -315,9 +313,7 @@ the parsing of the file, that follows, simpler. */
     return buffer;
   }
 
-  /**
-   * Pretty prints the processed source
-   */
+  /** Pretty prints the processed source */
   public String prettyPrint() {
     return combinedSourceFile.toString();
   }
@@ -331,5 +327,4 @@ the parsing of the file, that follows, simpler. */
   public SourceScanner startRead(OpCode[] opTable) {
     return new SourceScanner(combinedSourceFile, opTable);
   }
-
 }

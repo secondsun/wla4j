@@ -41,22 +41,22 @@ public final class DirectiveArgumentsValidator {
     }
   }
 
-  //x = a whole number
-  //f = a number with a decimal part
-  //c = a character
-  //s = a String value (expands to "some text"
-  //l = a label (which will be a string)
+  // x = a whole number
+  // f = a number with a decimal part
+  // c = a character
+  // s = a String value (expands to "some text"
+  // l = a label (which will be a string)
 
-  //t = a boolean expression
-  //e = a integer expression
+  // t = a boolean expression
+  // e = a integer expression
 
-  //{x|y} One of x, y...
-  //[]{} = A comma separated List of types in the braces (see .DB in https://wla-dx.readthedocs.io/en/latest/asmdiv.html)
+  // {x|y} One of x, y...
+  // []{} = A comma separated List of types in the braces (see .DB in
+  // https://wla-dx.readthedocs.io/en/latest/asmdiv.html)
 
-  //? = Optional
+  // ? = Optional
 
-  //(pattern) a pattern
-
+  // (pattern) a pattern
 
   /**
    * Look at the current element in the directive pattern and return true if the token matches that
@@ -84,15 +84,15 @@ public final class DirectiveArgumentsValidator {
 
     var chara = pattern.charAt(patternIndex);
     switch (chara) {
-      case 'x'://x = a whole number
+      case 'x': // x = a whole number
         return matchInt(token);
-      case 'f': //f = a number with a decimal part
+      case 'f': // f = a number with a decimal part
         return matchFloat(token);
-      case 'c': //c = a character
+      case 'c': // c = a character
         return matchChar(token);
-      case 'l': //l = a label (which will be a string)
+      case 'l': // l = a label (which will be a string)
         return matchLabel(token);
-      case 's'://s = a String value (expands to "some text"
+      case 's': // s = a String value (expands to "some text"
         return matchString(token);
       case '{':
         beginOneOf();
@@ -102,11 +102,11 @@ public final class DirectiveArgumentsValidator {
         return matches(token);
       case '?':
         throw new IllegalStateException("Optional Not Supported Yet");
-      case 'e'://e = a integer expression
+      case 'e': // e = a integer expression
         beginNumericExpression();
         return matches(token);
 
-      case 't'://t = a boolean expression
+      case 't': // t = a boolean expression
         throw new IllegalStateException("Expressions Not Supported Yet");
       case ',':
         return token.getString().equals(",");
@@ -133,7 +133,6 @@ public final class DirectiveArgumentsValidator {
     this.specialMatcher = new NumericExpressionMatcher();
   }
 
-
   private boolean matchString(Token token) {
     return token.getType().equals(TokenTypes.STRING);
   }
@@ -147,8 +146,11 @@ public final class DirectiveArgumentsValidator {
   }
 
   private boolean matchFloat(Token token) {
-    return token.getType().equals(TokenTypes.NUMBER) && token.getString()
-        .matches("^\\d*\\.\\d+$");//matches an optional number, a period, then any number of digits
+    return token.getType().equals(TokenTypes.NUMBER)
+        && token
+            .getString()
+            .matches(
+                "^\\d*\\.\\d+$"); // matches an optional number, a period, then any number of digits
   }
 
   private void begingArray() {
@@ -173,7 +175,6 @@ public final class DirectiveArgumentsValidator {
     return arrayPatternBuilder.toString();
   }
 
-
   private boolean oneOfArray(Token token) {
     return false;
   }
@@ -187,8 +188,8 @@ public final class DirectiveArgumentsValidator {
   }
 
   private boolean matchInt(Token token) {
-    return token.getType().equals(TokenTypes.NUMBER) && token.getString()
-        .matches("^\\d+$");//any number of digits
+    return token.getType().equals(TokenTypes.NUMBER)
+        && token.getString().matches("^\\d+$"); // any number of digits
   }
 
   interface Matcher {
@@ -200,7 +201,7 @@ public final class DirectiveArgumentsValidator {
      * master pattern
      *
      * @return if the master validator should clear the special matcher and advance the pattern to
-     * the next argument
+     *     the next argument
      */
     boolean shouldAdvance();
   }
@@ -224,10 +225,10 @@ public final class DirectiveArgumentsValidator {
         } else {
           return false;
         }
-
       }
 
-      for (int arrayPatternIndex = 0; arrayPatternIndex < arrayPattern.length();
+      for (int arrayPatternIndex = 0;
+          arrayPatternIndex < arrayPattern.length();
           arrayPatternIndex++) {
         switch (arrayPattern.charAt(arrayPatternIndex)) {
           case 'x':
@@ -252,7 +253,6 @@ public final class DirectiveArgumentsValidator {
             }
             break;
           case 's':
-
             if (matchString(token)) {
               hasMatched = true;
               expectComma = true;
@@ -280,8 +280,8 @@ public final class DirectiveArgumentsValidator {
 
   private class NumericExpressionMatcher implements Matcher {
 
-    final EnumSet<TokenTypes> operatorsSet = EnumSet
-        .of(TokenTypes.DIVIDE, TokenTypes.MULTIPLY, TokenTypes.PLUS, TokenTypes.MINUS);
+    final EnumSet<TokenTypes> operatorsSet =
+        EnumSet.of(TokenTypes.DIVIDE, TokenTypes.MULTIPLY, TokenTypes.PLUS, TokenTypes.MINUS);
     private boolean symbolNext = false;
     private boolean matched = false;
 
@@ -302,7 +302,6 @@ public final class DirectiveArgumentsValidator {
         } else {
           return false;
         }
-
       }
     }
 
@@ -331,5 +330,4 @@ public final class DirectiveArgumentsValidator {
       return false;
     }
   }
-
 }

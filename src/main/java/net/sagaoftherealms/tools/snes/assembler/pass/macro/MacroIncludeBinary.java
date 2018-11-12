@@ -6,5 +6,4 @@ public class MacroIncludeBinary {
   public int swap;
   public int position;
   public int left;
-
 }

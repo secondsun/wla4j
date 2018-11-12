@@ -1,6 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,9 +33,5 @@ public class SourceFileDataMapTest {
     datamap.addLine("testfile.s", 2, ".DEFINE TESA $fe");
 
     assertFalse(datamap.isEmpty());
-
-
   }
-
-
 }

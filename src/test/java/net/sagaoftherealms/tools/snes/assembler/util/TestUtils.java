@@ -30,5 +30,4 @@ public class TestUtils {
     var scanner = data.startRead(Opcodes65816.opt_table);
     return scanner;
   }
-
 }
