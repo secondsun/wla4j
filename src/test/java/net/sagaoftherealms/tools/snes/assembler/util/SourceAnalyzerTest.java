@@ -1,5 +1,9 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
@@ -9,20 +13,18 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StructNode;
 import org.junit.jupiter.api.Test;
 
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 public class SourceAnalyzerTest {
 
     @Test
     public void testStructDefinesSizeOf() {
-        fail("Struct should define a __sideof__.  See https://wla-dx.readthedocs.io/en/latest/asmdiv.html#struct-enemy-object");
+        fail(
+                "Struct should define a __sideof__.  See https://wla-dx.readthedocs.io/en/latest/asmdiv.html#struct-enemy-object");
     }
-    
+
     @Test
     public void testBankHeaderSection() {
-        fail("testing BANKHEADER see https://wla-dx.readthedocs.io/en/latest/asmdiv.html?highlight=BANKHEADER");
+        fail(
+                "testing BANKHEADER see https://wla-dx.readthedocs.io/en/latest/asmdiv.html?highlight=BANKHEADER");
     }
 
     public void testExpandingEnumStructDeclarationToDefinedStruct() {
@@ -39,7 +41,8 @@ public class SourceAnalyzerTest {
                 "map_01:   DS  16           ; ds  - define size (bytes)\n" +
                 "map_02    DSB 16           ; dsb - define size (bytes)\n" +
                 "map_03    DSW  8           ; dsw - define size (words)\n" +
-                "monster   INSTANCEOF mon 3 ; three instances of structure mon\n" +//7 = monster 8 = monster.name 12 = monster.1.age 17 = monster.3.name
+                "monster   INSTANCEOF mon 3 ; three instances of structure mon\n" +
+//7 = monster 8 = monster.name 12 = monster.1.age 17 = monster.3.name
                 "dragon    INSTANCEOF mon   ; one mon\n" + //21 dragon.age
                 ".ENDE";
         final String outfile = "test.out";
@@ -77,15 +80,14 @@ public class SourceAnalyzerTest {
         assertEquals(1, ((DefinitionNode) enumBody.getChildren().get(12)).getSize());
         assertEquals("monster.1.age", ((DefinitionNode) enumBody.getChildren().get(12)).getLabel());
 
-
         assertEquals(2, ((DefinitionNode) enumBody.getChildren().get(17)).getSize());
         assertEquals("monster.3.age", ((DefinitionNode) enumBody.getChildren().get(17)).getLabel());
-
 
         assertEquals(1, ((DefinitionNode) enumBody.getChildren().get(21)).getSize());
         assertEquals("dragon.age", ((DefinitionNode) enumBody.getChildren().get(21)).getLabel());
 
-        fail("See above.  During analysis monster and dragon should be expanded to make the previous pass");
+        fail(
+                "See above.  During analysis monster and dragon should be expanded to make the previous pass");
     }
 
 }

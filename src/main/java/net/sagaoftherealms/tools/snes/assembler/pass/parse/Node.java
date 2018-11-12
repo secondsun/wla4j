@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class Node {
+
     private final NodeTypes type;
     private final List<Node> children = new ArrayList<>();
 

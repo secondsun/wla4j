@@ -2,10 +2,15 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.factory;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.*;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StructNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StructParser;
 
 public final class DirectiveUtils {
+
     private DirectiveUtils() {
     }
 
@@ -204,7 +209,6 @@ public final class DirectiveUtils {
             case REPT:
 
             case ENDR:
-            
 
             case ENDE:
 

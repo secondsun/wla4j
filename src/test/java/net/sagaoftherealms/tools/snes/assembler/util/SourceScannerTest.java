@@ -1,14 +1,17 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.google.common.base.Strings;
-import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirective;
+import java.util.Arrays;
+import java.util.stream.Stream;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
-import net.sagaoftherealms.tools.snes.assembler.definition.directives.Directive;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeSpc700;
+import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.main.Test65816IncludeData;
-import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 import org.junit.jupiter.api.Assertions;
@@ -18,14 +21,29 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
 public class SourceScannerTest {
+
+    public static Stream<Arguments> opcodeGenerator65816() {
+        return Arrays.stream(Opcodes65816.opt_table).map(opcode -> {
+            var code = opcode.getOp().split(" ")[0].split("\\.")[0];
+            var sourceLine = opcode.getOp();
+            sourceLine = sourceLine.replace("x", "0ah");
+            sourceLine = sourceLine.replace("?", "0ah");
+            sourceLine = sourceLine.replace("&", "0ah");
+            return Arguments.of(sourceLine, code);
+        });
+    }
+
+    public static Stream<Arguments> opcodeGeneratorSPC700() {
+        return Arrays.stream(OpCodeSpc700.OPCODES).map(opcode -> {
+            var code = opcode.getOp().split(" ")[0].split("\\.")[0];
+            var sourceLine = opcode.getOp();
+            sourceLine = sourceLine.replace("x", "0ah");
+            sourceLine = sourceLine.replace("?", "0ah");
+            sourceLine = sourceLine.replace("&", "0ah");
+            return Arguments.of(sourceLine, code);
+        });
+    }
 
     @ParameterizedTest
     @CsvSource({"\"This is a String Token\"",
@@ -161,13 +179,12 @@ public class SourceScannerTest {
 
     }
 
-
     /**
      * This test tests single directive tokens and makes sure that we can match them.
      * <p>
      * Validation directives is another test.
      *
-     * @param sourceLine        the source code line
+     * @param sourceLine the source code line
      * @param expectedDirective the expected directive sourceLine parses to.
      */
     @ParameterizedTest
@@ -198,7 +215,8 @@ public class SourceScannerTest {
             "'$20.w', NUMBER, '$20', .w",
             "test.l, LABEL, test, .l, ",
     })
-    public void testValueSizeTypeToken(String sourceLine, String valueTokenType, String valueTokenString, String expectedValueSize) {
+    public void testValueSizeTypeToken(String sourceLine, String valueTokenType,
+            String valueTokenString, String expectedValueSize) {
         final String outfile = "test.out";
         final String inputFile = "test.s";
         final int lineNumber = 0;
@@ -218,7 +236,6 @@ public class SourceScannerTest {
 
     }
 
-
     @Test()
     public void emptyDirectiveThrowsException() {
         final String outfile = "test.out";
@@ -233,12 +250,12 @@ public class SourceScannerTest {
         Assertions.assertThrows(IllegalStateException.class, () -> scanner.getNextToken());
     }
 
-
     @ParameterizedTest
     @CsvSource({
             "label, label", //basic label, no :
             "label2:, label2", //basic label with colon
-            "_label, label", //underscore label IE local label (see https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)
+            "_label, label",
+            //underscore label IE local label (see https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)
             "@label.b, label", //Child label
             "@@@@label, label",//Deeply nested child label
     })
@@ -294,7 +311,6 @@ public class SourceScannerTest {
 
     }
 
-
     @ParameterizedTest
     @MethodSource({"opcodeGeneratorSPC700"})
     public void testOpcodeSPc700(String sourceLine, String opCode) {
@@ -317,9 +333,14 @@ public class SourceScannerTest {
     @Test
     public void testCanScanWholeFileAndNotCrash() {
         InputData data = new InputData(new Flags(" test.out "));
-        data.includeFile(Test65816IncludeData.class.getClassLoader().getResourceAsStream("main.s"), "main.s", 0);
-        data.includeFile(Test65816IncludeData.class.getClassLoader().getResourceAsStream("defines.i"), "defines.i", 1);
-        data.includeFile(Test65816IncludeData.class.getClassLoader().getResourceAsStream("snes_memory.i"), "snes_memeory.i", 2);
+        data.includeFile(Test65816IncludeData.class.getClassLoader().getResourceAsStream("main.s"),
+                "main.s", 0);
+        data.includeFile(
+                Test65816IncludeData.class.getClassLoader().getResourceAsStream("defines.i"),
+                "defines.i", 1);
+        data.includeFile(
+                Test65816IncludeData.class.getClassLoader().getResourceAsStream("snes_memory.i"),
+                "snes_memeory.i", 2);
         var scanner = data.startRead(Opcodes65816.opt_table);
 
         var token = scanner.getNextToken();
@@ -332,12 +353,13 @@ public class SourceScannerTest {
         }
 
     }
-
 
     @Test
     public void testCanScanFerris() {
         InputData data = new InputData(new Flags(" test.out "));
-        data.includeFile(Test65816IncludeData.class.getClassLoader().getResourceAsStream("ferris-kefren.s"), "ferris-kefren.s", 0);
+        data.includeFile(
+                Test65816IncludeData.class.getClassLoader().getResourceAsStream("ferris-kefren.s"),
+                "ferris-kefren.s", 0);
 
         var scanner = data.startRead(Opcodes65816.opt_table);
 
@@ -351,7 +373,6 @@ public class SourceScannerTest {
         }
 
     }
-
 
     @Test
     public void testAllDirectives() {
@@ -362,37 +383,14 @@ public class SourceScannerTest {
 
             var scanner = data.startRead(OpCodeSpc700.OPCODES);
             System.out.println(sourceLine);
-            while(!scanner.endOfInput()){
+            while (!scanner.endOfInput()) {
                 System.out.print(scanner.getNextToken());
                 System.out.print(" ");
-            };
+            }
             System.out.println(" ");
         });
-        
-    }
 
-    public static Stream<Arguments> opcodeGenerator65816() {
-        return Arrays.stream(Opcodes65816.opt_table).map(opcode -> {
-            var code = opcode.getOp().split(" ")[0].split("\\.")[0];
-            var sourceLine = opcode.getOp();
-            sourceLine = sourceLine.replace("x", "0ah");
-            sourceLine = sourceLine.replace("?", "0ah");
-            sourceLine = sourceLine.replace("&", "0ah");
-            return Arguments.of(sourceLine, code);
-        });
     }
-
-    public static Stream<Arguments> opcodeGeneratorSPC700() {
-        return Arrays.stream(OpCodeSpc700.OPCODES).map(opcode -> {
-            var code = opcode.getOp().split(" ")[0].split("\\.")[0];
-            var sourceLine = opcode.getOp();
-            sourceLine = sourceLine.replace("x", "0ah");
-            sourceLine = sourceLine.replace("?", "0ah");
-            sourceLine = sourceLine.replace("&", "0ah");
-            return Arguments.of(sourceLine, code);
-        });
-    }
-
 
     @ParameterizedTest
     @CsvSource({"!, NOT, ''",
@@ -418,7 +416,7 @@ public class SourceScannerTest {
         assertEquals(TokenTypes.valueOf(operator1), token.getType());
         if (!Strings.isNullOrEmpty(operator2)) {
             token = scanner.getNextToken();
-            assertEquals(TokenTypes.valueOf(operator2), token.getType());    
+            assertEquals(TokenTypes.valueOf(operator2), token.getType());
         }
 
 

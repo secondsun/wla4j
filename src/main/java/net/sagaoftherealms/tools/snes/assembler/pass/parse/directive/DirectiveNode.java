@@ -1,9 +1,7 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
-import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirective;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.factory.DirectiveUtils;
 
 public class DirectiveNode extends Node {
@@ -18,7 +16,16 @@ public class DirectiveNode extends Node {
     }
 
     public DirectiveArgumentsNode getArguments() {
-        return (DirectiveArgumentsNode) getChildren().get(0);//TODO throw exception if missing children?
+        return (DirectiveArgumentsNode) getChildren()
+                .get(0);//TODO throw exception if missing children?
+    }
+
+    public void setArguments(DirectiveArgumentsNode arguments) {
+        if (getChildren().size() != 0) {
+            throw new IllegalStateException(
+                    "Must set arguments only once and before you set any other children nodes.");
+        }
+        addChild(arguments);
     }
 
     public DirectiveBodyNode getBody() {
@@ -29,16 +36,10 @@ public class DirectiveNode extends Node {
         }
     }
 
-    public void setArguments(DirectiveArgumentsNode arguments) {
-        if (getChildren().size() != 0) {
-            throw new IllegalStateException("Must set arguments only once and before you set any other children nodes.");
-        }
-        addChild(arguments);
-    }
-
     public void setBody(DirectiveBodyNode body) {
         if (getChildren().size() != 1) {
-            throw new IllegalStateException("Must set body only once only after you set arguments.");
+            throw new IllegalStateException(
+                    "Must set body only once only after you set arguments.");
         }
         addChild(body);
     }

@@ -10,43 +10,44 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectivePa
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 
 public class GenericDirectiveParser implements DirectiveParser {
-    private final AllDirectives type;
 
-    public GenericDirectiveParser(AllDirectives type) {
-        this.type = type;
-    }
+  private final AllDirectives type;
 
-    @Override
-    public DirectiveBodyNode body(SourceParser parser) {
-        return new DirectiveBodyNode();
-    }
+  public GenericDirectiveParser(AllDirectives type) {
+    this.type = type;
+  }
 
-    @Override
-    public DirectiveArgumentsNode arguments(SourceParser parser) {
-        var argumentsPattern = type.getPattern().split("\\." + type.getName())[1].trim();
-        var argumentsNode = new DirectiveArgumentsNode();
+  @Override
+  public DirectiveBodyNode body(SourceParser parser) {
+    return new DirectiveBodyNode();
+  }
 
-        var validator = new DirectiveArgumentsValidator(argumentsPattern);
+  @Override
+  public DirectiveArgumentsNode arguments(SourceParser parser) {
+    var argumentsPattern = type.getPattern().split("\\." + type.getName())[1].trim();
+    var argumentsNode = new DirectiveArgumentsNode();
 
-        var token = parser.getCurrentToken();
-        while (token.getType() != TokenTypes.EOL && token.getType() != TokenTypes.END_OF_INPUT) {
-            if (validator.accept(token)) {
-                if (token.getType() != TokenTypes.COMMA) {
-                    argumentsNode.add(token.getString());
-                }
-            } else {
-                if (validator.checkHasMore()) {
-                    throw new ParseException("Invalid argument ", token);
-                }
-            }
-            parser.advanceToken();
-            token = parser.getCurrentToken();
+    var validator = new DirectiveArgumentsValidator(argumentsPattern);
+
+    var token = parser.getCurrentToken();
+    while (token.getType() != TokenTypes.EOL && token.getType() != TokenTypes.END_OF_INPUT) {
+      if (validator.accept(token)) {
+        if (token.getType() != TokenTypes.COMMA) {
+          argumentsNode.add(token.getString());
         }
-
+      } else {
         if (validator.checkHasMore()) {
-            throw new ParseException("Invalid argument ", token);
+          throw new ParseException("Invalid argument ", token);
         }
-
-        return argumentsNode;
+      }
+      parser.advanceToken();
+      token = parser.getCurrentToken();
     }
+
+    if (validator.checkHasMore()) {
+      throw new ParseException("Invalid argument ", token);
+    }
+
+    return argumentsNode;
+  }
 }

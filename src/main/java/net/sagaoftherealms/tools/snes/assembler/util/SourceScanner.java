@@ -1,23 +1,22 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * A stateful object that is used to read data from a {@link SourceFileDataMap}
  */
 public class SourceScanner {
-    private final SourceFileDataMap source;
 
+    private final SourceFileDataMap source;
+    private final List<String> opCodes;
     private int lineNumber = 0;
     private int linePosition = 0;
-    private final List<String> opCodes;
 
     public SourceScanner(SourceFileDataMap source, OpCode[] opcodes) {
         this.source = source;
@@ -43,8 +42,10 @@ public class SourceScanner {
         }
         String tokenString = getNextTokenString();
         TokenTypes type;
-        final List<Character> operators = Arrays.asList(new Character[]{',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')','!', '=','\\','@'});
-        final List<String> sizeTokens = Arrays.asList(new String[]{".b", ".w", ".l", ".B", ".W", ".L"});
+        final List<Character> operators = Arrays.asList(
+                ',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(',
+                ')', '!', '=', '\\', '@');
+        final List<String> sizeTokens = Arrays.asList(".b", ".w", ".l", ".B", ".W", ".L");
 
         if (tokenString.equals("\n")) {
             type = TokenTypes.EOL;
@@ -56,9 +57,14 @@ public class SourceScanner {
             type = TokenTypes.SIZE;
         } else if (tokenString.startsWith(".")) {
             type = TokenTypes.DIRECTIVE;
-        } else if (tokenString.matches(TokenUtil.DECIMAL_NUMBER_REGEX) || tokenString.matches(TokenUtil.HEX_NUMBER_REGEX_0) || tokenString.matches(TokenUtil.HEX_NUMBER_REGEX_$) || tokenString.matches(TokenUtil.CHARACTER_NUMBER_REGEX) || tokenString.matches(TokenUtil.BINARY_NUMBER_REGEX)) {
+        } else if (tokenString.matches(TokenUtil.DECIMAL_NUMBER_REGEX) || tokenString
+                .matches(TokenUtil.HEX_NUMBER_REGEX_0) || tokenString
+                .matches(TokenUtil.HEX_NUMBER_REGEX_$)
+                || tokenString.matches(TokenUtil.CHARACTER_NUMBER_REGEX) || tokenString
+                .matches(TokenUtil.BINARY_NUMBER_REGEX)) {
             type = TokenTypes.NUMBER;
-        } else if ((!tokenString.equals("@")) && (Character.isAlphabetic(tokenString.charAt(0)) || tokenString.charAt(0) == '_' || tokenString.charAt(0) == '@')) {
+        } else if ((!tokenString.equals("@")) && (Character.isAlphabetic(tokenString.charAt(0))
+                || tokenString.charAt(0) == '_' || tokenString.charAt(0) == '@')) {
             if (opCodes.contains(tokenString)) {
                 type = TokenTypes.OPCODE;
             } else {
@@ -70,14 +76,15 @@ public class SourceScanner {
             throw new IllegalArgumentException("Could not get TokenType for " + tokenString);
         }
 
-
         return new Token(tokenString, type);
     }
 
 
     private String getNextTokenString() {
 
-        final List<Character> operators = Arrays.asList(new Character[]{',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')','!','=','\\','@'});
+        final List<Character> operators = Arrays.asList(
+                ',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(',
+                ')', '!', '=', '\\', '@');
 
         if (lineNumber == 0) {
             getNextLine();
@@ -151,7 +158,8 @@ public class SourceScanner {
         StringBuilder builder = new StringBuilder().append(character);
 
         if (linePosition >= sourceString.length()) {
-            throw new IllegalStateException("Unterminated character at " + sourceString + ":" + getCurrentLine());
+            throw new IllegalStateException(
+                    "Unterminated character at " + sourceString + ":" + getCurrentLine());
         }
         character = sourceString.charAt(linePosition);
         linePosition++;
@@ -159,18 +167,19 @@ public class SourceScanner {
 
         character = sourceString.charAt(linePosition);
         if (character != '\'') {
-            throw new IllegalStateException("Unterminated character at " + sourceString + ":" + getCurrentLine());
+            throw new IllegalStateException(
+                    "Unterminated character at " + sourceString + ":" + getCurrentLine());
         }
         linePosition++;
         builder.append(character);
-
 
         return builder.toString().trim();
 
     }
 
     private String numberToken(String sourceString, char character) {
-        var chars = new Character[]{'A', 'B', 'C', 'D', 'E', 'F', 'H', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'h', '.', '$', '%'};
+        var chars = new Character[]{'A', 'B', 'C', 'D', 'E', 'F', 'H', '0', '1', '2', '3', '4', '5',
+                '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'h', '.', '$', '%'};
         final List<Character> allowedCharacters = Arrays.asList(chars);
         StringBuilder builder = new StringBuilder().append(character);
 
@@ -188,7 +197,9 @@ public class SourceScanner {
             linePosition++;
             if (character == '.') {
                 //Handle optional size
-                if (!Character.isDigit(sourceString.charAt(linePosition))) {//character is not a digit, may be size.
+                if (!Character
+                        .isDigit(sourceString
+                                .charAt(linePosition))) {//character is not a digit, may be size.
                     linePosition--;
                     return builder.toString().trim();
                 }
@@ -205,7 +216,8 @@ public class SourceScanner {
 
     private String directiveToken(String sourceString) {
         StringBuilder builder = new StringBuilder().append(".");
-        if (!(Character.isAlphabetic(sourceString.charAt(linePosition)) || Character.isDigit(sourceString.charAt(linePosition)))) {
+        if (!(Character.isAlphabetic(sourceString.charAt(linePosition)) || Character
+                .isDigit(sourceString.charAt(linePosition)))) {
             //TODO: Real Error Handling
             throw new IllegalStateException("Empty directive at " + sourceString);
         }
@@ -279,7 +291,7 @@ public class SourceScanner {
             case '\\':
                 return TokenTypes.ESCAPE;
             case '@':
-                return TokenTypes.AT;                
+                return TokenTypes.AT;
         }
 
         throw new IllegalArgumentException("Unknown Operator Type");
@@ -296,7 +308,7 @@ public class SourceScanner {
         } else {
             currentLine = getCurrentLine();
         }
-        
+
         if (linePosition >= currentLine.getDataLine().length()) {
             return lineNumber >= source.lineCount();
         }

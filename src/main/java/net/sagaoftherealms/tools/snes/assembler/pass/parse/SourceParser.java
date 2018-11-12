@@ -1,13 +1,14 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.factory.DirectiveUtils;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
 
 public class SourceParser {
+
     private final SourceScanner scanner;
     Token token;
+
     public SourceParser(SourceScanner scanner) {
         this.scanner = scanner;
     }

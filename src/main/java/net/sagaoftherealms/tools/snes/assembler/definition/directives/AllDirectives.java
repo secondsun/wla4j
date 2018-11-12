@@ -113,8 +113,10 @@ public enum AllDirectives {
     ROMBANKMAP(new AllDirective(".ROMBANKMAP")),
     ENDRO(new AllDirective(".ENDRO")),
     SEED(new AllDirective(".SEED x")),
-    SECTION_BANKSECTION(new AllDirective(".SECTION \"BANKSECTION\" ?(NAMESPACE s) ?(SIZE x) ?(ALIGN x) ?{FORCE|FREE|SUPERFREE|SEMIFREE|SEMISUBFREE|OVERWRITE} ?(APPENDTO l)")),
-    SECTION(new AllDirective(".SECTION l ?(NAMESPACE s) ?(SIZE x) ?(ALIGN x) ?{FORCE|FREE|SUPERFREE|SEMIFREE|SEMISUBFREE|OVERWRITE} ?(APPENDTO l)")),
+    SECTION_BANKSECTION(new AllDirective(
+            ".SECTION \"BANKSECTION\" ?(NAMESPACE s) ?(SIZE x) ?(ALIGN x) ?{FORCE|FREE|SUPERFREE|SEMIFREE|SEMISUBFREE|OVERWRITE} ?(APPENDTO l)")),
+    SECTION(new AllDirective(
+            ".SECTION l ?(NAMESPACE s) ?(SIZE x) ?(ALIGN x) ?{FORCE|FREE|SUPERFREE|SEMIFREE|SEMISUBFREE|OVERWRITE} ?(APPENDTO l)")),
     RAMSECTION(new AllDirective(".RAMSECTION l ?(BANK x) ?(SLOT x) ?(ALIGN x) ?(APPENDTO l)")),
     ENDS(new AllDirective(".ENDS")),
     EXPORT(new AllDirective(".EXPORT []{l}")),
@@ -137,14 +139,6 @@ public enum AllDirectives {
         this.pattern = directive.getPattern();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getPattern() {
-        return pattern;
-    }
-
     public static String generateDirectiveLine(String pattern, boolean skipFirst) {
         Random r = new Random();
         StringBuilder builder = new StringBuilder();
@@ -153,7 +147,7 @@ public enum AllDirectives {
         char patternCharacter = pattern.charAt(patternIndex);
 
         while (patternCharacter != ' ' && skipFirst) {
-            
+
             builder.append(patternCharacter);
             patternIndex = patternIndex + 1;
             if (patternIndex < pattern.length()) {
@@ -162,7 +156,6 @@ public enum AllDirectives {
                 break;
             }
         }
-
 
         for (; patternIndex <= pattern.length(); patternIndex++) {
             if (patternIndex < pattern.length()) {
@@ -200,16 +193,18 @@ public enum AllDirectives {
                         newPatternBuilder.append(test);
                         test = pattern.charAt(++patternIndex);
                     }
-                    
+
                     var newPattern = newPatternBuilder.toString();
-                    builder.append(generateDirectiveLine(""+newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1), false));
+                    builder.append(
+                            generateDirectiveLine(
+                                    "" + newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1),
+                                    false));
                 }
                 break;
                 case '[': {
                     patternIndex++;//]
-                    if ( pattern.charAt(++patternIndex) == '(') {
+                    if (pattern.charAt(++patternIndex) == '(') {
 
-                        
                         var newPatternBuilder = new StringBuilder();
                         newPatternBuilder.append('(');
                         var test = pattern.charAt(++patternIndex);
@@ -225,7 +220,7 @@ public enum AllDirectives {
                         builder.append(',');
                         builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
                     } else {
-                        
+
                         var newPatternBuilder = new StringBuilder();
                         newPatternBuilder.append('{');
                         var test = pattern.charAt(++patternIndex);
@@ -236,11 +231,17 @@ public enum AllDirectives {
                         newPatternBuilder.append('}');
                         var newPattern = newPatternBuilder.toString();
 
-                        builder.append(generateDirectiveLine(""+newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1), false));
+                        builder.append(generateDirectiveLine(
+                                "" + newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1),
+                                false));
                         builder.append(',');
-                        builder.append(generateDirectiveLine(""+newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1), false));
+                        builder.append(generateDirectiveLine(
+                                "" + newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1),
+                                false));
                         builder.append(',');
-                        builder.append(generateDirectiveLine(""+newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1), false));
+                        builder.append(generateDirectiveLine(
+                                "" + newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1),
+                                false));
                     }
                 }
                 break;
@@ -264,23 +265,22 @@ public enum AllDirectives {
                         //assume }
                         var newPatternBuilder = new StringBuilder();
 
-
                         var test = pattern.charAt(patternIndex);
                         while (test != '}') {
                             newPatternBuilder.append(test);
                             test = pattern.charAt(++patternIndex);
                         }
-                        
+
                         String[] choices = newPatternBuilder.toString().split("\\|");
                         builder.append(choices[r.nextInt(choices.length)]);
-                        
+
                     }
 
                 }
                 break;
                 case '(': {
                     patternIndex++;//(
-                    
+
                     var newPatternBuilder = new StringBuilder();
                     var test = pattern.charAt(patternIndex);
                     while (test != ')') {
@@ -308,6 +308,14 @@ public enum AllDirectives {
             b.append((char) (r.nextInt(26) + 'A'));
         }
         return b.toString();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPattern() {
+        return pattern;
     }
 
     //x = a whole number

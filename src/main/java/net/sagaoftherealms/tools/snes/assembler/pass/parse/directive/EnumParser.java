@@ -1,15 +1,12 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
+
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
-
-import java.util.EnumSet;
-
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
 
 /**
  * This class parses Enums, Structs, and RAMSECTIONS
@@ -19,9 +16,6 @@ public class EnumParser extends BodyDefinitionParser {
     public EnumParser() {
         super(AllDirectives.ENUM);
     }
-
-    public enum KEYS {ORDINAL, EXPORT, ADDRESS}
-
 
     @Override
     public DirectiveArgumentsNode arguments(SourceParser parser) {
@@ -49,7 +43,8 @@ public class EnumParser extends BodyDefinitionParser {
                         arguments.put(KEYS.ORDINAL, argument);
                         parser.advanceToken();
                     } else {
-                        throw new ParseException("The Ordinal of an enum may only be specified once", token);
+                        throw new ParseException(
+                                "The Ordinal of an enum may only be specified once", token);
                     }
                     break;
                 case "EXPORT":
@@ -72,4 +67,7 @@ public class EnumParser extends BodyDefinitionParser {
 
         return arguments;
     }
+
+
+    public enum KEYS {ORDINAL, EXPORT, ADDRESS}
 }
