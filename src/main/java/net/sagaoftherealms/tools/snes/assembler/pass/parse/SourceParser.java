@@ -60,6 +60,8 @@ public class SourceParser {
                 break;
             case SIZE:
                 break;
+            case EOL:
+                return nextNode();
         }
         return null;
     }

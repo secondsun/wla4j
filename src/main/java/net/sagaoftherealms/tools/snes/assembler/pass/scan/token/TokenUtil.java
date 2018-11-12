@@ -87,7 +87,12 @@ public final class TokenUtil {
             return "";
         }
 
-        return labelString.replace("@", "").replace("_", "").replace(":","");
+        while (labelString.startsWith("@") || labelString.startsWith("_")) {
+            labelString = labelString.substring(1);
+        }
+
+
+        return labelString.replace(":","");
 
     }
 }

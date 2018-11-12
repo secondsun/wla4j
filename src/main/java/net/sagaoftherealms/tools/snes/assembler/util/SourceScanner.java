@@ -39,7 +39,7 @@ public class SourceScanner {
 
     public Token getNextToken() {
         if (endOfInput()) {
-            return null;
+            return new Token("", TokenTypes.END_OF_INPUT);
         }
         String tokenString = getNextTokenString();
         TokenTypes type;

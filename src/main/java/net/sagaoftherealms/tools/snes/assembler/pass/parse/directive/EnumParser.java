@@ -1,38 +1,27 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
-public class EnumParser implements DirectiveParser {
+import java.util.EnumSet;
+
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
+
+/**
+ * This class parses Enums, Structs, and RAMSECTIONS
+ */
+public class EnumParser extends BodyDefinitionParser {
+
+    public EnumParser() {
+        super(AllDirectives.ENUM);
+    }
 
     public enum KEYS {ORDINAL, EXPORT, ADDRESS}
 
-    @Override
-    public DirectiveBodyNode body(SourceParser parser) {
-        var body = new DirectiveBodyNode();
-        var token = parser.getCurrentToken();
-        while (token!= null && !AllDirectives.ENDE.getName().equals(token.getString())) {//End on ENDE
-            //Expect the token to be the first label
-            if (token.getType() != TokenTypes.LABEL) {
-                throw new ParseException("Label expected in enum.", token);
-            }
-            var bodyNode = new EnumBodyNode(token.getString());
-
-            parser.advanceToken();
-            token = parser.getCurrentToken();
-
-            if (token == null || token.getType() != TokenTypes.LABEL) {
-                throw new ParseException("Expected a type", token);
-            }
-
-        }
-
-        return body;
-    }
 
     @Override
     public DirectiveArgumentsNode arguments(SourceParser parser) {
@@ -48,7 +37,7 @@ public class EnumParser implements DirectiveParser {
 
         parser.advanceToken();
         token = parser.getCurrentToken();
-        while (token != null && token.getType() != TokenTypes.EOL) {
+        while (token != null && token.getType() != EOL) {
             if (token.getType() != TokenTypes.LABEL) {
                 throw new ParseException("Unexpected Token.", token);
             }

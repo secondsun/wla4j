@@ -2,10 +2,8 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.factory;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.*;
 
 public final class DirectiveUtils {
     private DirectiveUtils() {
@@ -15,6 +13,8 @@ public final class DirectiveUtils {
         switch (type) {
             case ENUM:
                 return new EnumParser();
+            case STRUCT:
+                return new StructParser();
             default:
                 return new GenericDirectiveParser(type);
 
@@ -28,6 +28,10 @@ public final class DirectiveUtils {
 
             case ENUM:
                 node = new EnumNode();
+                break;
+
+            case STRUCT:
+                node = new StructNode();
                 break;
             case EIGHT_BIT:
 
@@ -203,8 +207,6 @@ public final class DirectiveUtils {
             
 
             case ENDE:
-
-            case STRUCT:
 
             case ENDST:
 
