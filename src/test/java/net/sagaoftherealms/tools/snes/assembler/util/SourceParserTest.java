@@ -176,6 +176,26 @@ public class SourceParserTest {
     assertEquals("SEASON_SUMMER", ((DefinitionNode) body.getChildren().get(1)).getLabel());
   }
 
+  @ParameterizedTest
+  @CsvSource({".IF 5 > 10",
+      ".IFDEF LABEL",
+      ".IFDEFM",
+      ".IFEQ",
+      ".IFEXISTS",
+      ".IFGR",
+      ".IFGREQ",
+      ".IFLE",
+      ".IFLEEQ",
+      ".IFNDEF",
+      ".IFNDEFM",
+      ".IFNEQ",
+      })
+  public void parseIfs() {
+    fail("implement this.  Also finish writing the directives above");
+  }
+  
+  
+  
   @Test
   public void parseEnumBodyWithIfDirective() {
     //TODO Include all the types of IFs as parameterized test.
