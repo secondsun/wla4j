@@ -179,18 +179,38 @@ public class SourceParserTest {
   @ParameterizedTest
   @CsvSource({".IF 5 > 10",
       ".IFDEF LABEL",
-      ".IFDEFM",
-      ".IFEQ",
-      ".IFEXISTS",
-      ".IFGR",
-      ".IFGREQ",
-      ".IFLE",
-      ".IFLEEQ",
-      ".IFNDEF",
-      ".IFNDEFM",
-      ".IFNEQ",
+      ".IFDEFM \\5",
+      ".IFEQ 4 4", //Two constant expressions
+      ".IFEQ 4 * 4 BERRIES", //A math experssion and a label
+      ".IFEXISTS \"FileName String\"",
+      ".IFGR 4 * 4 BERRIES",
+      ".IFGR 4 4 ",
+      ".IFGREQ 4 * 4 BERRIES",
+      ".IFGREQ 4 BERRIES",
+      ".IFLE BERRIES 45",
+      ".IFLEEQ BERRIES @JAMMING",
+      ".IFNDEF LABEL",
+      ".IFNDEFM \\5",
+      ".IFNEQ BERRIES :JAMMING",
       })
-  public void parseIfs() {
+  public void parseIfs(String ifStatement) {
+    var source = ifStatement + 
+        ".db 1, \"Two\", 3\n" + 
+         ".else\n" + 
+         ".db 42.0  5 \"Six\"\n" + 
+         ".endif";
+    final String outfile = "test.out";
+    final String inputFile = "test.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(source), inputFile, lineNumber);
+
+    var scanner = data.startRead(Opcodes65816.opt_table);
+
+    SourceParser parser = new SourceParser(scanner);
+    var node = parser.nextNode();
+    
     fail("implement this.  Also finish writing the directives above");
   }
   

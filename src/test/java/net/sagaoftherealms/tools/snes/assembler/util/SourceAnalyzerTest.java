@@ -27,6 +27,11 @@ public class SourceAnalyzerTest {
         "testing BANKHEADER see https://wla-dx.readthedocs.io/en/latest/asmdiv.html?highlight=BANKHEADER");
   }
 
+  @Test
+  public void testFilenameExsists() {
+    fail("This is testing a filename string (IE .IFEXISTS ) exists");
+  }
+  
   public void testExpandingEnumStructDeclarationToDefinedStruct() {
     var source =
         ".STRUCT mon                ; check out the documentation on\n"
