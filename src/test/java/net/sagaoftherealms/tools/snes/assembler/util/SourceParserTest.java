@@ -211,9 +211,16 @@ public class SourceParserTest {
 
     SourceParser parser = new SourceParser(scanner);
     var ifNode = (DirectiveNode) parser.nextNode();
+    var elseNode = (DirectiveNode) parser.nextNode();
     assertEquals(AllDirectives.IF, ifNode.getDirectiveType());
+    assertEquals(AllDirectives.ELSE, elseNode.getDirectiveType());
 
-    fail("implement this.  Also finish writing the directives above");
+    var ifBody = ifNode.getBody();
+    assertEquals("2",((DirectiveNode)ifBody.getChildren().get(0)).getArguments().get(1));
+
+    var elseBody = elseNode.getBody();
+    assertEquals(5,((DirectiveNode)ifBody.getChildren().get(0)).getArguments().get(1));
+    
   }
   
   
