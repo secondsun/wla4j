@@ -195,7 +195,7 @@ public class SourceParserTest {
       })
   public void parseIfs(String ifStatement) {
     var source = ifStatement + 
-        ".db 1, \"Two\", 3\n" + 
+        "\n .db 1, \"Two\", 3\n" + 
          ".else\n" + 
          ".db 42.0  5 \"Six\"\n" + 
          ".endif";

@@ -23,6 +23,8 @@ public final class DirectiveArgumentsValidator {
     if (matches(token)) {
       if (specialMatcher == null) {
         advancePattern();
+      } else if (specialMatcher.shouldAdvance()) {
+        advancePattern();
       }
       return true;
     } else {
@@ -107,7 +109,8 @@ public final class DirectiveArgumentsValidator {
         return matches(token);
 
       case 't': // t = a boolean expression
-        throw new IllegalStateException("Expressions Not Supported Yet");
+        beginBooleanExpression();
+        return matches(token);
       case ',':
         return token.getString().equals(",");
       default:
@@ -133,6 +136,10 @@ public final class DirectiveArgumentsValidator {
     this.specialMatcher = new NumericExpressionMatcher();
   }
 
+  private void beginBooleanExpression() {
+    this.specialMatcher = new BooleanExpressionMatcher();
+  }
+
   private boolean matchString(Token token) {
     return token.getType().equals(TokenTypes.STRING);
   }
@@ -148,9 +155,9 @@ public final class DirectiveArgumentsValidator {
   private boolean matchFloat(Token token) {
     return token.getType().equals(TokenTypes.NUMBER)
         && token
-            .getString()
-            .matches(
-                "^\\d*\\.\\d+$"); // matches an optional number, a period, then any number of digits
+        .getString()
+        .matches(
+            "^\\d*\\.\\d+$"); // matches an optional number, a period, then any number of digits
   }
 
   private void begingArray() {
@@ -201,7 +208,7 @@ public final class DirectiveArgumentsValidator {
      * master pattern
      *
      * @return if the master validator should clear the special matcher and advance the pattern to
-     *     the next argument
+     * the next argument
      */
     boolean shouldAdvance();
   }
@@ -308,6 +315,85 @@ public final class DirectiveArgumentsValidator {
     @Override
     public boolean shouldAdvance() {
       return matched && symbolNext;
+    }
+  }
+
+  private class BooleanExpressionMatcher implements Matcher {
+
+    final EnumSet<TokenTypes> operatorsSet =
+        EnumSet.of(TokenTypes.EQUAL, TokenTypes.NOT, TokenTypes.LT, TokenTypes.GT);
+    private Token firstArgument;
+    private Token firstTokenOfOperator;
+    private Token secondTokenOfOperator;
+    private Token finalArgument;
+
+    @Override
+    public boolean match(Token token) {
+      if (finalArgument != null) {
+        return false;
+      }
+
+      if (firstArgument == null) {
+        if (token.getType().equals(TokenTypes.NUMBER) || token.getType()
+            .equals(TokenTypes.STRING)) {
+          firstArgument = token;
+          return true;
+        } else {
+          return false;
+        }
+      } else if (firstTokenOfOperator == null) {
+        if (operatorsSet.contains(token.getType())) {
+          firstTokenOfOperator = token;
+          return true;
+        }
+        return false;
+      } else if (secondTokenOfOperator == null) {
+        if (firstTokenOfOperator.getType().equals(TokenTypes.GT) || firstTokenOfOperator.getType()
+            .equals(TokenTypes.LT)) {
+          //second token is optional
+          //<=, >=
+          if (token.getType().equals(TokenTypes.EQUAL)) {
+            secondTokenOfOperator = token;
+            return true;
+          } else if (token.getType().equals(TokenTypes.NUMBER) || token.getType()
+              .equals(TokenTypes.STRING)) {
+            //<, >
+            finalArgument = token;
+            return true;
+          }
+          return false;
+        } else if (firstTokenOfOperator.getType().equals(TokenTypes.NOT)) {
+          //!=
+          if (token.getType().equals(TokenTypes.EQUAL)) {
+            secondTokenOfOperator = token;
+            return true;
+          }
+          return false;
+        } else if (firstTokenOfOperator.getType().equals(TokenTypes.EQUAL)) {
+          //==
+          if (token.getType().equals(TokenTypes.EQUAL)) {
+            secondTokenOfOperator = token;
+            return true;
+          }
+          return false;
+        }
+        return false;
+      } else {
+        if (token.getType().equals(TokenTypes.NUMBER) || token.getType()
+            .equals(TokenTypes.STRING)) {
+          finalArgument = token;
+          return true;
+        } else {
+          return false;
+        }
+      }
+
+
+    }
+
+    @Override
+    public boolean shouldAdvance() {
+      return finalArgument != null;
     }
   }
 

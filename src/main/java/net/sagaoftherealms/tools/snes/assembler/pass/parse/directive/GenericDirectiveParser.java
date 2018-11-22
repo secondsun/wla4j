@@ -1,4 +1,4 @@
-package net.sagaoftherealms.tools.snes.assembler.pass.parse.factory;
+package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.DirectiveArgumentsValidator;

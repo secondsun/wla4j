@@ -1,4 +1,4 @@
-package net.sagaoftherealms.tools.snes.assembler.pass.parse.factory;
+package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
@@ -6,6 +6,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNo
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.GenericDirectiveParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StructParser;
 
