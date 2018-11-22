@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
+import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
@@ -209,8 +210,9 @@ public class SourceParserTest {
     var scanner = data.startRead(Opcodes65816.opt_table);
 
     SourceParser parser = new SourceParser(scanner);
-    var node = parser.nextNode();
-    
+    var ifNode = (DirectiveNode) parser.nextNode();
+    assertEquals(AllDirectives.IF, ifNode.getDirectiveType());
+
     fail("implement this.  Also finish writing the directives above");
   }
   
