@@ -178,28 +178,26 @@ public class SourceParserTest {
   }
 
   @ParameterizedTest
-  @CsvSource({".IF 5 > 10",
-      ".IFDEF LABEL",
-      ".IFDEFM \\5",
-      ".IFEQ 4 4", //Two constant expressions
-      ".IFEQ 4 * 4 BERRIES", //A math experssion and a label
-      ".IFEXISTS \"FileName String\"",
-      ".IFGR 4 * 4 BERRIES",
-      ".IFGR 4 4 ",
-      ".IFGREQ 4 * 4 BERRIES",
-      ".IFGREQ 4 BERRIES",
-      ".IFLE BERRIES 45",
-      ".IFLEEQ BERRIES @JAMMING",
-      ".IFNDEF LABEL",
-      ".IFNDEFM \\5",
-      ".IFNEQ BERRIES :JAMMING",
-      })
+  @CsvSource({
+    ".IF 5 > 10",
+    ".IFDEF LABEL",
+    ".IFDEFM \\5",
+    ".IFEQ 4 4", // Two constant expressions
+    ".IFEQ 4 * 4 BERRIES", // A math experssion and a label
+    ".IFEXISTS \"FileName String\"",
+    ".IFGR 4 * 4 BERRIES",
+    ".IFGR 4 4 ",
+    ".IFGREQ 4 * 4 BERRIES",
+    ".IFGREQ 4 BERRIES",
+    ".IFLE BERRIES 45",
+    ".IFLEEQ BERRIES @JAMMING",
+    ".IFNDEF LABEL",
+    ".IFNDEFM \\5",
+    ".IFNEQ BERRIES :JAMMING",
+  })
   public void parseIfs(String ifStatement) {
-    var source = ifStatement + 
-        "\n .db 1, \"Two\", 3\n" + 
-         ".else\n" + 
-         ".db 42.0  5 \"Six\"\n" + 
-         ".endif";
+    var source =
+        ifStatement + "\n .db 1, \"Two\", 3\n" + ".else\n" + ".db 42.0  5 \"Six\"\n" + ".endif";
     final String outfile = "test.out";
     final String inputFile = "test.s";
     final int lineNumber = 0;
@@ -216,18 +214,15 @@ public class SourceParserTest {
     assertEquals(AllDirectives.ELSE, elseNode.getDirectiveType());
 
     var ifBody = ifNode.getBody();
-    assertEquals("2",((DirectiveNode)ifBody.getChildren().get(0)).getArguments().get(1));
+    assertEquals("2", ((DirectiveNode) ifBody.getChildren().get(0)).getArguments().get(1));
 
     var elseBody = elseNode.getBody();
-    assertEquals(5,((DirectiveNode)ifBody.getChildren().get(0)).getArguments().get(1));
-    
+    assertEquals(5, ((DirectiveNode) ifBody.getChildren().get(0)).getArguments().get(1));
   }
-  
-  
-  
+
   @Test
   public void parseEnumBodyWithIfDirective() {
-    //TODO Include all the types of IFs as parameterized test.
+    // TODO Include all the types of IFs as parameterized test.
     fail("See pass_1.c#1137");
   }
 
@@ -317,34 +312,31 @@ public class SourceParserTest {
     assertEquals("mon", ((DefinitionNode) enumBody.getChildren().get(8)).getStructName().get());
   }
 
-  /**
-   * Only if directives are allowed inside of a DirectiveBody
-   */
+  /** Only if directives are allowed inside of a DirectiveBody */
   @Test
   public void parseEnumBodyWithDirectiveThrowsParseException() {
-      final String enumSource =
-          ".ENUM $C000\n"
-              + " SEASON_SPRING db\n"
-              + "SEASON_SUMMER BYTE\n"
-              + "SEASON_SUMMER_2 dw\n"
-              + "SEASON_FALL DS 16\n"
-              + "SEASON_WINTER dsW 16\n"
-              + ".PRINTT 'error'\n"
-              + ".ENDE";
-      final String outfile = "test.out";
-      final String inputFile = "test.s";
-      final int lineNumber = 0;
+    final String enumSource =
+        ".ENUM $C000\n"
+            + " SEASON_SPRING db\n"
+            + "SEASON_SUMMER BYTE\n"
+            + "SEASON_SUMMER_2 dw\n"
+            + "SEASON_FALL DS 16\n"
+            + "SEASON_WINTER dsW 16\n"
+            + ".PRINTT 'error'\n"
+            + ".ENDE";
+    final String outfile = "test.out";
+    final String inputFile = "test.s";
+    final int lineNumber = 0;
 
-      var data = new InputData(new Flags(outfile));
-      data.includeFile($(enumSource), inputFile, lineNumber);
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(enumSource), inputFile, lineNumber);
 
-      var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(Opcodes65816.opt_table);
 
-      SourceParser parser = new SourceParser(scanner);
+    SourceParser parser = new SourceParser(scanner);
 
-      assertThrows((ParseException.class),()->parser.nextNode());
+    assertThrows((ParseException.class), () -> parser.nextNode());
   }
-
 
   @Test
   public void exceptionIfNoEnde() {

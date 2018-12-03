@@ -155,9 +155,9 @@ public final class DirectiveArgumentsValidator {
   private boolean matchFloat(Token token) {
     return token.getType().equals(TokenTypes.NUMBER)
         && token
-        .getString()
-        .matches(
-            "^\\d*\\.\\d+$"); // matches an optional number, a period, then any number of digits
+            .getString()
+            .matches(
+                "^\\d*\\.\\d+$"); // matches an optional number, a period, then any number of digits
   }
 
   private void begingArray() {
@@ -208,7 +208,7 @@ public final class DirectiveArgumentsValidator {
      * master pattern
      *
      * @return if the master validator should clear the special matcher and advance the pattern to
-     * the next argument
+     *     the next argument
      */
     boolean shouldAdvance();
   }
@@ -218,6 +218,7 @@ public final class DirectiveArgumentsValidator {
     private final String arrayPattern;
     private boolean expectComma = false;
     private boolean hasMatched = false;
+    private boolean finished = false;
 
     public ArrayMatcher(String arrayPattern) {
       this.arrayPattern = arrayPattern;
@@ -230,6 +231,7 @@ public final class DirectiveArgumentsValidator {
           expectComma = false;
           return true;
         } else {
+          finished = true;
           return false;
         }
       }
@@ -275,13 +277,13 @@ public final class DirectiveArgumentsValidator {
             break;
         }
       }
-
+      finished = true;
       return false;
     }
 
     @Override
     public boolean shouldAdvance() {
-      return hasMatched;
+      return finished;
     }
   }
 
@@ -334,8 +336,8 @@ public final class DirectiveArgumentsValidator {
       }
 
       if (firstArgument == null) {
-        if (token.getType().equals(TokenTypes.NUMBER) || token.getType()
-            .equals(TokenTypes.STRING)) {
+        if (token.getType().equals(TokenTypes.NUMBER)
+            || token.getType().equals(TokenTypes.STRING)) {
           firstArgument = token;
           return true;
         } else {
@@ -348,29 +350,29 @@ public final class DirectiveArgumentsValidator {
         }
         return false;
       } else if (secondTokenOfOperator == null) {
-        if (firstTokenOfOperator.getType().equals(TokenTypes.GT) || firstTokenOfOperator.getType()
-            .equals(TokenTypes.LT)) {
-          //second token is optional
-          //<=, >=
+        if (firstTokenOfOperator.getType().equals(TokenTypes.GT)
+            || firstTokenOfOperator.getType().equals(TokenTypes.LT)) {
+          // second token is optional
+          // <=, >=
           if (token.getType().equals(TokenTypes.EQUAL)) {
             secondTokenOfOperator = token;
             return true;
-          } else if (token.getType().equals(TokenTypes.NUMBER) || token.getType()
-              .equals(TokenTypes.STRING)) {
-            //<, >
+          } else if (token.getType().equals(TokenTypes.NUMBER)
+              || token.getType().equals(TokenTypes.STRING)) {
+            // <, >
             finalArgument = token;
             return true;
           }
           return false;
         } else if (firstTokenOfOperator.getType().equals(TokenTypes.NOT)) {
-          //!=
+          // !=
           if (token.getType().equals(TokenTypes.EQUAL)) {
             secondTokenOfOperator = token;
             return true;
           }
           return false;
         } else if (firstTokenOfOperator.getType().equals(TokenTypes.EQUAL)) {
-          //==
+          // ==
           if (token.getType().equals(TokenTypes.EQUAL)) {
             secondTokenOfOperator = token;
             return true;
@@ -379,16 +381,14 @@ public final class DirectiveArgumentsValidator {
         }
         return false;
       } else {
-        if (token.getType().equals(TokenTypes.NUMBER) || token.getType()
-            .equals(TokenTypes.STRING)) {
+        if (token.getType().equals(TokenTypes.NUMBER)
+            || token.getType().equals(TokenTypes.STRING)) {
           finalArgument = token;
           return true;
         } else {
           return false;
         }
       }
-
-
     }
 
     @Override

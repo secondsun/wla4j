@@ -2,13 +2,6 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.GenericDirectiveParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StructNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StructParser;
 
 public final class DirectiveUtils {
 
@@ -20,13 +13,37 @@ public final class DirectiveUtils {
         return new EnumParser();
       case STRUCT:
         return new StructParser();
+      case IF:
+
+      case IFDEF:
+
+      case IFEXISTS:
+
+      case IFNDEF:
+
+      case IFDEFM:
+
+      case IFNDEFM:
+
+      case IFEQ:
+
+      case IFNEQ:
+
+      case IFLE:
+
+      case IFLEEQ:
+
+      case IFGR:
+
+      case IFGREQ:
+        return new IfParser(type);
       default:
         return new GenericDirectiveParser(type);
     }
   }
 
   public static DirectiveNode createDirectiveNode(String directiveName) {
-    AllDirectives directive = AllDirectives.valueOf(directiveName.replace(".", ""));
+    AllDirectives directive = AllDirectives.valueOf(directiveName.replace(".", "").toUpperCase());
     DirectiveNode node;
     switch (directive) {
       case ENUM:
@@ -36,6 +53,37 @@ public final class DirectiveUtils {
       case STRUCT:
         node = new StructNode();
         break;
+      case IF:
+
+      case IFDEF:
+
+      case IFEXISTS:
+
+      case IFNDEF:
+
+      case IFDEFM:
+
+      case IFNDEFM:
+
+      case IFEQ:
+
+      case IFNEQ:
+
+      case IFLE:
+
+      case IFLEEQ:
+
+      case IFGR:
+
+      case IFGREQ:
+
+      case ELSE:
+
+      case ENDIF:
+
+
+      case UNDEF:
+
       case EIGHT_BIT:
 
       case SIXTEEN_BIT:
@@ -169,38 +217,7 @@ public final class DirectiveUtils {
       case REDEFINE:
 
       case REDEF:
-
-      case IF:
-
-      case IFDEF:
-
-      case IFEXISTS:
-
       case UNDEFINE:
-
-      case UNDEF:
-
-      case IFNDEF:
-
-      case IFDEFM:
-
-      case IFNDEFM:
-
-      case IFEQ:
-
-      case IFNEQ:
-
-      case IFLE:
-
-      case IFLEEQ:
-
-      case IFGR:
-
-      case IFGREQ:
-
-      case ELSE:
-
-      case ENDIF:
 
       case REPEAT:
 

@@ -31,7 +31,7 @@ public class SourceAnalyzerTest {
   public void testFilenameExsists() {
     fail("This is testing a filename string (IE .IFEXISTS ) exists");
   }
-  
+
   public void testExpandingEnumStructDeclarationToDefinedStruct() {
     var source =
         ".STRUCT mon                ; check out the documentation on\n"

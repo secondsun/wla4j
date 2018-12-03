@@ -15,6 +15,10 @@ public class SourceParser {
 
   public Node nextNode() {
     advanceToken();
+    return getCurrentNode();
+  }
+
+  public Node getCurrentNode() {
     switch (token.getType()) {
       case STRING:
         break;
