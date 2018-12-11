@@ -21,8 +21,14 @@ public class GenericDirectiveParser implements DirectiveParser {
 
   @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
-    var argumentsPattern = type.getPattern().split("\\." + type.getName())[1].trim();
     var argumentsNode = new DirectiveArgumentsNode();
+    
+    if (!hasArguments(type)) {
+      return  argumentsNode;
+    }
+    
+    var argumentsPattern = type.getPattern().split("\\." + type.getName())[1].trim();
+    
 
     var validator = new DirectiveArgumentsValidator(argumentsPattern);
 
@@ -49,5 +55,9 @@ public class GenericDirectiveParser implements DirectiveParser {
     }
 
     return argumentsNode;
+  }
+
+  private boolean hasArguments(AllDirectives type) {
+    return type.getPattern().split("\\." + type.getName()).length > 1;
   }
 }
