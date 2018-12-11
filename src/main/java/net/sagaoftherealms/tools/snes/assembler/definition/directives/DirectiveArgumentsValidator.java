@@ -23,12 +23,10 @@ public final class DirectiveArgumentsValidator {
     if (matches(token)) {
       if (specialMatcher == null) {
         advancePattern();
-      } else if (specialMatcher.shouldAdvance()) {
-        advancePattern();
       }
       return true;
     } else {
-      if (specialMatcher != null && specialMatcher.shouldAdvance()) {
+      if (specialMatcher != null && specialMatcher.isSatisfied()) {
         advancePattern();
         return matches(token);
       }
@@ -74,7 +72,7 @@ public final class DirectiveArgumentsValidator {
       if (matches) {
         return true;
       } else {
-        if (specialMatcher.shouldAdvance()) {
+        if (specialMatcher.isSatisfied()) {
           specialMatcher = null;
           advancePattern();
           return checkHasMore() && matches(token);
@@ -155,9 +153,9 @@ public final class DirectiveArgumentsValidator {
   private boolean matchFloat(Token token) {
     return token.getType().equals(TokenTypes.NUMBER)
         && token
-            .getString()
-            .matches(
-                "^\\d*\\.\\d+$"); // matches an optional number, a period, then any number of digits
+        .getString()
+        .matches(
+            "^\\d*\\.\\d+$"); // matches an optional number, a period, then any number of digits
   }
 
   private void begingArray() {
@@ -208,9 +206,9 @@ public final class DirectiveArgumentsValidator {
      * master pattern
      *
      * @return if the master validator should clear the special matcher and advance the pattern to
-     *     the next argument
+     * the next argument
      */
-    boolean shouldAdvance();
+    boolean isSatisfied();
   }
 
   private class ArrayMatcher implements Matcher {
@@ -282,7 +280,7 @@ public final class DirectiveArgumentsValidator {
     }
 
     @Override
-    public boolean shouldAdvance() {
+    public boolean isSatisfied() {
       return finished;
     }
   }
@@ -315,7 +313,7 @@ public final class DirectiveArgumentsValidator {
     }
 
     @Override
-    public boolean shouldAdvance() {
+    public boolean isSatisfied() {
       return matched && symbolNext;
     }
   }
@@ -392,7 +390,7 @@ public final class DirectiveArgumentsValidator {
     }
 
     @Override
-    public boolean shouldAdvance() {
+    public boolean isSatisfied() {
       return finalArgument != null;
     }
   }
@@ -401,19 +399,74 @@ public final class DirectiveArgumentsValidator {
 
     private final String oneOfPattern;
     private boolean hasMatched = false;
-
+    private boolean expressionComplete = false;
+    
     public OneOfMatcher(String oneOfPattern) {
       this.oneOfPattern = oneOfPattern;
     }
 
     @Override
     public boolean match(Token token) {
+
+      switch (token.getType()) {
+        case STRING:
+          if (oneOfPattern.contains("s")) {
+            hasMatched = true;
+            expressionComplete = true;
+            return true;
+          }
+          break;
+        case NUMBER:
+          if (!token.getString().contains(".")) {
+            if (oneOfPattern.contains("x")) {
+              hasMatched = true;
+              expressionComplete = true;
+              return true;
+            }
+          } else {
+            if (oneOfPattern.contains("f")) {
+              hasMatched = true;
+              expressionComplete = true;
+              return true;
+            }
+          }
+          
+          if (oneOfPattern.contains("e")) {
+            expressionComplete = true;
+            hasMatched = true;
+            return true;
+          }
+          
+          break;
+        case LABEL:
+          if (oneOfPattern.contains("l")) {
+            hasMatched = true;
+            return true;
+          }
+          if (oneOfPattern.contains("e")) {
+            hasMatched = true;
+            expressionComplete = true;
+            return true;
+          }
+          break;
+        case MULTIPLY:
+        case AND:
+        case MINUS:
+        case PLUS:
+          if (expressionComplete) {
+            expressionComplete = false;
+            return true;
+          }
+          break;
+
+      }
+
       return false;
     }
 
     @Override
-    public boolean shouldAdvance() {
-      return false;
+    public boolean isSatisfied() {
+      return hasMatched  && !expressionComplete;
     }
   }
 }

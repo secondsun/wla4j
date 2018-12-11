@@ -137,7 +137,39 @@ public class DirectiveArgumentsValidatorTester {
       assertTrue(validator.accept(token));
     }
   }
+  /*
+  * // x = a whole number
+  // f = a number with a decimal part
+  // c = a character
+  // s = a String value (expands to "some text"
+  // l = a label (which will be a string)
 
+  // t = a boolean expression
+  // e = a integer expression*/
+
+  @Test
+  public void testOneOf() {
+    DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("{xc}");
+    assertTrue(validator.accept(new Token("4", TokenTypes.NUMBER)));
+    validator = new DirectiveArgumentsValidator("{xc}");
+    assertTrue(validator.accept(new Token("c", TokenTypes.NUMBER)));
+    validator = new DirectiveArgumentsValidator("{xc}");
+    assertFalse(validator.accept(new Token("4.5", TokenTypes.NUMBER)));
+    validator = new DirectiveArgumentsValidator("{fc}");
+    assertTrue(validator.accept(new Token("4.5", TokenTypes.NUMBER)));
+    validator = new DirectiveArgumentsValidator("{es}");
+    assertTrue(validator.accept(new Token("\"Twelve\"", TokenTypes.STRING)));
+    validator = new DirectiveArgumentsValidator("{es}");
+    assertTrue(validator.accept(new Token("4", TokenTypes.NUMBER)));
+    assertTrue(validator.accept(new Token("+", TokenTypes.PLUS)));
+    assertTrue(validator.accept(new Token("4", TokenTypes.NUMBER)));
+    validator = new DirectiveArgumentsValidator("{sl}");
+    assertTrue(validator.accept(new Token("\"Twelve\"", TokenTypes.STRING)));
+    validator = new DirectiveArgumentsValidator("{sl}");
+    assertTrue(validator.accept(new Token("4", TokenTypes.LABEL)));
+  }
+
+  
   @Test
   public void validateBooleanExpression() {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("t");
