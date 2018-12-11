@@ -63,8 +63,8 @@ public final class DirectiveArgumentsValidator {
    * pattern.
    */
   private boolean matches(Token token) {
-    if (patternIndex > pattern.length()) {
-      throw new IllegalStateException("All arguments consumed, call checkHasMore()");
+    if (patternIndex >= pattern.length()) {
+      return false;
     }
 
     if (specialMatcher != null) {
@@ -81,7 +81,7 @@ public final class DirectiveArgumentsValidator {
         }
       }
     }
-
+ 
     var chara = pattern.charAt(patternIndex);
     switch (chara) {
       case 'x': // x = a whole number
