@@ -20,26 +20,21 @@ public class EnumParser extends BodyDefinitionParser {
     var arguments = new EnumArgumentsNode();
 
     var token = parser.getCurrentToken();
+    parser.consume(TokenTypes.NUMBER);
+    arguments.put(KEYS.ADDRESS, "" + TokenUtil.getInt(token));
 
-    if (token.getType() != TokenTypes.NUMBER) {
-      throw new ParseException("Enum expects the first argument to be a Number.", token);
-    } else {
-      arguments.put(KEYS.ADDRESS, "" + TokenUtil.getInt(token));
-    }
-
-    parser.advanceToken();
     token = parser.getCurrentToken();
+
     while (token != null && token.getType() != EOL) {
-      if (token.getType() != TokenTypes.LABEL) {
-        throw new ParseException("Unexpected Token.", token);
-      }
+
+      parser.consume(TokenTypes.LABEL);
       var argument = token.getString();
+
       switch (argument) {
         case "ASC":
         case "DESC":
           if (arguments.get(KEYS.ORDINAL) == null) {
             arguments.put(KEYS.ORDINAL, argument);
-            parser.advanceToken();
           } else {
             throw new ParseException("The Ordinal of an enum may only be specified once", token);
           }
@@ -47,7 +42,6 @@ public class EnumParser extends BodyDefinitionParser {
         case "EXPORT":
           if (arguments.get(KEYS.EXPORT) == null) {
             arguments.put(KEYS.EXPORT, argument);
-            parser.advanceToken();
           } else {
             throw new ParseException("Duplicate Export Token.", token);
           }

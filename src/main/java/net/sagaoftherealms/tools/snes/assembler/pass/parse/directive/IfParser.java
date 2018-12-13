@@ -30,7 +30,7 @@ public class IfParser extends GenericDirectiveParser {
   public DirectiveBodyNode body(SourceParser parser) {
     DirectiveBodyNode trueBody = new DirectiveBodyNode();
     DirectiveBodyNode elseBody = new DirectiveBodyNode();
-    var node = parser.getCurrentNode();
+    var node = parser.nextNode();
     while (node.getType() != NodeTypes.DIRECTIVE || (((DirectiveNode)node).getDirectiveType() != AllDirectives.ELSE && ((DirectiveNode)node).getDirectiveType() != AllDirectives.ENDIF)) {
       trueBody.addChild(node);
       node = parser.nextNode();

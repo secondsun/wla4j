@@ -38,7 +38,7 @@ public class SourceParserTest {
   }
 
   /**
-   * This test tests single directive tokens and makes sure that we can match them.
+   * This test tests single directive tokens and makes sure that we can consume them.
    *
    * <p>Validation directives is another test.
    *

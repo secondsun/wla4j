@@ -38,22 +38,20 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
   @Override
   public DirectiveBodyNode body(SourceParser parser) {
     var body = new DirectiveBodyNode();
+    parser.clearWhiteSpaceTokens();
     var token = parser.getCurrentToken();
 
-    while (token != null && EOL.equals(token.getType())) {
-      parser.advanceToken();
-      token = parser.getCurrentToken();
-    }
 
     while (token != null
         && !endDirective.getPattern().startsWith(token.getString())) { // End on ENDE
       // Expect the token to be the first label
-      if (token.getType() != TokenTypes.LABEL) {
-        throw new ParseException("Label expected in enum.", token);
-      }
+      parser.consumeAndClear(TokenTypes.LABEL);
+
       var bodyNode = new DefinitionNode(TokenUtil.getLabelName(token));
 
-      token = nextTokenWithType(TokenTypes.LABEL, parser);
+      token = parser.getCurrentToken();
+
+      parser.consumeAndClear(TokenTypes.LABEL);
 
       switch (token.getString().toUpperCase()) {
         case "DB":
@@ -67,57 +65,42 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
           break;
         case "DS":
         case "DSB":
-          token = nextTokenWithType(TokenTypes.NUMBER, parser);
+          token = parser.getCurrentToken();
+          parser.consumeAndClear(TokenTypes.NUMBER);
           bodyNode.setSize(TokenUtil.getInt(token));
           break;
         case "DSW":
-          token = nextTokenWithType(TokenTypes.NUMBER, parser);
-
+          token = parser.getCurrentToken();
+          parser.consumeAndClear(TokenTypes.NUMBER);
           bodyNode.setSize(TokenUtil.getInt(token) * 2);
           break;
         case "INSTANCEOF":
-          token = nextTokenWithType(TokenTypes.LABEL, parser);
+          token = parser.getCurrentToken();
+          parser.consumeAndClear(TokenTypes.LABEL);
+
           bodyNode.setStructName(TokenUtil.getLabelName(token));
           bodyNode.setSize(1);
-          token =
-              nextTokenWithType(
-                  EnumSet.of(TokenTypes.LABEL, TokenTypes.DIRECTIVE, TokenTypes.NUMBER), parser);
+          token = parser.getCurrentToken();
+
           if (NUMBER.equals(token.getType())) {
             bodyNode.setSize(TokenUtil.getInt(token));
+            parser.consumeAndClear(TokenTypes.NUMBER);
           }
           break;
         default:
           throw new ParseException("Unexpected type.", token);
       }
 
-      token =
-          nextTokenWithType(
-              EnumSet.of(TokenTypes.LABEL, TokenTypes.DIRECTIVE, TokenTypes.END_OF_INPUT), parser);
+      token = parser.getCurrentToken();
+
       body.addChild(bodyNode);
       if (token.getType().equals(END_OF_INPUT)) {
         break;
       }
     }
 
+    parser.consumeAndClear(TokenTypes.DIRECTIVE);//consume the .END? directives
     return body;
   }
 
-  private Token nextTokenWithType(TokenTypes type, SourceParser parser) {
-    return this.nextTokenWithType(EnumSet.of(type), parser);
-  }
-
-  private Token nextTokenWithType(EnumSet<TokenTypes> types, SourceParser parser) {
-    parser.advanceToken();
-    var token = parser.getCurrentToken();
-
-    while (token != null && EOL.equals(token.getType())) {
-      parser.advanceToken();
-      token = parser.getCurrentToken();
-    }
-    if (token == null || !types.contains(token.getType())) {
-      throw new ParseException(types.toString() + " expected.", token);
-    }
-
-    return token;
-  }
 }

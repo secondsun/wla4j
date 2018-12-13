@@ -1,29 +1,32 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
+
+import java.util.Arrays;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveUtils;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
 
 public class SourceParser {
 
   private final SourceScanner scanner;
-  Token token;
+  private Token token;
 
   public SourceParser(SourceScanner scanner) {
     this.scanner = scanner;
+    token = scanner.getNextToken();
   }
 
   public Node nextNode() {
-    advanceToken();
-    return getCurrentNode();
-  }
-
-  public Node getCurrentNode() {
     switch (token.getType()) {
       case STRING:
         break;
       case DIRECTIVE:
-        return directive();
+        var directiveName = token.getString();
+        var directiveNode = directive(directiveName);
+        clearWhiteSpaceTokens();
+        return directiveNode;
       case NUMBER:
         break;
       case LABEL:
@@ -65,12 +68,32 @@ public class SourceParser {
       case SIZE:
         break;
       case EOL:
+        consume(TokenTypes.EOL);
         return nextNode();
     }
     return null;
   }
 
-  public void advanceToken() {
+  /**
+   * Confirms that the current token is expected and advances to the next token.
+   * @param types
+   */
+  public void consume(TokenTypes... types) {
+    final var typesList = Arrays.asList(types);
+    if (typesList.contains(token.getType())) {
+      advanceToken();
+    } else {
+      throw new ParseException("Unexpected Type " + token + ".  One of " + typesList + " was expected.",
+          getCurrentToken());
+    }
+  }
+
+  public void consumeAndClear(TokenTypes... types) {
+    consume(types);
+    clearWhiteSpaceTokens();
+  }
+
+  private void advanceToken() {
     this.token = scanner.getNextToken();
   }
 
@@ -78,9 +101,9 @@ public class SourceParser {
     return this.token;
   }
 
-  private Node directive() {
-    var directiveName = token.getString();
-    advanceToken(); // Clear the directive Name token
+  private Node directive(String directiveName) {
+
+    consume(TokenTypes.DIRECTIVE);
 
     var node = DirectiveUtils.createDirectiveNode(directiveName);
     var nodeParser = DirectiveUtils.getParser(node.getDirectiveType());
@@ -95,5 +118,18 @@ public class SourceParser {
 
   private Node arguments(NodeTypes nodeType) {
     return null;
+  }
+
+  /**
+   * Move the token past any whitespace / comments
+   */
+  public void clearWhiteSpaceTokens() {
+    var token = getCurrentToken();
+
+    while (token != null && EOL.equals(token.getType())) {
+      consume(TokenTypes.EOL);
+      token = getCurrentToken();
+    }
+
   }
 }
