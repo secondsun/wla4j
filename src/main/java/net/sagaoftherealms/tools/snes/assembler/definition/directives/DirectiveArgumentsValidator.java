@@ -407,7 +407,9 @@ public final class DirectiveArgumentsValidator {
 
     @Override
     public boolean match(Token token) {
-
+      if (hasMatched) {
+        return false;
+      }
       switch (token.getType()) {
         case STRING:
           if (oneOfPattern.contains("s")) {
@@ -465,7 +467,7 @@ public final class DirectiveArgumentsValidator {
 
     @Override
     public boolean isSatisfied() {
-      return hasMatched && !expressionComplete;
+      return hasMatched && expressionComplete;
     }
   }
 }
