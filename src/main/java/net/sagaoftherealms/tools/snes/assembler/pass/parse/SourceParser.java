@@ -76,6 +76,7 @@ public class SourceParser {
 
   /**
    * Confirms that the current token is expected and advances to the next token.
+   *
    * @param types
    */
   public void consume(TokenTypes... types) {
@@ -83,7 +84,8 @@ public class SourceParser {
     if (typesList.contains(token.getType())) {
       advanceToken();
     } else {
-      throw new ParseException("Unexpected Type " + token + ".  One of " + typesList + " was expected.",
+      throw new ParseException(
+          "Unexpected Type " + token + ".  One of " + typesList + " was expected.",
           getCurrentToken());
     }
   }
@@ -120,9 +122,7 @@ public class SourceParser {
     return null;
   }
 
-  /**
-   * Move the token past any whitespace / comments
-   */
+  /** Move the token past any whitespace / comments */
   public void clearWhiteSpaceTokens() {
     var token = getCurrentToken();
 
@@ -130,6 +130,5 @@ public class SourceParser {
       consume(TokenTypes.EOL);
       token = getCurrentToken();
     }
-
   }
 }

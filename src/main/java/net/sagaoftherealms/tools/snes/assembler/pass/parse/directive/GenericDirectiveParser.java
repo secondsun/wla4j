@@ -22,12 +22,13 @@ public class GenericDirectiveParser implements DirectiveParser {
   @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
     var argumentsNode = new DirectiveArgumentsNode();
-    var argumentsPattern = type.getPattern().split("\\." + type.getName())[1].trim();
-    var validator = new DirectiveArgumentsValidator(argumentsPattern);
 
     if (!hasArguments(type)) {
-      return  argumentsNode;
+      return argumentsNode;
     }
+
+    var argumentsPattern = type.getPattern().split("\\." + type.getName())[1].trim();
+    var validator = new DirectiveArgumentsValidator(argumentsPattern);
 
     var token = parser.getCurrentToken();
 
@@ -35,7 +36,9 @@ public class GenericDirectiveParser implements DirectiveParser {
       if (validator.accept(token)) {
         if (token.getType() != TokenTypes.COMMA) {
           argumentsNode.add(token.getString());
-          parser.consume(token.getType());//We  have already calculated the fact this is a valid token in the validator.
+          parser.consume(
+              token.getType()); // We  have already calculated the fact this is a valid token in the
+          // validator.
         } else {
           parser.consume(TokenTypes.COMMA);
         }
@@ -50,7 +53,6 @@ public class GenericDirectiveParser implements DirectiveParser {
     }
 
     parser.consume(TokenTypes.END_OF_INPUT, TokenTypes.EOL);
-
 
     if (validator.checkHasMore()) {
       throw new ParseException("Invalid argument ", token);

@@ -169,7 +169,6 @@ public class DirectiveArgumentsValidatorTester {
     assertTrue(validator.accept(new Token("4", TokenTypes.LABEL)));
   }
 
-  
   @Test
   public void validateBooleanExpression() {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("t");

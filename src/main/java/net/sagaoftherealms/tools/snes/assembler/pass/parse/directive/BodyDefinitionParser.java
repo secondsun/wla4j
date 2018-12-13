@@ -1,14 +1,11 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.NUMBER;
 
-import java.util.EnumSet;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
@@ -40,7 +37,6 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
     var body = new DirectiveBodyNode();
     parser.clearWhiteSpaceTokens();
     var token = parser.getCurrentToken();
-
 
     while (token != null
         && !endDirective.getPattern().startsWith(token.getString())) { // End on ENDE
@@ -99,8 +95,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
       }
     }
 
-    parser.consumeAndClear(TokenTypes.DIRECTIVE);//consume the .END? directives
+    parser.consumeAndClear(TokenTypes.DIRECTIVE); // consume the .END? directives
     return body;
   }
-
 }

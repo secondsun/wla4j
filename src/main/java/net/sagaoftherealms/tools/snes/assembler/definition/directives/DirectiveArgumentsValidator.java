@@ -81,7 +81,7 @@ public final class DirectiveArgumentsValidator {
         }
       }
     }
- 
+
     var chara = pattern.charAt(patternIndex);
     switch (chara) {
       case 'x': // x = a whole number
@@ -112,7 +112,7 @@ public final class DirectiveArgumentsValidator {
       case ',':
         return token.getString().equals(",");
       default:
-        throw new IllegalStateException("Unknown pattern character " + chara);
+        return token.getString().equals(chara + "");
     }
   }
 
@@ -153,9 +153,9 @@ public final class DirectiveArgumentsValidator {
   private boolean matchFloat(Token token) {
     return token.getType().equals(TokenTypes.NUMBER)
         && token
-        .getString()
-        .matches(
-            "^\\d*\\.\\d+$"); // matches an optional number, a period, then any number of digits
+            .getString()
+            .matches(
+                "^\\d*\\.\\d+$"); // matches an optional number, a period, then any number of digits
   }
 
   private void begingArray() {
@@ -206,7 +206,7 @@ public final class DirectiveArgumentsValidator {
      * master pattern
      *
      * @return if the master validator should clear the special matcher and advance the pattern to
-     * the next argument
+     *     the next argument
      */
     boolean isSatisfied();
   }
@@ -400,7 +400,7 @@ public final class DirectiveArgumentsValidator {
     private final String oneOfPattern;
     private boolean hasMatched = false;
     private boolean expressionComplete = false;
-    
+
     public OneOfMatcher(String oneOfPattern) {
       this.oneOfPattern = oneOfPattern;
     }
@@ -430,13 +430,13 @@ public final class DirectiveArgumentsValidator {
               return true;
             }
           }
-          
+
           if (oneOfPattern.contains("e")) {
             expressionComplete = true;
             hasMatched = true;
             return true;
           }
-          
+
           break;
         case LABEL:
           if (oneOfPattern.contains("l")) {
@@ -458,7 +458,6 @@ public final class DirectiveArgumentsValidator {
             return true;
           }
           break;
-
       }
 
       return false;
@@ -466,7 +465,7 @@ public final class DirectiveArgumentsValidator {
 
     @Override
     public boolean isSatisfied() {
-      return hasMatched  && !expressionComplete;
+      return hasMatched && !expressionComplete;
     }
   }
 }

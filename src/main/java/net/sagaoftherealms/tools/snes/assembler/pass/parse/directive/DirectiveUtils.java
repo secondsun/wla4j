@@ -81,7 +81,6 @@ public final class DirectiveUtils {
 
       case ENDIF:
 
-
       case UNDEF:
 
       case EIGHT_BIT:

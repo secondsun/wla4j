@@ -15,6 +15,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DefinitionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StructNode;
@@ -197,7 +198,7 @@ public class SourceParserTest {
   })
   public void parseIfs(String ifStatement) {
     var source =
-        ifStatement + "\n .db 1, \"Two\", 3 \n" + " .else \n " + ".db 42.0  5 \"Six\"\n" + ".endif";
+        ifStatement + "\n .db 1, \"Two\", 3 \n" + " .else \n " + ".db 42.0,  5, \"Six\"\n" + ".endif";
     final String outfile = "test.out";
     final String inputFile = "test.s";
     final int lineNumber = 0;
@@ -209,15 +210,11 @@ public class SourceParserTest {
 
     SourceParser parser = new SourceParser(scanner);
     var ifNode = (DirectiveNode) parser.nextNode();
-    var elseNode = (DirectiveNode) ifNode.getChildren().get(2);
-    assertEquals(AllDirectives.IF, ifNode.getDirectiveType());
-    assertEquals(AllDirectives.ELSE, elseNode.getDirectiveType());
+    var thenNode = (DirectiveBodyNode) ifNode.getBody().getChildren().get(0);
+    var elseNode = (DirectiveBodyNode) ifNode.getBody().getChildren().get(1);
 
-    var ifBody = ifNode.getBody();
-    assertEquals("2", ((DirectiveNode) ifBody.getChildren().get(0)).getArguments().get(1));
-
-    var elseBody = elseNode.getBody();
-    assertEquals(5, ((DirectiveNode) ifBody.getChildren().get(0)).getArguments().get(1));
+    assertEquals("Two", ((DirectiveNode) thenNode.getChildren().get(0)).getArguments().get(1));
+    assertEquals("5", ((DirectiveNode) elseNode.getChildren().get(0)).getArguments().get(1));
   }
 
   @Test
