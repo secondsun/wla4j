@@ -28,16 +28,17 @@ public class IfParser extends GenericDirectiveParser {
 
   @Override
   public DirectiveBodyNode body(SourceParser parser) {
-    DirectiveBodyNode body = new DirectiveBodyNode();
+    DirectiveBodyNode trueBody = new DirectiveBodyNode();
+    DirectiveBodyNode elseBody = new DirectiveBodyNode();
     var node = parser.getCurrentNode();
-    while (node.getType() != NodeTypes.DIRECTIVE || (((DirectiveNode)node).getDirectiveType() != AllDirectives.ELSE || ((DirectiveNode)node).getDirectiveType() != AllDirectives.ENDIF)) {
-      body.addChild(node);
+    while (node.getType() != NodeTypes.DIRECTIVE || (((DirectiveNode)node).getDirectiveType() != AllDirectives.ELSE && ((DirectiveNode)node).getDirectiveType() != AllDirectives.ENDIF)) {
+      trueBody.addChild(node);
       node = parser.nextNode();
     }
 
     if (node.getType() == NodeTypes.DIRECTIVE && ((DirectiveNode)node).getDirectiveType() != AllDirectives.ELSE) {
       while (node.getType() != NodeTypes.DIRECTIVE && ( ((DirectiveNode)node).getDirectiveType() != AllDirectives.ENDIF)) {
-        body.addChild(node);
+        trueBody.addChild(node);
         node = parser.nextNode();
       }
     } else if(node.getType() == NodeTypes.DIRECTIVE && ((DirectiveNode)node).getDirectiveType() != AllDirectives.ENDIF) {
@@ -50,7 +51,7 @@ public class IfParser extends GenericDirectiveParser {
       throw new IllegalStateException("Expected End");
     }
 
-    return body;
+    return trueBody;
   }
 
 }

@@ -197,7 +197,7 @@ public class SourceParserTest {
   })
   public void parseIfs(String ifStatement) {
     var source =
-        ifStatement + "\n .db 1, \"Two\", 3\n" + ".else\n" + ".db 42.0  5 \"Six\"\n" + ".endif";
+        ifStatement + "\n .db 1, \"Two\", 3 \n" + " .else \n " + ".db 42.0  5 \"Six\"\n" + ".endif";
     final String outfile = "test.out";
     final String inputFile = "test.s";
     final int lineNumber = 0;
@@ -209,7 +209,7 @@ public class SourceParserTest {
 
     SourceParser parser = new SourceParser(scanner);
     var ifNode = (DirectiveNode) parser.nextNode();
-    var elseNode = (DirectiveNode) parser.nextNode();
+    var elseNode = (DirectiveNode) ifNode.getChildren().get(2);
     assertEquals(AllDirectives.IF, ifNode.getDirectiveType());
     assertEquals(AllDirectives.ELSE, elseNode.getDirectiveType());
 
