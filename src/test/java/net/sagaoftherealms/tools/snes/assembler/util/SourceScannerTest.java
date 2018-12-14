@@ -258,6 +258,7 @@ public class SourceScannerTest {
   @CsvSource({
     "label, label", // basic label, no :
     "label2:, label2", // basic label with colon
+    ":label2, label2", // basic label with colon at beginning
     "_label, label",
     // underscore label IE local label (see
     // https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)

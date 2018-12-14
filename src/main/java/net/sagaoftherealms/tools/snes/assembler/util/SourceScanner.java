@@ -66,6 +66,7 @@ public class SourceScanner {
     } else if ((!tokenString.equals("@"))
         && (Character.isAlphabetic(tokenString.charAt(0))
             || tokenString.charAt(0) == '_'
+            || tokenString.charAt(0) == ':'
             || tokenString.charAt(0) == '@')) {
       if (opCodes.contains(tokenString)) {
         type = TokenTypes.OPCODE;
@@ -122,7 +123,7 @@ public class SourceScanner {
       return numberToken(sourceString, character);
     } else if (character == '\'') {
       return characterToken(sourceString);
-    } else if (Character.isAlphabetic(character) || character == '_' || character == '@') {
+    } else if (Character.isAlphabetic(character) || character == '_' || character == '@' || character == ':') {
       return labelToken(sourceString, character);
     } else if (operators.contains(character)) {
       return "" + character;

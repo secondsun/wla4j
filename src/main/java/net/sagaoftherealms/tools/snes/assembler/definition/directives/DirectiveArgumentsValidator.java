@@ -402,14 +402,27 @@ public final class DirectiveArgumentsValidator {
     private boolean expressionComplete = false;
 
     public OneOfMatcher(String oneOfPattern) {
+      //consolidate patterns
+      //IE if a Label or a Number or an Expression then you can match all of those as just an expression.
+      //Then we give priority to expressions in the matcher.  Should even things out.
+
+      if (oneOfPattern.contains("e") || oneOfPattern.contains("t")) {
+        oneOfPattern = oneOfPattern.replace("l", "")
+            .replace("c", "")
+            .replace("f", "")
+            .replace("x", "");
+      }
+
       this.oneOfPattern = oneOfPattern;
     }
 
     @Override
     public boolean match(Token token) {
-      if (hasMatched) {
+
+      if (hasMatched  && !oneOfPattern.contains("e")) {// As one of implies, it can only match one.  However expressions are hard to do because they require multiple tokens to be matched possible.
         return false;
       }
+
       switch (token.getType()) {
         case STRING:
           if (oneOfPattern.contains("s")) {
@@ -433,7 +446,7 @@ public final class DirectiveArgumentsValidator {
             }
           }
 
-          if (oneOfPattern.contains("e")) {
+          if (oneOfPattern.contains("e")&& !expressionComplete)  {
             expressionComplete = true;
             hasMatched = true;
             return true;
@@ -445,7 +458,7 @@ public final class DirectiveArgumentsValidator {
             hasMatched = true;
             return true;
           }
-          if (oneOfPattern.contains("e")) {
+          if (oneOfPattern.contains("e") && !expressionComplete) {
             hasMatched = true;
             expressionComplete = true;
             return true;

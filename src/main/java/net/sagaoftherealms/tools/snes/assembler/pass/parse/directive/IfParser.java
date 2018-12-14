@@ -11,6 +11,7 @@ public class IfParser extends GenericDirectiveParser {
   EnumSet<AllDirectives> IF_DIRECTIVES =
       EnumSet.of(
           AllDirectives.IF,
+          AllDirectives.IFNEQ,
           AllDirectives.IFLE,
           AllDirectives.IFDEF,
           AllDirectives.IFDEFM,
