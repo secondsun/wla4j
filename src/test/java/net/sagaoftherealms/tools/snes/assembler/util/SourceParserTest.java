@@ -7,12 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
-import net.sagaoftherealms.tools.snes.assembler.Definition;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
-import net.sagaoftherealms.tools.snes.assembler.definition.directives.Directive;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
@@ -21,6 +20,8 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBo
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.IfBodyNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.SectionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.SectionNode.SectionStatus;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StructNode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -439,4 +440,39 @@ public class SourceParserTest {
     SourceParser parser = new SourceParser(scanner);
     Assertions.assertThrows(ParseException.class, () -> parser.nextNode());
   }
+
+  /**
+   * Sections can have a lot of permuations of type, size, etc.  See the section Node for the stuff I will
+   * need to write.
+   */
+  @Test
+  public void testSectionBasic() {
+    final String enumSource =
+        ".SECTION \"EmptyVectors\" SEMIFREE\n"
+            + "\n"
+            + "EmptyHandler:\n"
+            + "       rti\n"
+            + "\n"
+            + ".ENDS";
+    final String outfile = "test.out";
+    final String inputFile = "test.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(enumSource), inputFile, lineNumber);
+
+    var scanner = data.startRead(Opcodes65816.opt_table);
+
+    SourceParser parser = new SourceParser(scanner);
+    SectionNode node = (SectionNode) parser.nextNode();
+    assertEquals(NodeTypes.SECTION, node.getType());
+    assertEquals("EmptyVectors", node.getName());
+    assertEquals(SectionStatus.SEMIFREE, node.getStatus());
+
+    Node emptyHandlerLabelNode = node.getChildren().get(0);
+    assertEquals(NodeTypes.LABEL, emptyHandlerLabelNode.getType());
+    Node rtiOpLabel = node.getChildren().get(1);
+    assertEquals(NodeTypes.OPCODE, rtiOpLabel.getType());
+  }
+
 }

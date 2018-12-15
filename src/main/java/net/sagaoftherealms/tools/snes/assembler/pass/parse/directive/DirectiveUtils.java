@@ -13,6 +13,7 @@ public final class DirectiveUtils {
         return new EnumParser();
       case STRUCT:
         return new StructParser();
+
       case IF:
 
       case IFDEF:
@@ -52,6 +53,9 @@ public final class DirectiveUtils {
 
       case STRUCT:
         node = new StructNode();
+        break;
+      case SECTION:
+        node = new SectionNode();
         break;
       case IF:
 
@@ -239,8 +243,6 @@ public final class DirectiveUtils {
       case SEED:
 
       case SECTION_BANKSECTION:
-
-      case SECTION:
 
       case RAMSECTION:
 

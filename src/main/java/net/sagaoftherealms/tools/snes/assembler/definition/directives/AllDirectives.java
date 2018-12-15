@@ -119,7 +119,7 @@ public enum AllDirectives {
           ".SECTION \"BANKSECTION\" ?(NAMESPACE s) ?(SIZE x) ?(ALIGN x) ?{FORCE|FREE|SUPERFREE|SEMIFREE|SEMISUBFREE|OVERWRITE} ?(APPENDTO l)")),
   SECTION(
       new AllDirective(
-          ".SECTION l ?(NAMESPACE s) ?(SIZE x) ?(ALIGN x) ?{FORCE|FREE|SUPERFREE|SEMIFREE|SEMISUBFREE|OVERWRITE} ?(APPENDTO l)")),
+          ".SECTION {sl} ?(NAMESPACE s) ?(SIZE x) ?(ALIGN x) ?{FORCE|FREE|SUPERFREE|SEMIFREE|SEMISUBFREE|OVERWRITE} ?(APPENDTO l)")),
   RAMSECTION(new AllDirective(".RAMSECTION l ?(BANK x) ?(SLOT x) ?(ALIGN x) ?(APPENDTO l)")),
   ENDS(new AllDirective(".ENDS")),
   EXPORT(new AllDirective(".EXPORT []{l}")),
