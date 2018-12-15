@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
+import net.sagaoftherealms.tools.snes.assembler.Definition;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.Directive;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
@@ -274,8 +275,43 @@ public class SourceParserTest {
 
   @Test
   public void parseStructWithEmbeddedIfDirective() {
+    var source =
+        ".STRUCT mon                ; check out the documentation on\n"
+            + ".IFDEF THREE\n"
+            + "name ds 2                  ; .STRUCT\n"
+            + ".ELSE\n"
+            + "age  db\n"
+            + ".ENDIF\n"
+            + ".ENDST\n"
+            + "\n"
+            + ".ENUM $A000\n"
+            + "_scroll_x DB               ; db  - define byte (byt and byte work also)\n"
+            + "_scroll_y DB\n"
+            + "player_x: DW               ; dw  - define word (word works also)\n"
+            + "player_y: DW\n"
+            + "map_01:   DS  16           ; ds  - define size (bytes)\n"
+            + "map_02    DSB 16           ; dsb - define size (bytes)\n"
+            + "map_03    DSW  8           ; dsw - define size (words)\n"
+            + "   monster   INSTANCEOF mon 3 ; three instances of structure mon\n"
+            + "     dragon    INSTANCEOF mon   ; one mon\n"
+            + ".ENDE";
 
-    fail("See pass_1 Line 2446");
+    final String outfile = "test.out";
+    final String inputFile = "test.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(source), inputFile, lineNumber);
+
+    var scanner = data.startRead(Opcodes65816.opt_table);
+
+    SourceParser parser = new SourceParser(scanner);
+    StructNode structNode = (StructNode) parser.nextNode();
+
+    assertEquals(AllDirectives.IFDEF, ((DirectiveNode)(structNode.getBody().getChildren().get(0))).getDirectiveType());
+    assertEquals("age", ((DefinitionNode)((DirectiveBodyNode)((IfBodyNode)((DirectiveNode)(structNode.getBody().getChildren().get(0))).getBody()).getElseBody()).getChildren().get(0)).getLabel());
+    assertEquals(2, ((DefinitionNode)((DirectiveBodyNode)((IfBodyNode)((DirectiveNode)(structNode.getBody().getChildren().get(0))).getBody()).getThenBody()).getChildren().get(0)).getSize());
+
   }
 
   @Test
