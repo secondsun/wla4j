@@ -8,7 +8,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 
 public class IfParser extends GenericDirectiveParser {
 
-  EnumSet<AllDirectives> IF_DIRECTIVES =
+  public static final EnumSet<AllDirectives> IF_DIRECTIVES =
       EnumSet.of(
           AllDirectives.IF,
           AllDirectives.IFNEQ,

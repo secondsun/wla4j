@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
+import net.sagaoftherealms.tools.snes.assembler.definition.directives.Directive;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
@@ -18,6 +19,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DefinitionN
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.IfBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StructNode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -180,25 +182,26 @@ public class SourceParserTest {
 
   @ParameterizedTest
   @CsvSource({
-    ".IF 5 > 10",
-    ".IFDEF LABEL",
-    ".IFDEFM \\5",
-    ".IFEQ 4 4", // Two constant expressions
-    ".IFEQ 4 * 4 BERRIES", // A math experssion and a label
-    ".IFEXISTS \"FileName String\"",
-    ".IFGR 4 * 4 BERRIES",
-    ".IFGR 4 4 ",
-    ".IFGREQ 4 * 4 BERRIES",
-    ".IFGREQ 4 BERRIES",
-    ".IFLE BERRIES 45",
-    ".IFLEEQ BERRIES @JAMMING",
-    ".IFNDEF LABEL",
-    ".IFNDEFM \\5",
-    ".IFNEQ BERRIES :JAMMING",
+      ".IF 5 > 10",
+      ".IFDEF LABEL",
+      ".IFDEFM \\5",
+      ".IFEQ 4 4", // Two constant expressions
+      ".IFEQ 4 * 4 BERRIES", // A math experssion and a label
+      ".IFEXISTS \"FileName String\"",
+      ".IFGR 4 * 4 BERRIES",
+      ".IFGR 4 4 ",
+      ".IFGREQ 4 * 4 BERRIES",
+      ".IFGREQ 4 BERRIES",
+      ".IFLE BERRIES 45",
+      ".IFLEEQ BERRIES @JAMMING",
+      ".IFNDEF LABEL",
+      ".IFNDEFM \\5",
+      ".IFNEQ BERRIES :JAMMING",
   })
   public void parseIfs(String ifStatement) {
     var source =
-        ifStatement + "\n .db 1, \"Two\", 3 \n" + " .else \n " + ".db 42.0,  5, \"Six\"\n" + ".endif";
+        ifStatement + "\n .db 1, \"Two\", 3 \n" + " .else \n " + ".db 42.0,  5, \"Six\"\n"
+            + ".endif";
     final String outfile = "test.out";
     final String inputFile = "test.s";
     final int lineNumber = 0;
@@ -219,12 +222,59 @@ public class SourceParserTest {
 
   @Test
   public void parseEnumBodyWithIfDirective() {
-    // TODO Include all the types of IFs as parameterized test.
-    fail("See pass_1.c#1137");
+    var source =
+        ".STRUCT mon                ; check out the documentation on\n"
+            + "name ds 2                  ; .STRUCT\n"
+            + "age  db\n"
+            + ".ENDST\n"
+            + "\n"
+            + ".ENUM $A000\n"
+            + "_scroll_x DB               ; db  - define byte (byt and byte work also)\n"
+            + "_scroll_y DB\n"
+            + "player_x: DW               ; dw  - define word (word works also)\n"
+            + "player_y: DW\n"
+            + "map_01:   DS  16           ; ds  - define size (bytes)\n"
+            + "map_02    DSB 16           ; dsb - define size (bytes)\n"
+            + "map_03    DSW  8           ; dsw - define size (words)\n"
+            + ".IFDEF THREE\n"
+            + "   monster   INSTANCEOF mon 3 ; three instances of structure mon\n"
+            + ".IFDEF THREE\n"
+            + "   monster   INSTANCEOF mon 3 ; three instances of structure mon\n"
+            + ".ELSE\n"
+            +
+            // 7 = monster 8 = monster.name 12 = monster.1.age 17 = monster.3.name
+            "     dragon    INSTANCEOF mon   ; one mon\n"
+            + ".ENDIF\n"
+            + ".ELSE\n"
+            +
+            // 7 = monster 8 = monster.name 12 = monster.1.age 17 = monster.3.name
+            "     dragon    INSTANCEOF mon   ; one mon\n"
+            + ".ENDIF\n"
+            + // 21 dragon.age
+            ".ENDE";
+
+    final String outfile = "test.out";
+    final String inputFile = "test.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(source), inputFile, lineNumber);
+
+    var scanner = data.startRead(Opcodes65816.opt_table);
+
+    SourceParser parser = new SourceParser(scanner);
+    parser.nextNode();
+    var enumNode = (EnumNode) parser.nextNode();
+
+    assertEquals(AllDirectives.IFDEF, ((DirectiveNode)(enumNode.getBody().getChildren().get(7))).getDirectiveType());
+    assertEquals("monster", ((DefinitionNode)((IfBodyNode)((DirectiveNode)(enumNode.getBody().getChildren().get(7))).getBody()).getThenBody().getChildren().get(0)).getLabel());
+    assertEquals("dragon", ((DefinitionNode)((IfBodyNode)((DirectiveNode)(enumNode.getBody().getChildren().get(7))).getBody()).getElseBody().getChildren().get(0)).getLabel());
+    assertEquals(AllDirectives.IFDEF, ((DirectiveNode)((IfBodyNode)((DirectiveNode)(enumNode.getBody().getChildren().get(7))).getBody()).getThenBody().getChildren().get(1)).getDirectiveType());
   }
 
   @Test
   public void parseStructWithEmbeddedIfDirective() {
+
     fail("See pass_1 Line 2446");
   }
 
@@ -309,7 +359,9 @@ public class SourceParserTest {
     assertEquals("mon", ((DefinitionNode) enumBody.getChildren().get(8)).getStructName().get());
   }
 
-  /** Only if directives are allowed inside of a DirectiveBody */
+  /**
+   * Only if directives are allowed inside of a DirectiveBody
+   */
   @Test
   public void parseEnumBodyWithDirectiveThrowsParseException() {
     final String enumSource =
