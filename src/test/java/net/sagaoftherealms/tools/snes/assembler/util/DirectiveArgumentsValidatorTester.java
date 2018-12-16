@@ -59,9 +59,9 @@ public class DirectiveArgumentsValidatorTester {
 
   @ParameterizedTest
   @CsvSource({
-    "4 'a', x c, 'NUMBER, NUMBER'",
-    "4 \"This is a String\", x s, 'NUMBER, STRING'",
-    "'4, \"This is a String\"', 'x, s', 'NUMBER, COMMA, STRING'",
+      "4 'a', x c, 'NUMBER, NUMBER'",
+      "4 \"This is a String\", x s, 'NUMBER, STRING'",
+      "'4, \"This is a String\"', 'x, s', 'NUMBER, COMMA, STRING'",
   })
   public void validateMultipleArgumentsPattern(
       String sourceLine, String pattern, String tokenTypes) {
@@ -77,7 +77,7 @@ public class DirectiveArgumentsValidatorTester {
 
   @ParameterizedTest
   @CsvSource({
-    "'[]{x}, c'",
+      "'[]{x}, c'",
   })
   public void checkPatternIsValid(String pattern) {
     assertThrows(
@@ -89,9 +89,9 @@ public class DirectiveArgumentsValidatorTester {
 
   @ParameterizedTest
   @CsvSource({
-    "'4, 4, 5', []{x}, 'NUMBER, COMMA, NUMBER, COMMA, NUMBER'",
-    "'4, ''c'', 5', []{cx}, 'NUMBER, COMMA, NUMBER, COMMA, NUMBER'",
-    "'4, 5 ''c''', []{x} c, 'NUMBER, COMMA, NUMBER, NUMBER'",
+      "'4, 4, 5', []{x}, 'NUMBER, COMMA, NUMBER, COMMA, NUMBER'",
+      "'4, ''c'', 5', []{cx}, 'NUMBER, COMMA, NUMBER, COMMA, NUMBER'",
+      "'4, 5 ''c''', []{x} c, 'NUMBER, COMMA, NUMBER, NUMBER'",
   })
   public void validateArray(String sourceLine, String pattern, String tokenTypes) {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator(pattern);
@@ -107,8 +107,8 @@ public class DirectiveArgumentsValidatorTester {
 
   @ParameterizedTest
   @CsvSource({
-    "4 + 4, 'NUMBER, PLUS, NUMBER'",
-    "8 * 4 + 2, 'NUMBER, MULTIPLY, NUMBER, PLUS, NUMBER'",
+      "4 + 4, 'NUMBER, PLUS, NUMBER'",
+      "8 * 4 + 2, 'NUMBER, MULTIPLY, NUMBER, PLUS, NUMBER'",
   })
   public void validateNumericExpression(String sourceLine, String tokenTypes) {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("e");
@@ -123,8 +123,8 @@ public class DirectiveArgumentsValidatorTester {
 
   @ParameterizedTest
   @CsvSource({
-    "4 + 4 FLOUR, 'NUMBER, PLUS, NUMBER, LABEL'",
-    "8 * 4 + 2 6+3, 'NUMBER, MULTIPLY, NUMBER, PLUS, NUMBER, NUMBER, PLUS, NUMBER'",
+      "4 + 4 FLOUR, 'NUMBER, PLUS, NUMBER, LABEL'",
+      "8 * 4 + 2 6+3, 'NUMBER, MULTIPLY, NUMBER, PLUS, NUMBER, NUMBER, PLUS, NUMBER'",
   })
   public void validateComplexArguments(String sourceLine, String tokenTypes) {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("{elx} {elx}");

@@ -2,10 +2,18 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionParser;
 
 public final class DirectiveUtils {
 
-  private DirectiveUtils() {}
+  private DirectiveUtils() {
+  }
 
   public static DirectiveParser getParser(AllDirectives type) {
     switch (type) {
@@ -38,6 +46,8 @@ public final class DirectiveUtils {
 
       case IFGREQ:
         return new IfParser(type);
+      case SECTION:
+        return new SectionParser();
       default:
         return new GenericDirectiveParser(type);
     }

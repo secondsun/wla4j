@@ -1,6 +1,7 @@
-package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
+package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control;
 
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
 
 public class IfBodyNode extends DirectiveBodyNode {
 

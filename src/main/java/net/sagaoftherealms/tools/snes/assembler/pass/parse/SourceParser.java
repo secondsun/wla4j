@@ -18,6 +18,13 @@ public class SourceParser {
     token = scanner.getNextToken();
   }
 
+  /**
+   *
+   * This will create a node from the location of the parser in the source scanner.
+   * This will move the current token, has side effects, etc.  Needless to say it is not thread safe.
+   *
+   * @return the nextNode that the current token is on.
+   */
   public Node nextNode() {
     switch (token.getType()) {
       case STRING:
@@ -30,7 +37,9 @@ public class SourceParser {
       case NUMBER:
         break;
       case LABEL:
-        break;
+        var labelNode = new LabelNode(token);
+        consumeAndClear(TokenTypes.LABEL);
+        return labelNode;
       case PLUS:
         break;
       case MINUS:
@@ -64,7 +73,9 @@ public class SourceParser {
       case XOR:
         break;
       case OPCODE:
-        break;
+        var opcodeNode = new OpcodeNode(token);
+        consumeAndClear(TokenTypes.OPCODE);
+        return opcodeNode;
       case SIZE:
         break;
       case EOL:
@@ -76,8 +87,6 @@ public class SourceParser {
 
   /**
    * Confirms that the current token is expected and advances to the next token.
-   *
-   * @param types
    */
   public void consume(TokenTypes... types) {
     final var typesList = Arrays.asList(types);
@@ -99,6 +108,12 @@ public class SourceParser {
     this.token = scanner.getNextToken();
   }
 
+  /**
+   * The token that the parser is ready to consume.
+   * Calling nextNode will change this value.  If you need the token of a node, call this before
+   * you call next node.
+   * @return the current token under the parser.
+   */
   public Token getCurrentToken() {
     return this.token;
   }
@@ -122,7 +137,9 @@ public class SourceParser {
     return null;
   }
 
-  /** Move the token past any whitespace / comments */
+  /**
+   * Move the token past any whitespace / comments
+   */
   public void clearWhiteSpaceTokens() {
     var token = getCurrentToken();
 

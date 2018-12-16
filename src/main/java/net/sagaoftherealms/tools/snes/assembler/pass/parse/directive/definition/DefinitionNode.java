@@ -1,4 +1,4 @@
-package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
+package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
 
 import java.util.Optional;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;

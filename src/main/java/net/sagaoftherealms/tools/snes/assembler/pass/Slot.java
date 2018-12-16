@@ -6,7 +6,8 @@ public class Slot {
   private int size;
   private Slot next;
 
-  public Slot() {}
+  public Slot() {
+  }
 
   public Slot(int address, int size) {
     this.address = address;

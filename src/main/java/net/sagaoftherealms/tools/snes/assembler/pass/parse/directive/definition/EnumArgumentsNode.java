@@ -1,4 +1,6 @@
-package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
+package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
+
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 
 public class EnumArgumentsNode extends DirectiveArgumentsNode {
 

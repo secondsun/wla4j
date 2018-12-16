@@ -1,10 +1,12 @@
-package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
+package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control;
 
 import java.util.EnumSet;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.GenericDirectiveParser;
 
 public class IfParser extends GenericDirectiveParser {
 
@@ -38,7 +40,7 @@ public class IfParser extends GenericDirectiveParser {
     var node = parser.nextNode();
     while (node.getType() != NodeTypes.DIRECTIVE
         || (((DirectiveNode) node).getDirectiveType() != AllDirectives.ELSE
-            && ((DirectiveNode) node).getDirectiveType() != AllDirectives.ENDIF)) {
+        && ((DirectiveNode) node).getDirectiveType() != AllDirectives.ENDIF)) {
       thenBody.addChild(node);
       node = parser.nextNode();
     }

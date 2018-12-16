@@ -8,7 +8,9 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
-/** A stateful object that is used to read data from a {@link SourceFileDataMap} */
+/**
+ * A stateful object that is used to read data from a {@link SourceFileDataMap}
+ */
 public class SourceScanner {
 
   private final SourceFileDataMap source;
@@ -65,10 +67,10 @@ public class SourceScanner {
       type = TokenTypes.NUMBER;
     } else if ((!tokenString.equals("@"))
         && (Character.isAlphabetic(tokenString.charAt(0))
-            || tokenString.charAt(0) == '_'
-            || tokenString.charAt(0) == ':'
-            || tokenString.charAt(0) == '@')) {
-      if (opCodes.contains(tokenString)) {
+        || tokenString.charAt(0) == '_'
+        || tokenString.charAt(0) == ':'
+        || tokenString.charAt(0) == '@')) {
+      if (opCodes.contains(tokenString.toUpperCase())) {
         type = TokenTypes.OPCODE;
       } else {
         type = TokenTypes.LABEL;
@@ -123,7 +125,8 @@ public class SourceScanner {
       return numberToken(sourceString, character);
     } else if (character == '\'') {
       return characterToken(sourceString);
-    } else if (Character.isAlphabetic(character) || character == '_' || character == '@' || character == ':') {
+    } else if (Character.isAlphabetic(character) || character == '_' || character == '@'
+        || character == ':') {
       return labelToken(sourceString, character);
     } else if (operators.contains(character)) {
       return "" + character;
@@ -181,9 +184,10 @@ public class SourceScanner {
 
   private String numberToken(String sourceString, char character) {
     var chars =
-        new Character[] {
-          'A', 'B', 'C', 'D', 'E', 'F', 'H', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',
-          'b', 'c', 'd', 'e', 'f', 'h', '.', '$', '%'
+        new Character[]{
+            'A', 'B', 'C', 'D', 'E', 'F', 'H', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            'a',
+            'b', 'c', 'd', 'e', 'f', 'h', '.', '$', '%'
         };
     final List<Character> allowedCharacters = Arrays.asList(chars);
     StringBuilder builder = new StringBuilder().append(character);

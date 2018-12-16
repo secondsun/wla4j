@@ -153,9 +153,9 @@ public final class DirectiveArgumentsValidator {
   private boolean matchFloat(Token token) {
     return token.getType().equals(TokenTypes.NUMBER)
         && token
-            .getString()
-            .matches(
-                "^\\d*\\.\\d+$"); // matches an optional number, a period, then any number of digits
+        .getString()
+        .matches(
+            "^\\d*\\.\\d+$"); // matches an optional number, a period, then any number of digits
   }
 
   private void begingArray() {
@@ -206,7 +206,7 @@ public final class DirectiveArgumentsValidator {
      * master pattern
      *
      * @return if the master validator should clear the special matcher and advance the pattern to
-     *     the next argument
+     * the next argument
      */
     boolean isSatisfied();
   }
@@ -419,7 +419,8 @@ public final class DirectiveArgumentsValidator {
     @Override
     public boolean match(Token token) {
 
-      if (hasMatched  && !oneOfPattern.contains("e")) {// As one of implies, it can only match one.  However expressions are hard to do because they require multiple tokens to be matched possible.
+      if (hasMatched && !oneOfPattern.contains(
+          "e")) {// As one of implies, it can only match one.  However expressions are hard to do because they require multiple tokens to be matched possible.
         return false;
       }
 
@@ -446,7 +447,7 @@ public final class DirectiveArgumentsValidator {
             }
           }
 
-          if (oneOfPattern.contains("e")&& !expressionComplete)  {
+          if (oneOfPattern.contains("e") && !expressionComplete) {
             expressionComplete = true;
             hasMatched = true;
             return true;

@@ -8,9 +8,9 @@ import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DefinitionNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StructNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefinitionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import org.junit.jupiter.api.Test;
 
 public class SourceAnalyzerTest {

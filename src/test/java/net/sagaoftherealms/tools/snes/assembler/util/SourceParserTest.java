@@ -3,9 +3,11 @@ package net.sagaoftherealms.tools.snes.assembler.util;
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.time.Duration;
 import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
@@ -15,14 +17,14 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DefinitionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.EnumNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.IfBodyNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.SectionNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.SectionNode.SectionStatus;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StructNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfBodyNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode.SectionStatus;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -268,10 +270,17 @@ public class SourceParserTest {
     parser.nextNode();
     var enumNode = (EnumNode) parser.nextNode();
 
-    assertEquals(AllDirectives.IFDEF, ((DirectiveNode)(enumNode.getBody().getChildren().get(7))).getDirectiveType());
-    assertEquals("monster", ((DefinitionNode)((IfBodyNode)((DirectiveNode)(enumNode.getBody().getChildren().get(7))).getBody()).getThenBody().getChildren().get(0)).getLabel());
-    assertEquals("dragon", ((DefinitionNode)((IfBodyNode)((DirectiveNode)(enumNode.getBody().getChildren().get(7))).getBody()).getElseBody().getChildren().get(0)).getLabel());
-    assertEquals(AllDirectives.IFDEF, ((DirectiveNode)((IfBodyNode)((DirectiveNode)(enumNode.getBody().getChildren().get(7))).getBody()).getThenBody().getChildren().get(1)).getDirectiveType());
+    assertEquals(AllDirectives.IFDEF,
+        ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getDirectiveType());
+    assertEquals("monster",
+        ((DefinitionNode) ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7)))
+            .getBody()).getThenBody().getChildren().get(0)).getLabel());
+    assertEquals("dragon",
+        ((DefinitionNode) ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7)))
+            .getBody()).getElseBody().getChildren().get(0)).getLabel());
+    assertEquals(AllDirectives.IFDEF,
+        ((DirectiveNode) ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7)))
+            .getBody()).getThenBody().getChildren().get(1)).getDirectiveType());
   }
 
   @Test
@@ -309,9 +318,14 @@ public class SourceParserTest {
     SourceParser parser = new SourceParser(scanner);
     StructNode structNode = (StructNode) parser.nextNode();
 
-    assertEquals(AllDirectives.IFDEF, ((DirectiveNode)(structNode.getBody().getChildren().get(0))).getDirectiveType());
-    assertEquals("age", ((DefinitionNode)((DirectiveBodyNode)((IfBodyNode)((DirectiveNode)(structNode.getBody().getChildren().get(0))).getBody()).getElseBody()).getChildren().get(0)).getLabel());
-    assertEquals(2, ((DefinitionNode)((DirectiveBodyNode)((IfBodyNode)((DirectiveNode)(structNode.getBody().getChildren().get(0))).getBody()).getThenBody()).getChildren().get(0)).getSize());
+    assertEquals(AllDirectives.IFDEF,
+        ((DirectiveNode) (structNode.getBody().getChildren().get(0))).getDirectiveType());
+    assertEquals("age",
+        ((DefinitionNode) ((DirectiveBodyNode) ((IfBodyNode) ((DirectiveNode) (structNode.getBody()
+            .getChildren().get(0))).getBody()).getElseBody()).getChildren().get(0)).getLabel());
+    assertEquals(2,
+        ((DefinitionNode) ((DirectiveBodyNode) ((IfBodyNode) ((DirectiveNode) (structNode.getBody()
+            .getChildren().get(0))).getBody()).getThenBody()).getChildren().get(0)).getSize());
 
   }
 
@@ -442,8 +456,8 @@ public class SourceParserTest {
   }
 
   /**
-   * Sections can have a lot of permuations of type, size, etc.  See the section Node for the stuff I will
-   * need to write.
+   * Sections can have a lot of permuations of type, size, etc.  See the section Node for the stuff
+   * I will need to write.
    */
   @Test
   public void testSectionBasic() {
@@ -464,15 +478,20 @@ public class SourceParserTest {
     var scanner = data.startRead(Opcodes65816.opt_table);
 
     SourceParser parser = new SourceParser(scanner);
-    SectionNode node = (SectionNode) parser.nextNode();
-    assertEquals(NodeTypes.SECTION, node.getType());
-    assertEquals("EmptyVectors", node.getName());
-    assertEquals(SectionStatus.SEMIFREE, node.getStatus());
 
-    Node emptyHandlerLabelNode = node.getChildren().get(0);
-    assertEquals(NodeTypes.LABEL, emptyHandlerLabelNode.getType());
-    Node rtiOpLabel = node.getChildren().get(1);
-    assertEquals(NodeTypes.OPCODE, rtiOpLabel.getType());
+    assertTimeout(Duration.ofSeconds(1),()->{
+      SectionNode node = (SectionNode) parser.nextNode();
+      assertEquals(AllDirectives.SECTION, ((DirectiveNode)node).getDirectiveType());
+      assertEquals("EmptyVectors", node.getName());
+      assertEquals(SectionStatus.SEMIFREE, node.getStatus());
+
+      Node emptyHandlerLabelNode = node.getBody().getChildren().get(0);
+      assertEquals(NodeTypes.LABEL, emptyHandlerLabelNode.getType());
+      Node rtiOpLabel =node.getBody().getChildren().get(1);
+      assertEquals(NodeTypes.OPCODE, rtiOpLabel.getType());
+    });
+
+
   }
 
 }

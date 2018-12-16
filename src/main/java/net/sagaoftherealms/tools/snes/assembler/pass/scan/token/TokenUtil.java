@@ -1,6 +1,8 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.scan.token;
 
-/** Utilities for transforming a token into typed values */
+/**
+ * Utilities for transforming a token into typed values
+ */
 public final class TokenUtil {
 
   public static final String CHARACTER_NUMBER_REGEX = "'.'";
@@ -9,7 +11,8 @@ public final class TokenUtil {
   public static final String HEX_NUMBER_REGEX_$ = "\\$[A-Fa-f0-9]+";
   public static final String BINARY_NUMBER_REGEX = "\\%[01]+";
 
-  private TokenUtil() {}
+  private TokenUtil() {
+  }
 
   public static double getDouble(Token token) {
     if (TokenTypes.NUMBER != token.getType()) {
