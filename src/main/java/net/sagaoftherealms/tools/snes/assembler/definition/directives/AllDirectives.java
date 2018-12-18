@@ -200,7 +200,7 @@ public enum AllDirectives {
           var newPattern = newPatternBuilder.toString();
           builder.append(
               generateDirectiveLine(
-                  "" + newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1), false));
+                  "" + newPattern.charAt(r.nextInt(newPattern.length() )), false));
         }
         break;
         case '[': {

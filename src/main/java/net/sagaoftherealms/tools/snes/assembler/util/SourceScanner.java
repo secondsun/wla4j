@@ -77,6 +77,8 @@ public class SourceScanner {
       }
     } else if (tokenString.length() == 1 && operators.contains(tokenString.charAt(0))) {
       type = operatorType(tokenString.charAt(0));
+    } else if (tokenString.matches("\\-+") || tokenString.matches("\\++")) {
+      type = TokenTypes.LABEL;
     } else {
       throw new IllegalArgumentException("Could not get TokenType for " + tokenString);
     }
@@ -129,6 +131,20 @@ public class SourceScanner {
         || character == ':') {
       return labelToken(sourceString, character);
     } else if (operators.contains(character)) {
+      if (character == '-' || character == '+') {
+        if ((linePosition ) < sourceString.length()) {
+          var nextCharacter = sourceString.charAt(linePosition );
+          String toReturn = character+ "";
+          while(((linePosition) < sourceString.length()) && nextCharacter == character) {//This is a label of the --- or +++ variety
+            toReturn += nextCharacter;
+            linePosition++;
+            if ((linePosition) < sourceString.length()) {
+              nextCharacter = sourceString.charAt(linePosition);
+            }
+          }
+          return toReturn;
+        }
+      }
       return "" + character;
     }
 

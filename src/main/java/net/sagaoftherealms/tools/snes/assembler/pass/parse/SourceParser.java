@@ -1,6 +1,9 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.MINUS;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.PLUS;
 
 import java.util.Arrays;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveUtils;
@@ -19,9 +22,8 @@ public class SourceParser {
   }
 
   /**
-   *
-   * This will create a node from the location of the parser in the source scanner.
-   * This will move the current token, has side effects, etc.  Needless to say it is not thread safe.
+   * This will create a node from the location of the parser in the source scanner. This will move
+   * the current token, has side effects, etc.  Needless to say it is not thread safe.
    *
    * @return the nextNode that the current token is on.
    */
@@ -36,14 +38,16 @@ public class SourceParser {
         return directiveNode;
       case NUMBER:
         break;
-      case LABEL:
+      case LABEL: {
         var labelNode = new LabelNode(token);
         consumeAndClear(TokenTypes.LABEL);
         return labelNode;
-      case PLUS:
-        break;
+      }
       case MINUS:
-        break;
+      case PLUS: {
+        LabelNode labelNode = createUnnamedLabel(token);
+        return labelNode;
+      }
       case LT:
         break;
       case GT:
@@ -73,8 +77,7 @@ public class SourceParser {
       case XOR:
         break;
       case OPCODE:
-        var opcodeNode = new OpcodeNode(token);
-        consumeAndClear(TokenTypes.OPCODE);
+        OpcodeNode opcodeNode = opcode();
         return opcodeNode;
       case SIZE:
         break;
@@ -83,6 +86,46 @@ public class SourceParser {
         return nextNode();
     }
     return null;
+  }
+
+  private OpcodeNode opcode() {
+    var opcode = new OpcodeNode(token);
+    consume(TokenTypes.OPCODE);
+    token = getCurrentToken();
+
+    while (!token.getType().equals(EOL) && !token.getType().equals(END_OF_INPUT)) {
+      opcode.addChild(new OpcodeArgumentNode(getCurrentToken()));
+      consume(getCurrentToken().getType());
+    }
+
+    consumeAndClear(EOL, END_OF_INPUT);
+    return opcode;
+
+  }
+
+  private LabelNode createUnnamedLabel(Token token) {
+    StringBuilder labelNameBuilder = new StringBuilder(10);
+    Token initialToken = token;
+
+    while (PLUS.equals(token.getType()) ||
+        MINUS.equals(token.getType())) {
+      switch (token.getType()) {
+        case PLUS:
+          labelNameBuilder.append('+');
+          consumeAndClear(TokenTypes.PLUS);
+          token = getCurrentToken();
+          break;
+        case MINUS:
+          labelNameBuilder.append('-');
+          consumeAndClear(TokenTypes.MINUS);
+          token = getCurrentToken();
+          break;
+        default:
+          throw new ParseException("expected +* or -*.", token);
+      }
+    }
+    var label = new LabelNode(labelNameBuilder.toString(), token);
+    return label;
   }
 
   /**
@@ -109,9 +152,9 @@ public class SourceParser {
   }
 
   /**
-   * The token that the parser is ready to consume.
-   * Calling nextNode will change this value.  If you need the token of a node, call this before
-   * you call next node.
+   * The token that the parser is ready to consume. Calling nextNode will change this value.  If you
+   * need the token of a node, call this before you call next node.
+   *
    * @return the current token under the parser.
    */
   public Token getCurrentToken() {

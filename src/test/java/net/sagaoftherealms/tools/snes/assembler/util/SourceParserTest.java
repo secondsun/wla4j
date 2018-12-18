@@ -2,6 +2,7 @@ package net.sagaoftherealms.tools.snes.assembler.util;
 
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -13,8 +14,10 @@ import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirecti
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.OpcodeNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefinitionNode;
@@ -33,10 +36,41 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 public class SourceParserTest {
 
-  @Test
-  public void testAnonymousLabelNode() {
-    fail(
-        "This test will test that when - or + are used as labels the parser identifies them as such instead of as parts of a arthimetic operation");
+  @ParameterizedTest
+  @CsvSource({
+      "'- rti \n jmp -'",//Label, opcode newline opcode
+      "'--- rti \n jmp ---'",//Label, opcode newline opcode
+      "'+ rti \n jmp +'",//Label, opcode newline opcode
+      "'++ rti \n jmp ++'",//Label, opcode newline opcode
+      "'+++ rti \n jmp +++'",//Label, opcode newline opcode
+      "'-- rti \n jmp --'",//Label, opcode newline opcode
+      "'__ rti \n jmp _f'",//Label, opcode newline opcode
+      "'__ rti \n jmp _b'"//Label, opcode newline opcode
+  })
+  public void testAnonymousLabelNode(String sourceLine) {
+    final String outfile = "test.out";
+    final String inputFile = "test.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(sourceLine), inputFile, lineNumber);
+
+    var scanner = data.startRead(Opcodes65816.opt_table);
+    var parser = new SourceParser(scanner);
+
+    LabelNode node = (LabelNode) parser.nextNode();
+    OpcodeNode rti = (OpcodeNode) parser.nextNode();
+    OpcodeNode jmp = (OpcodeNode) parser.nextNode();
+
+    assertNotNull(node);
+    assertNotNull(rti);
+    assertNotNull(jmp);
+    assertNotNull(node.getLabelName());
+    assertEquals(0, rti.getChildren().size());//RTI has no arguments
+    assertEquals(1, jmp.getChildren().size());//JMP has one argument
+    assertEquals(sourceLine.split("\\s")[0], node.getLabelName());
+    assertEquals(NodeTypes.OPCODE_ARGUMENT, jmp.getChildren().get(0).getType());
+
   }
 
   @Test

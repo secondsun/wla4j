@@ -264,6 +264,8 @@ public class SourceScannerTest {
       // https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)
       "@label.b, label", // Child label
       "@@@@label, label", // Deeply nested child label
+      "---, ''",//unnamed label
+      "+++, ''"//unnamed label
   })
   public void testBasicLabel(String sourceLine, String labelName) {
     final String outfile = "test.out";
