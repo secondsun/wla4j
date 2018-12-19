@@ -16,12 +16,13 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
 /**
- * This class parses Enums, Structs, and RAMSECTIONS
+ * This class parses Enums, Structs
  */
 public class SectionParser implements DirectiveParser {
 
   private final AllDirectives endDirective = ENDS;
 
+  private boolean isBankheader = false;
 
   @Override
   public DirectiveBodyNode body(SourceParser parser) {
@@ -45,6 +46,11 @@ public class SectionParser implements DirectiveParser {
         }
 
       }
+
+      if (node.getType() == NodeTypes.LABEL && isBankheader) {
+        throw new ParseException("Labels are not allowed in bankheaders.", token);
+      }
+
       body.addChild(node);
       node = parser.nextNode();
     }
@@ -59,6 +65,11 @@ public class SectionParser implements DirectiveParser {
     var token = parser.getCurrentToken();
     parser.consume(TokenTypes.STRING, TokenTypes.LABEL);
     arguments.put(KEYS.NAME, "" + token.getString());
+
+    if (token.getString().equalsIgnoreCase("BANKHEADER")) {
+      arguments.put(KEYS.BANKHEADER, token.getString());
+      isBankheader = true;
+    }
 
     token = parser.getCurrentToken();
 
@@ -126,14 +137,6 @@ public class SectionParser implements DirectiveParser {
                 token);
           }
           break;
-        case "BANKSECTION":
-          parser.consume(LABEL);
-          if (arguments.get(KEYS.BANKSECTION) == null) {
-            arguments.put(KEYS.BANKSECTION, argument);
-          } else {
-            throw new ParseException("Duplicate BANKSECTION Token.", token);
-          }
-          break;
         case "RETURNORG":
           parser.consume(LABEL);
           if (arguments.get(KEYS.RETURNORG) == null) {
@@ -158,7 +161,7 @@ parser.consumeAndClear(TokenTypes.EOL);
 
   public enum KEYS {
     NAME,
-    BANKSECTION,
+    BANKHEADER,
     NAMESPACE,
     SIZE,
     ALIGN,

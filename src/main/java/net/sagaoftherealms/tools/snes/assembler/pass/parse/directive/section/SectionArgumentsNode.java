@@ -21,7 +21,7 @@ public class SectionArgumentsNode extends DirectiveArgumentsNode {
       case NAME:
         arguments.set(0, value);
         break;
-      case BANKSECTION:
+      case BANKHEADER:
         arguments.set(1, value);
         break;
       case NAMESPACE:
@@ -49,7 +49,7 @@ public class SectionArgumentsNode extends DirectiveArgumentsNode {
     switch (key) {
       case NAME:
         return arguments.get(0);
-      case BANKSECTION:
+      case BANKHEADER:
         return arguments.get(1);
       case NAMESPACE:
         return arguments.get(2);

@@ -116,11 +116,11 @@ public enum AllDirectives {
   SEED(new AllDirective(".SEED x")),
   SECTION_BANKSECTION(
       new AllDirective(
-          ".SECTION \"BANKSECTION\" ?(NAMESPACE s) ?(SIZE x) ?(ALIGN x) ?{FORCE|FREE|SUPERFREE|SEMIFREE|SEMISUBFREE|OVERWRITE} ?(APPENDTO l)")),
+          ".SECTION \"BANKHEADER\" ?(NAMESPACE s) ?(SIZE x) ?(ALIGN x) ?{FORCE|FREE|SUPERFREE|SEMIFREE|SEMISUBFREE|OVERWRITE} ?(APPENDTO l)")),
   SECTION(
       new AllDirective(
           ".SECTION {sl} ?(NAMESPACE s) ?(SIZE x) ?(ALIGN x) ?{FORCE|FREE|SUPERFREE|SEMIFREE|SEMISUBFREE|OVERWRITE} ?(APPENDTO l)")),
-  RAMSECTION(new AllDirective(".RAMSECTION l ?(BANK x) ?(SLOT x) ?(ALIGN x) ?(APPENDTO l)")),
+  RAMSECTION(new AllDirective(".RAMSECTION {ls} ?(BANK x) ?(SLOT x) ?(ALIGN x) ?(APPENDTO l)")),
   ENDS(new AllDirective(".ENDS")),
   EXPORT(new AllDirective(".EXPORT []{l}")),
   PRINTT(new AllDirective(".PRINTT s")),

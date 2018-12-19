@@ -35,6 +35,9 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
       case STRUCT:
         endDirective = AllDirectives.ENDST;
         break;
+      case RAMSECTION:
+        endDirective = AllDirectives.ENDS;
+        break;
       default:
         throw new IllegalArgumentException("Unsupported type" + type);
     }
@@ -72,6 +75,9 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
     parser.consumeAndClear(TokenTypes.DIRECTIVE);
     var directive = AllDirectives.valueOf(token.getString().replace(".", "").toUpperCase());
     var ifNode = DirectiveUtils.createDirectiveNode(directive.getName());
+    if (!IfParser.IF_DIRECTIVES.contains(directive)) {
+      throw new ParseException("Directive was not an IF style directive", token);
+    }
     var ifParser = new IfInDefinitionBodyParser(directive);
 
     ifNode.setArguments(ifParser.arguments(parser));

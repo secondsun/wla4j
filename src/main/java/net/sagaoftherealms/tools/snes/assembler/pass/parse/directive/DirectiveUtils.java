@@ -7,6 +7,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamSectionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionParser;
 
@@ -48,6 +49,8 @@ public final class DirectiveUtils {
         return new IfParser(type);
       case SECTION:
         return new SectionParser();
+      case RAMSECTION:
+        return new RamSectionParser();
       default:
         return new GenericDirectiveParser(type);
     }

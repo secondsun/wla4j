@@ -1,5 +1,7 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.BANK;
+import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.NAME;
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,6 +27,8 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBo
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfBodyNode;
+
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode.SectionStatus;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
@@ -123,19 +127,30 @@ public class SourceParserTest {
     assertThrows(ParseException.class, () -> parser.nextNode());
   }
 
-  @Test
-  public void testLabelFailsIfOutputLibrary() {
-    fail("See pass_1.c#788");
-  }
 
-  @Test
-  public void testLabelFailsIfNoMemoryPosition() {
-    fail("See pass_1.c#792");
-  }
 
   @Test
   public void testLabelFailsIfInBankHeaderSection() {
-    fail("See pass_1.c#802");
+    final String enumSource =
+        ".SECTION \"BANKHEADER\" SEMIFREE\n"
+            + "\n"
+            + "EmptyHandler:\n"
+            + "       rti\n"
+            + "\n"
+            + ".ENDS";
+    final String outfile = "test.out";
+    final String inputFile = "test.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(enumSource), inputFile, lineNumber);
+
+    var scanner = data.startRead(Opcodes65816.opt_table);
+
+    SourceParser parser = new SourceParser(scanner);
+
+    assertThrows(ParseException.class, ()->{parser.nextNode();});
+
   }
 
   @Test
@@ -150,20 +165,98 @@ public class SourceParserTest {
 
   @Test
   public void testParseRamSectionToken() {
-    fail(
-        "This test should test that the ramsection directive starts a statement style block that respects ramsections."); // see pass_1.c#776
+    //Source for source : ages-disasm wram.s#2548
+    var source = ".RAMSECTION \"RAM 2\" BANK 2 SLOT 3\n"
+        + "\n"
+        + "; $d000 used as part of the routine for redrawing the collapsed d2 cave in the present\n"
+        + "w2Filler1:\t\t\tdsb $0800\n"
+        + "\n"
+        + "; This is a list of values for scrollX or scrollY registers to make the screen turn all\n"
+        + "; wavy (ie. in underwater areas).\n"
+        + "w2WaveScrollValues:\t\tdsb $80\t; $d800/$d800\n"
+        + "\n"
+        + "w2Filler7:\t\t\tdsb $80\n"
+        + "\n"
+        + "; Tree refill data also used for child and an event in room $2f7\n"
+        + "w2SeedTreeRefillData:\t\tdsb NUM_SEED_TREES*8 ; $d900/3:dfc0\n"
+        + "\n"
+        + ".ifdef ROM_SEASONS\n"
+        + "w2Filler9:\t\t\tdsb $40\n"
+        + ".endif\n"
+        + "\n"
+        + "; Bitset of positions where objects (mostly npcs) are residing. When one of these bits is\n"
+        + "; set, this will prevent Link from time-warping onto the corresponding tile.\n"
+        + "w2SolidObjectPositions:\t\t\tdsb $010 ; $d980\n"
+        + "\n"
+        + "w2Filler6:\t\t\tdsb $70\n"
+        + "\n"
+        + "; Used as the \"source\" palette when fading between two sets of palettes\n"
+        + "w2ColorComponentBuffer1:\tdsb $090 ; $da00\n"
+        + "\n"
+        + "; Keeps a history of Link's path when objects (Impa) are following Link.\n"
+        + "; Consists of 16 entries of 3 bytes each: direction, Y position, X position.\n"
+        + "w2LinkWalkPath:\t\t\tdsb $030 ; $da90\n"
+        + "\n"
+        + "w2ChangedTileQueue:\t\tdsb $040 ; $dac0\n"
+        + "\n"
+        + "; Used as the \"destination\" palette when fading between two sets of palettes\n"
+        + "w2ColorComponentBuffer2:\tdsb $090 ; $db00\n"
+        + "\n"
+        + "w2AnimationQueue:\t\tdsb $20\t; $db90\n"
+        + "\n"
+        + "w2Filler4:\t\t\tdsb $50\n"
+        + "\n"
+        + "; Each $40 bytes is one floor\n"
+        + "w2DungeonLayout:\tdsb $100\t; $dc00\n"
+        + "\n"
+        + "w2Filler2: dsb $100\n"
+        + "\n"
+        + "w2GbaModePaletteData:\tdsb $80\t\t; $de00\n"
+        + "\n"
+        + "; The \"base\" palettes on a screen.\n"
+        + "w2AreaBgPalettes:\tdsb $40\t\t; $de80\n"
+        + "w2AreaSprPalettes:\tdsb $40\t\t; $dec0\n"
+        + "\n"
+        + "; The palettes that are copied over during vblank\n"
+        + "w2BgPalettesBuffer:\tdsb $40\t\t; $df00\n"
+        + "w2SprPalettesBuffer:\tdsb $40\t\t; $df40\n"
+        + "\n"
+        + "; The \"base\" palettes have \"fading\" operations applied, and the result is written here.\n"
+        + "w2FadingBgPalettes:\tdsb $40\t\t; $df80\n"
+        + "w2FadingSprPalettes:\tdsb $40\t\t; $dfc0\n"
+        + "\n"
+        + ".ENDS";
+
+    final String outfile = "test.out";
+    final String inputFile = "test.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(source), inputFile, lineNumber);
+
+    var scanner = data.startRead(Opcodes65816.opt_table);
+
+    SourceParser parser = new SourceParser(scanner);
+
+    var node = parser.nextNode();
+
+    assertTrue(node instanceof DirectiveNode);
+    var directiveNode = (DirectiveNode) node;
+    var arguments = (RamsectionArgumentsNode)directiveNode.getArguments();
+
+    assertEquals("RAM 2", arguments.get(NAME));
+    assertEquals("2", arguments.get(BANK));
+
+    var body = directiveNode.getBody();
+    var randomLabel = body.getChildren().get(6);
+    assertEquals(NodeTypes.LABEL, randomLabel);
+    assertEquals("w2SeedTreeRefillData", ((LabelNode)randomLabel).getLabelName());
+
   }
 
   @Test
   public void firstStringTokenWithExpandedMacro() {
     fail("See pass_1.c#649");
-  }
-
-  @Test
-  public void testParseEnumToken() {
-    // see pass_1.c#776
-    fail(
-        "This test should test that the enum directive starts a statement style block that respects enums.");
   }
 
   @Test
@@ -456,7 +549,7 @@ public class SourceParserTest {
             + "SEASON_SUMMER_2 dw\n"
             + "SEASON_FALL DS 16\n"
             + "SEASON_WINTER dsW 16\n"
-            + ".PRINTT 'error'\n"
+            + ".PRINTT \"error\"\n"
             + ".ENDE";
     final String outfile = "test.out";
     final String inputFile = "test.s";
