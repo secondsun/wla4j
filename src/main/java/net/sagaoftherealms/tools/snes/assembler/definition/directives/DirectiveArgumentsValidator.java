@@ -194,7 +194,7 @@ public final class DirectiveArgumentsValidator {
 
   private boolean matchInt(Token token) {
     return token.getType().equals(TokenTypes.NUMBER)
-        && token.getString().matches("^\\d+$"); // any number of digits
+        && (token.getString().startsWith("$") || token.getString().matches("^\\d+$")); // any number of digits
   }
 
   interface Matcher {

@@ -77,6 +77,8 @@ public class SourceScanner {
       type = operatorType(tokenString.charAt(0));
     } else if (tokenString.matches("\\-+:?") || tokenString.matches("\\++:?")) {
       type = TokenTypes.LABEL;
+    } else if (tokenString.matches("\\\\\\d+?")) {
+      type = TokenTypes.LABEL;
     } else {
       throw new IllegalArgumentException("Could not get TokenType for " + tokenString);
     }
@@ -123,11 +125,12 @@ public class SourceScanner {
       return directiveToken(sourceString);
     } else if (Character.isDigit(character) || character == '$' || character == '%') {
       return numberToken(sourceString, character);
-    } else if (character == '\'') {
+    } else if (character == '\'' && !Character.isDigit(sourceString.charAt(linePosition))) {//Escape character unless it is \1 \2 etc then it is a macro label.
       return characterToken(sourceString);
     } else if (Character.isAlphabetic(character)
         || character == '_'
         || character == '@'
+        || character == '\\'
         || character == ':') {
       return labelToken(sourceString, character);
     } else if (operators.contains(character)) {

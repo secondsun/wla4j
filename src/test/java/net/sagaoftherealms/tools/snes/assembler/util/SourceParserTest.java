@@ -375,6 +375,11 @@ public class SourceParserTest {
   }
 
   @Test
+  public void remindSummersToMakeDBAndFriendsUseExpressionNodes() {
+    fail("Not that expression nodes are a thing, we should use those and begin to carry type info in the AllDirectivesDirectives.  See .DB as an example where this could be done.");
+  }
+  
+  @Test
   public void parseEnumBodyWithIfDirective() {
     var source =
         ".STRUCT mon                ; check out the documentation on\n"
@@ -682,7 +687,7 @@ public class SourceParserTest {
         IOUtils.toString(
             SourceParserTest.class
                 .getClassLoader()
-                .getResourceAsStream("define-marco-1.s"),
+                .getResourceAsStream("parseMacro/define-macro-1.s"),
             "UTF-8");
     final String outfile = "define_macro_1.out";
     final String inputFile = "define_macro_1.s";
@@ -703,6 +708,68 @@ public class SourceParserTest {
     assertEquals(NodeTypes.LABEL, body.getChildren().get(1).getType());
     assertEquals("-", ((LabelNode)body.getChildren().get(1)).getLabelName());
     assertEquals(NodeTypes.OPCODE, body.getChildren().get(2).getType());
-        
+
   }
+
+  /** macro_2 is a basic macro with two variables */
+  @Test
+  public void testDefineMacro2DeclaredVariables() throws IOException {
+    final String macroSource =
+        IOUtils.toString(
+            SourceParserTest.class
+                .getClassLoader()
+                .getResourceAsStream("parseMacro/define_macro_2.s"),
+            "UTF-8");
+    final String outfile = "define_macro_2.out";
+    final String inputFile = "parseMacro/define_macro_2.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(macroSource), inputFile, lineNumber);
+
+    var scanner = data.startRead(OpCodeZ80.OPCODES);
+
+    SourceParser parser = new SourceParser(scanner);
+
+    MacroNode node = (MacroNode) parser.nextNode();
+    assertEquals("Engine_FillMemory", node.getName());
+
+    var arguments = node.getArguments();
+    assertEquals("value", arguments.get(1));
+    assertEquals("value2", arguments.get(2));
+    assertEquals("value3", arguments.get(3));
+  }
+
+
+  /** macro_3 is a basic macro with labels inside that refer to macro arguments by number*/
+  @Test
+  public void testDefineMacro3DeclaredVariables() throws IOException {
+    final String macroSource =
+        IOUtils.toString(
+            SourceParserTest.class
+                .getClassLoader()
+                .getResourceAsStream("parseMacro/define_macro_3.s"),
+            "UTF-8");
+    final String outfile = "define_macro_3.out";
+    final String inputFile = "parseMacro/define_macro_3.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(macroSource), inputFile, lineNumber);
+
+    var scanner = data.startRead(OpCodeZ80.OPCODES);
+
+    SourceParser parser = new SourceParser(scanner);
+
+    MacroNode node = (MacroNode) parser.nextNode();
+    
+    var arguments = node.getArguments();
+    assertEquals(1, arguments.size());
+    var body = node.getBody();
+    DirectiveNode dbNode = (DirectiveNode) body.getChildren().get(0);
+    var dbArgs = dbNode.getArguments();
+    assertEquals(2, dbArgs.size());
+    assertEquals("\\1", dbArgs.get(1));
+  }
+  
 }
