@@ -152,6 +152,10 @@ public class SourceScanner {
   }
 
   private String labelToken(String sourceString, char character) {
+    final List<Character> operators =
+        Arrays.asList(
+            ',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')', '!',
+            '=', '\\');
 
     StringBuilder builder = new StringBuilder();
 
@@ -165,9 +169,9 @@ public class SourceScanner {
       character = sourceString.charAt(linePosition);
       linePosition++;
 
-    } while (!Character.isWhitespace(character) && character != '.');
+    } while (!Character.isWhitespace(character) && character != '.' && !operators.contains(character));
 
-    if (character == '.') {
+    if (character == '.' || operators.contains(character)) {
       linePosition--;
     }
 

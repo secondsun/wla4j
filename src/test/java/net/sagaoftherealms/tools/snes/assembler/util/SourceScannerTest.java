@@ -265,7 +265,8 @@ public class SourceScannerTest {
       "@label.b, label", // Child label
       "@@@@label, label", // Deeply nested child label
       "---, ''",//unnamed label
-      "+++, ''"//unnamed label
+      "+++, ''",//unnamed label
+      "NUM_SEED_TREES*8, 'NUM_SEED_TREES'"//label during a 
   })
   public void testBasicLabel(String sourceLine, String labelName) {
     final String outfile = "test.out";
@@ -428,4 +429,21 @@ public class SourceScannerTest {
       assertEquals(TokenTypes.valueOf(operator2), token.getType());
     }
   }
+  @Test
+  public void complexScanTest() {
+    var sourceLine = "NUM_SEED_TREES*8";
+    final String outfile = "test.out";
+    final String inputFile = "test.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(sourceLine), inputFile, lineNumber);
+
+    var scanner = data.startRead(OpCodeSpc700.OPCODES);
+    assertEquals(TokenTypes.LABEL, scanner.getNextToken().getType());
+    assertEquals(TokenTypes.MULTIPLY, scanner.getNextToken().getType());
+    assertEquals(TokenTypes.NUMBER, scanner.getNextToken().getType());
+    
+  }
+  
 }

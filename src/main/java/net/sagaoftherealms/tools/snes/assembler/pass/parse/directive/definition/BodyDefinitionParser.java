@@ -5,7 +5,9 @@ import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenType
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.NUMBER;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.ConstantNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
@@ -25,7 +27,8 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 public abstract class BodyDefinitionParser extends GenericDirectiveParser {
 
   private final AllDirectives endDirective;
-
+  private final ExpressionParser expressionParserUtil = new ExpressionParser();
+  
   public BodyDefinitionParser(AllDirectives type) {
     super(type);
     switch (type) {
@@ -88,7 +91,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
 
   private Node makeDefinitionNode(SourceParser parser, Token token) {
     parser.consumeAndClear(TokenTypes.LABEL);
-
+    
     var bodyNode = new DefinitionNode(TokenUtil.getLabelName(token));
 
     token = parser.getCurrentToken();
@@ -106,17 +109,27 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
         bodyNode.setSize(2);
         break;
       case "DS":
-      case "DSB":
-        token = parser.getCurrentToken();
-        parser.consumeAndClear(TokenTypes.NUMBER);
-        bodyNode.setSize(TokenUtil.getInt(token));
+      case "DSB": {
+        var expression = expressionParserUtil.expressionNode(parser);
+        bodyNode.setSize(expression);
         break;
-      case "DSW":
-        token = parser.getCurrentToken();
-        parser.consumeAndClear(TokenTypes.NUMBER);
-        bodyNode.setSize(TokenUtil.getInt(token) * 2);
+      }
+      case "DSW": {//We have to fake a double expression
+        var expression = expressionParserUtil.expressionNode(parser);
+        
+        var constant = new ConstantNode(NodeTypes.NUMERIC_CONSTANT);
+        constant.setValue("2");
+        
+        var doubleExpression = new ExpressionNode();
+        doubleExpression.addChild(expression);
+
+        doubleExpression.addChild(constant);
+        doubleExpression.setOperationType(TokenTypes.MULTIPLY);
+        bodyNode.setSize(doubleExpression);
+
         break;
-      case "INSTANCEOF":
+      }
+      case "INSTANCEOF"://TODO: Sizes of structs may be expressions, but I don't want to deal with that yet
         token = parser.getCurrentToken();
         parser.consumeAndClear(TokenTypes.LABEL);
 

@@ -28,10 +28,12 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNo
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfBodyNode;
 
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode.SectionStatus;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -40,6 +42,28 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 public class SourceParserTest {
 
+  @Test
+  public void testExpressionParser() {
+    var sourceLine = "NUM_SEED_TREES*8";
+    final String outfile = "test.out";
+    final String inputFile = "test.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(sourceLine), inputFile, lineNumber);
+
+    var scanner = data.startRead(Opcodes65816.opt_table);
+    var parser = new SourceParser(scanner);
+
+    ExpressionParser expressionParser = new ExpressionParser();
+    var expressionNode = expressionParser.expressionNode(parser);
+    
+    assertEquals(NodeTypes.LABEL, expressionNode.getChildren().get(0).getType());
+    assertEquals(NodeTypes.NUMERIC_CONSTANT, expressionNode.getChildren().get(1).getType());
+    assertEquals(TokenTypes.MULTIPLY, expressionNode.getOperationType());
+
+  }
+  
   @ParameterizedTest
   @CsvSource({
       "'- rti \n jmp -'",//Label, opcode newline opcode
@@ -248,10 +272,12 @@ public class SourceParserTest {
     assertEquals("2", arguments.get(BANK));
 
     var body = directiveNode.getBody();
-    var randomLabel = body.getChildren().get(6);
-    assertEquals(NodeTypes.LABEL, randomLabel);
-    assertEquals("w2SeedTreeRefillData", ((LabelNode)randomLabel).getLabelName());
-
+    DefinitionNode randomLabel = (DefinitionNode) body.getChildren().get(3);
+    assertEquals("w2SeedTreeRefillData", randomLabel.getLabel());
+    
+    DirectiveNode ifNode = (DirectiveNode) body.getChildren().get(4);
+    assertEquals("IFDEF", ifNode.getDirectiveType().getName());
+    randomLabel = (DefinitionNode) body.getChildren().get(5);
   }
 
   @Test
@@ -452,7 +478,7 @@ public class SourceParserTest {
             .getChildren().get(0))).getBody()).getElseBody()).getChildren().get(0)).getLabel());
     assertEquals(2,
         ((DefinitionNode) ((DirectiveBodyNode) ((IfBodyNode) ((DirectiveNode) (structNode.getBody()
-            .getChildren().get(0))).getBody()).getThenBody()).getChildren().get(0)).getSize());
+            .getChildren().get(0))).getBody()).getThenBody()).getChildren().get(0)).getSize().evaluateInt());
 
   }
 
@@ -475,8 +501,8 @@ public class SourceParserTest {
     var body = structNode.getBody();
 
     assertEquals(2, body.getChildren().size());
-    assertEquals(2, ((DefinitionNode) body.getChildren().get(0)).getSize());
-    assertEquals(1, ((DefinitionNode) body.getChildren().get(1)).getSize());
+    assertEquals(2, ((DefinitionNode) body.getChildren().get(0)).getSize().evaluateInt());
+    assertEquals(1, ((DefinitionNode) body.getChildren().get(1)).getSize().evaluateInt());
     assertEquals("name", ((DefinitionNode) body.getChildren().get(0)).getLabel());
     assertEquals("age", ((DefinitionNode) body.getChildren().get(1)).getLabel());
     assertEquals("mon", structNode.getName());
@@ -522,17 +548,17 @@ public class SourceParserTest {
     assertEquals("mon", structNode.getName());
     assertEquals(0xA000, Integer.parseInt(enumNode.getAddress()));
     assertEquals(9, enumBody.getChildren().size());
-    assertEquals(1, ((DefinitionNode) enumBody.getChildren().get(0)).getSize());
-    assertEquals(2, ((DefinitionNode) enumBody.getChildren().get(2)).getSize());
+    assertEquals(1, ((DefinitionNode) enumBody.getChildren().get(0)).getSize().evaluateInt());
+    assertEquals(2, ((DefinitionNode) enumBody.getChildren().get(2)).getSize().evaluateInt());
 
     assertEquals("name", ((DefinitionNode) structBody.getChildren().get(0)).getLabel());
     assertEquals("age", ((DefinitionNode) structBody.getChildren().get(1)).getLabel());
     assertTrue(((DefinitionNode) structBody.getChildren().get(1)).getStructName().isEmpty());
     assertEquals("mon", structNode.getName());
-    assertEquals(3, ((DefinitionNode) enumBody.getChildren().get(7)).getSize());
+    assertEquals(3, ((DefinitionNode) enumBody.getChildren().get(7)).getSize().evaluateInt());
     assertEquals("monster", ((DefinitionNode) enumBody.getChildren().get(7)).getLabel());
     assertEquals("mon", ((DefinitionNode) enumBody.getChildren().get(7)).getStructName().get());
-    assertEquals(1, ((DefinitionNode) enumBody.getChildren().get(8)).getSize());
+    assertEquals(1, ((DefinitionNode) enumBody.getChildren().get(8)).getSize().evaluateInt());
     assertEquals("dragon", ((DefinitionNode) enumBody.getChildren().get(8)).getLabel());
     assertEquals("mon", ((DefinitionNode) enumBody.getChildren().get(8)).getStructName().get());
   }
