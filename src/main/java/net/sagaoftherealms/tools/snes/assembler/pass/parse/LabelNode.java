@@ -1,6 +1,7 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
 public class LabelNode extends Node {
 
@@ -10,7 +11,7 @@ public class LabelNode extends Node {
   public LabelNode(Token token) {
     super(NodeTypes.LABEL);
     this.token = token;
-    this.labelName = token.getString();
+    this.labelName = TokenUtil.getLabelName(token);
   }
 
   public LabelNode(String labelName, Token token) {

@@ -13,9 +13,7 @@ import java.util.stream.Collectors;
  */
 public class SourceFileDataMap {
 
-  /**
-   * 1:1 mapping of listEntry to lines in the source file.
-   */
+  /** 1:1 mapping of listEntry to lines in the source file. */
   private List<SourceDataLine> lines = new ArrayList<>();
 
   /**
@@ -75,9 +73,7 @@ public class SourceFileDataMap {
     lines.addAll(includeAt, preprocessedDataMap.lines);
   }
 
-  /**
-   * Removes empty lines, extra white space etc.
-   */
+  /** Removes empty lines, extra white space etc. */
   public void compress() {
     lines = lines.stream().filter(it -> !it.getDataLine().isEmpty()).collect(Collectors.toList());
   }

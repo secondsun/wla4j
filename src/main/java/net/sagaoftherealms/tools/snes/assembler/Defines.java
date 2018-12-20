@@ -1,8 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler;
 
-/**
- * Various enum definitions
- */
+/** Various enum definitions */
 public final class Defines {
 
   public enum Output {

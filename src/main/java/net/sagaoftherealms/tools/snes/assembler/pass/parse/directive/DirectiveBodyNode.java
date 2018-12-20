@@ -4,7 +4,6 @@ import static net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes.DIRE
 
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 
-
 public class DirectiveBodyNode extends Node {
 
   public DirectiveBodyNode() {

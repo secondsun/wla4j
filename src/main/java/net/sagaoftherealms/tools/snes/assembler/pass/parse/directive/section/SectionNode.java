@@ -28,13 +28,12 @@ public class SectionNode extends DirectiveNode {
   }
 
   public int getAlignment() {
-     return Integer.parseInt(getArguments().get(KEYS.ALIGN));
+    return Integer.parseInt(getArguments().get(KEYS.ALIGN));
   }
 
   public int getAppendTo() {
-     return Integer.parseInt(getArguments().get(KEYS.APPEND_TO));
+    return Integer.parseInt(getArguments().get(KEYS.APPEND_TO));
   }
-
 
   public SectionStatus getStatus() {
     return SectionStatus.valueOf(getArguments().get(KEYS.STATUS));
@@ -44,5 +43,13 @@ public class SectionNode extends DirectiveNode {
     return getArguments().get(KEYS.RETURNORG) == null;
   }
 
-  public enum SectionStatus {FORCE, FREE, SUPERFREE, SEMIFREE, SEMISUBFREE, OVERWRITE, BANKHEADER}
+  public enum SectionStatus {
+    FORCE,
+    FREE,
+    SUPERFREE,
+    SEMIFREE,
+    SEMISUBFREE,
+    OVERWRITE,
+    BANKHEADER
+  }
 }

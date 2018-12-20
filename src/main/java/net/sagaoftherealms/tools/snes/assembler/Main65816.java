@@ -13,9 +13,7 @@ import java.util.HashMap;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 
-/**
- * @author summers
- */
+/** @author summers */
 public class Main65816 {
 
   private static final String wla_version =

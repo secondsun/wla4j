@@ -14,9 +14,7 @@ import java.util.Map;
 import net.sagaoftherealms.tools.snes.assembler.Defines;
 import net.sagaoftherealms.tools.snes.assembler.Definition;
 
-/**
- * This class parses and represents flags.
- */
+/** This class parses and represents flags. */
 public class Flags {
 
   private static final int MAX_NAME_LENGTH = 255;
@@ -53,119 +51,130 @@ public class Flags {
     for (count = 0; count < flags.length; count++) {
 
       switch (flags[count]) {
-        case "-o": {
-          if (outputFormat != OUTPUT_NONE) {
-            return Result.FAILED;
-          }
-          outputFormat = OUTPUT_OBJECT;
-          if (count + 1 < flagc) {
-            /* set output */
-            finalName = flags[count + 1];
-          } else {
-            return Result.FAILED;
+        case "-o":
+          {
+            if (outputFormat != OUTPUT_NONE) {
+              return Result.FAILED;
+            }
+            outputFormat = OUTPUT_OBJECT;
+            if (count + 1 < flagc) {
+              /* set output */
+              finalName = flags[count + 1];
+            } else {
+              return Result.FAILED;
+            }
+
+            count++;
+            break;
           }
 
-          count++;
-          break;
-        }
-
-        case "-l": {
-          if (outputFormat != OUTPUT_NONE) {
-            throw new RuntimeException(outputFormat + " != OUTPUT_NONE");
+        case "-l":
+          {
+            if (outputFormat != OUTPUT_NONE) {
+              throw new RuntimeException(outputFormat + " != OUTPUT_NONE");
+            }
+            outputFormat = OUTPUT_LIBRARY;
+            if (count + 1 < flagc) {
+              /* set output */
+              finalName = flags[count + 1];
+            } else {
+              throw new RuntimeException("parse error");
+            }
+            count++;
+            break;
           }
-          outputFormat = OUTPUT_LIBRARY;
-          if (count + 1 < flagc) {
-            /* set output */
-            finalName = flags[count + 1];
-          } else {
-            throw new RuntimeException("parse error");
-          }
-          count++;
-          break;
-        }
 
-        case "-D": {
-          if (count + 1 < flagc) {
-            if (count + 3 < flagc) {
-              if (!(flags[count + 2].equals("="))) {
-                str_build =
-                    new StringBuilder(
-                        (flags[count + 1].length()) + (flags[count + 3]).length() + 2);
-                str_build.append(String.format("%s=%s", flags[count + 1], flags[count + 3]));
-                parse_and_add_definition(str_build.toString(), NO);
-                str_build = null;
-                count += 2;
+        case "-D":
+          {
+            if (count + 1 < flagc) {
+              if (count + 3 < flagc) {
+                if (!(flags[count + 2].equals("="))) {
+                  str_build =
+                      new StringBuilder(
+                          (flags[count + 1].length()) + (flags[count + 3]).length() + 2);
+                  str_build.append(String.format("%s=%s", flags[count + 1], flags[count + 3]));
+                  parse_and_add_definition(str_build.toString(), NO);
+                  str_build = null;
+                  count += 2;
+                } else {
+                  parse_and_add_definition(flags[count + 1], NO);
+                }
               } else {
                 parse_and_add_definition(flags[count + 1], NO);
               }
             } else {
-              parse_and_add_definition(flags[count + 1], NO);
+              throw new RuntimeException("parse error");
             }
-          } else {
-            throw new RuntimeException("parse error");
-          }
 
-          count++;
-          break;
-        }
-
-        case "-I": {
-          if (count + 1 < flagc) {
-            /* get arg */
-            parse_and_set_incdir(flags[count + 1], NO);
-          } else {
-            throw new RuntimeException("Unknown Flag " + flags[count] + ":" + flags[count + 1]);
-          }
-          count++;
-          break;
-        }
-        case "-i": {
-          listFileData = true;
-          break;
-        }
-        case "-v": {
-          verboseMode = true;
-          break;
-        }
-        case "-t": {
-          testMode = true;
-          break;
-        }
-        case "-M": {
-          makefileRules = true;
-          testMode = true;
-          verboseMode = false;
-          quiet = true;
-          break;
-        }
-        case "-q": {
-          quiet = true;
-          break;
-        }
-        case "-x": {
-          extraDefinitions = true;
-          break;
-        }
-        default: {
-          if (count == flags.length - 1) {
-            asmName = (flags[count]);
             count++;
-            asm_name_def++;
-          } else {
-            /* legacy support? */
-            if (flags[count].equals("-D")) {
-              /* old define */
-              parse_and_add_definition(flags[count], YES);
-            } else if (flags[count].equals("-I")) {
-              /* old include directory */
-              parse_and_set_incdir(flags[count], YES);
-              continue;
-            } else {
-              throw new RuntimeException("Unknown Flag " + flags[count]);
-            }
+            break;
           }
-          break;
-        }
+
+        case "-I":
+          {
+            if (count + 1 < flagc) {
+              /* get arg */
+              parse_and_set_incdir(flags[count + 1], NO);
+            } else {
+              throw new RuntimeException("Unknown Flag " + flags[count] + ":" + flags[count + 1]);
+            }
+            count++;
+            break;
+          }
+        case "-i":
+          {
+            listFileData = true;
+            break;
+          }
+        case "-v":
+          {
+            verboseMode = true;
+            break;
+          }
+        case "-t":
+          {
+            testMode = true;
+            break;
+          }
+        case "-M":
+          {
+            makefileRules = true;
+            testMode = true;
+            verboseMode = false;
+            quiet = true;
+            break;
+          }
+        case "-q":
+          {
+            quiet = true;
+            break;
+          }
+        case "-x":
+          {
+            extraDefinitions = true;
+            break;
+          }
+        default:
+          {
+            if (count == flags.length - 1) {
+              asmName = (flags[count]);
+              count++;
+              asm_name_def++;
+            } else {
+              /* legacy support? */
+              if (flags[count].equals("-D")) {
+                /* old define */
+                parse_and_add_definition(flags[count], YES);
+              } else if (flags[count].equals("-I")) {
+                /* old include directory */
+                parse_and_set_incdir(flags[count], YES);
+                continue;
+              } else {
+                throw new RuntimeException("Unknown Flag " + flags[count]);
+              }
+            }
+            break;
+          }
       }
     }
 
@@ -220,7 +229,7 @@ public class Flags {
         value = flagsAfterSplit[index];
         if (value.startsWith("$")
             || ((value.endsWith("h") || value.endsWith("H"))
-            && ((value.matches("[0-9a-fA-F]+[hH]$"))))) {
+                && ((value.matches("[0-9a-fA-F]+[hH]$"))))) {
 
           try {
             value = value.replace("$", "").replace("h", "").replace("H", "");

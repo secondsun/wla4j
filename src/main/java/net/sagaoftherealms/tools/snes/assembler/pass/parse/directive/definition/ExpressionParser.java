@@ -1,6 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
 
-
 import java.util.Arrays;
 import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ConstantNode;
@@ -10,21 +9,19 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
-import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
 
-/**
- * Parses expressions in the body definition.
- */
+/** Parses expressions in the body definition. */
 public class ExpressionParser {
 
+  private static final List<TokenTypes> factorTypes =
+      Arrays.asList(TokenTypes.NUMBER, TokenTypes.LABEL);
+  private static final List<TokenTypes> operatorTypes =
+      Arrays.asList(TokenTypes.MULTIPLY, TokenTypes.DIVIDE, TokenTypes.PLUS, TokenTypes.MINUS);
 
-  private static final List<TokenTypes> factorTypes = Arrays.asList(TokenTypes.NUMBER, TokenTypes.LABEL);
-  private static final List<TokenTypes> operatorTypes = Arrays.asList(TokenTypes.MULTIPLY, TokenTypes.DIVIDE, TokenTypes.PLUS, TokenTypes.MINUS);
-  
   public ExpressionNode expressionNode(SourceParser parser) {
-    
+
     ExpressionNode returnNode = new ExpressionNode();
-    
+
     var token = parser.getCurrentToken();
     boolean parsing = true;
     while (parsing) {
@@ -47,7 +44,7 @@ public class ExpressionParser {
         case DIVIDE:
         case PLUS:
         case MINUS:
-          returnNode.setOperationType( token.getType() );
+          returnNode.setOperationType(token.getType());
           parser.consumeAndClear(token.getType());
           token = parser.getCurrentToken();
           if (!factorTypes.contains(token.getType())) {
@@ -57,9 +54,8 @@ public class ExpressionParser {
         default:
           throw new ParseException("Unexpected Token in expression", token);
       }
-      
     }
-    
+
     return returnNode;
   }
 
@@ -75,5 +71,4 @@ public class ExpressionParser {
     parser.consumeAndClear(TokenTypes.LABEL);
     returnNode.addChild(labelNode);
   }
-
 }

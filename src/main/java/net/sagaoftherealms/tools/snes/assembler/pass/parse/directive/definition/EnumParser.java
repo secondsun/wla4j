@@ -9,9 +9,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveAr
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
-/**
- * This class parses Enums, Structs, and RAMSECTIONS
- */
+/** This class parses Enums, Structs, and RAMSECTIONS */
 public class EnumParser extends BodyDefinitionParser {
 
   public EnumParser() {

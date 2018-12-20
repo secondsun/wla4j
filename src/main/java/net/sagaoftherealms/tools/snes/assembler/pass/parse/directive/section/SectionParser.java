@@ -15,9 +15,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectivePa
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
-/**
- * This class parses Enums, Structs
- */
+/** This class parses Enums, Structs */
 public class SectionParser implements DirectiveParser {
 
   private final AllDirectives endDirective = ENDS;
@@ -44,7 +42,6 @@ public class SectionParser implements DirectiveParser {
           case BANK:
             throw new ParseException("You may not use this directive inside a section", token);
         }
-
       }
 
       if (node.getType() == NodeTypes.LABEL && isBankheader) {
@@ -85,41 +82,41 @@ public class SectionParser implements DirectiveParser {
             arguments.put(KEYS.NAMESPACE, token.getString());
             parser.consume(TokenTypes.STRING);
           } else {
-            throw new ParseException("The namespace of an section may only be specified once",
-                token);
+            throw new ParseException(
+                "The namespace of an section may only be specified once", token);
           }
           break;
         case "SIZE":
           parser.consume(LABEL);
           token = parser.getCurrentToken();
           if (arguments.get(KEYS.SIZE) == null) {
-            arguments.put(KEYS.SIZE, TokenUtil.getInt(token) + "");//TYPECHECK
+            arguments.put(KEYS.SIZE, TokenUtil.getInt(token) + ""); // TYPECHECK
             parser.consume(TokenTypes.NUMBER);
           } else {
-            throw new ParseException("The namespace of an section may only be specified once",
-                token);
+            throw new ParseException(
+                "The namespace of an section may only be specified once", token);
           }
           break;
         case "ALIGN":
           parser.consume(LABEL);
           token = parser.getCurrentToken();
           if (arguments.get(KEYS.ALIGN) == null) {
-            arguments.put(KEYS.ALIGN, TokenUtil.getInt(token) + "");//TYPECHECK
+            arguments.put(KEYS.ALIGN, TokenUtil.getInt(token) + ""); // TYPECHECK
             parser.consume(TokenTypes.NUMBER);
           } else {
-            throw new ParseException("The namespace of an section may only be specified once",
-                token);
+            throw new ParseException(
+                "The namespace of an section may only be specified once", token);
           }
           break;
         case "APPENDTO":
           parser.consume(LABEL);
           token = parser.getCurrentToken();
           if (arguments.get(KEYS.APPEND_TO) == null) {
-            arguments.put(KEYS.APPEND_TO, token.getString());//TYPECHECK
+            arguments.put(KEYS.APPEND_TO, token.getString()); // TYPECHECK
             parser.consume(TokenTypes.LABEL);
           } else {
-            throw new ParseException("The namespace of an section may only be specified once",
-                token);
+            throw new ParseException(
+                "The namespace of an section may only be specified once", token);
           }
           break;
         case "FORCE":
@@ -131,10 +128,10 @@ public class SectionParser implements DirectiveParser {
           parser.consume(LABEL);
           token = parser.getCurrentToken();
           if (arguments.get(KEYS.STATUS) == null) {
-            arguments.put(KEYS.STATUS, argument);//TYPECHECK
+            arguments.put(KEYS.STATUS, argument); // TYPECHECK
           } else {
-            throw new ParseException("The namespace of an section may only be specified once",
-                token);
+            throw new ParseException(
+                "The namespace of an section may only be specified once", token);
           }
           break;
         case "RETURNORG":
@@ -155,7 +152,7 @@ public class SectionParser implements DirectiveParser {
     if (token == null) {
       throw new ParseException("Unexpected End of input", token);
     }
-parser.consumeAndClear(TokenTypes.EOL);
+    parser.consumeAndClear(TokenTypes.EOL);
     return arguments;
   }
 
@@ -168,6 +165,5 @@ parser.consumeAndClear(TokenTypes.EOL);
     STATUS,
     APPEND_TO,
     RETURNORG;
-
   }
 }

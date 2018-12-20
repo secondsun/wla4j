@@ -10,30 +10,33 @@ import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
+import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeZ80;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.OpcodeNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfBodyNode;
-
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefinitionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode.SectionStatus;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -57,23 +60,22 @@ public class SourceParserTest {
 
     ExpressionParser expressionParser = new ExpressionParser();
     var expressionNode = expressionParser.expressionNode(parser);
-    
+
     assertEquals(NodeTypes.LABEL, expressionNode.getChildren().get(0).getType());
     assertEquals(NodeTypes.NUMERIC_CONSTANT, expressionNode.getChildren().get(1).getType());
     assertEquals(TokenTypes.MULTIPLY, expressionNode.getOperationType());
-
   }
-  
+
   @ParameterizedTest
   @CsvSource({
-      "'- rti \n jmp -'",//Label, opcode newline opcode
-      "'--- rti \n jmp ---'",//Label, opcode newline opcode
-      "'+ rti \n jmp +'",//Label, opcode newline opcode
-      "'++ rti \n jmp ++'",//Label, opcode newline opcode
-      "'+++ rti \n jmp +++'",//Label, opcode newline opcode
-      "'-- rti \n jmp --'",//Label, opcode newline opcode
-      "'__ rti \n jmp _f'",//Label, opcode newline opcode
-      "'__ rti \n jmp _b'"//Label, opcode newline opcode
+    "'- rti \n jmp -'", // Label, opcode newline opcode
+    "'--- rti \n jmp ---'", // Label, opcode newline opcode
+    "'+ rti \n jmp +'", // Label, opcode newline opcode
+    "'++ rti \n jmp ++'", // Label, opcode newline opcode
+    "'+++ rti \n jmp +++'", // Label, opcode newline opcode
+    "'-- rti \n jmp --'", // Label, opcode newline opcode
+    "'__ rti \n jmp _f'", // Label, opcode newline opcode
+    "'__ rti \n jmp _b'" // Label, opcode newline opcode
   })
   public void testAnonymousLabelNode(String sourceLine) {
     final String outfile = "test.out";
@@ -94,11 +96,10 @@ public class SourceParserTest {
     assertNotNull(rti);
     assertNotNull(jmp);
     assertNotNull(node.getLabelName());
-    assertEquals(0, rti.getChildren().size());//RTI has no arguments
-    assertEquals(1, jmp.getChildren().size());//JMP has one argument
+    assertEquals(0, rti.getChildren().size()); // RTI has no arguments
+    assertEquals(1, jmp.getChildren().size()); // JMP has one argument
     assertEquals(sourceLine.split("\\s")[0], node.getLabelName());
     assertEquals(NodeTypes.OPCODE_ARGUMENT, jmp.getChildren().get(0).getType());
-
   }
 
   @Test
@@ -151,8 +152,6 @@ public class SourceParserTest {
     assertThrows(ParseException.class, () -> parser.nextNode());
   }
 
-
-
   @Test
   public void testLabelFailsIfInBankHeaderSection() {
     final String enumSource =
@@ -173,83 +172,77 @@ public class SourceParserTest {
 
     SourceParser parser = new SourceParser(scanner);
 
-    assertThrows(ParseException.class, ()->{parser.nextNode();});
-
-  }
-
-  @Test
-  public void testLabelInActiveMacro() {
-    fail("See pass_1.c#807");
-  }
-
-  @Test
-  public void testDecodeOtherArchOpcodeToken() {
-    fail("This will deal with checking types and such on opcodes");
+    assertThrows(
+        ParseException.class,
+        () -> {
+          parser.nextNode();
+        });
   }
 
   @Test
   public void testParseRamSectionToken() {
-    //Source for source : ages-disasm wram.s#2548
-    var source = ".RAMSECTION \"RAM 2\" BANK 2 SLOT 3\n"
-        + "\n"
-        + "; $d000 used as part of the routine for redrawing the collapsed d2 cave in the present\n"
-        + "w2Filler1:\t\t\tdsb $0800\n"
-        + "\n"
-        + "; This is a list of values for scrollX or scrollY registers to make the screen turn all\n"
-        + "; wavy (ie. in underwater areas).\n"
-        + "w2WaveScrollValues:\t\tdsb $80\t; $d800/$d800\n"
-        + "\n"
-        + "w2Filler7:\t\t\tdsb $80\n"
-        + "\n"
-        + "; Tree refill data also used for child and an event in room $2f7\n"
-        + "w2SeedTreeRefillData:\t\tdsb NUM_SEED_TREES*8 ; $d900/3:dfc0\n"
-        + "\n"
-        + ".ifdef ROM_SEASONS\n"
-        + "w2Filler9:\t\t\tdsb $40\n"
-        + ".endif\n"
-        + "\n"
-        + "; Bitset of positions where objects (mostly npcs) are residing. When one of these bits is\n"
-        + "; set, this will prevent Link from time-warping onto the corresponding tile.\n"
-        + "w2SolidObjectPositions:\t\t\tdsb $010 ; $d980\n"
-        + "\n"
-        + "w2Filler6:\t\t\tdsb $70\n"
-        + "\n"
-        + "; Used as the \"source\" palette when fading between two sets of palettes\n"
-        + "w2ColorComponentBuffer1:\tdsb $090 ; $da00\n"
-        + "\n"
-        + "; Keeps a history of Link's path when objects (Impa) are following Link.\n"
-        + "; Consists of 16 entries of 3 bytes each: direction, Y position, X position.\n"
-        + "w2LinkWalkPath:\t\t\tdsb $030 ; $da90\n"
-        + "\n"
-        + "w2ChangedTileQueue:\t\tdsb $040 ; $dac0\n"
-        + "\n"
-        + "; Used as the \"destination\" palette when fading between two sets of palettes\n"
-        + "w2ColorComponentBuffer2:\tdsb $090 ; $db00\n"
-        + "\n"
-        + "w2AnimationQueue:\t\tdsb $20\t; $db90\n"
-        + "\n"
-        + "w2Filler4:\t\t\tdsb $50\n"
-        + "\n"
-        + "; Each $40 bytes is one floor\n"
-        + "w2DungeonLayout:\tdsb $100\t; $dc00\n"
-        + "\n"
-        + "w2Filler2: dsb $100\n"
-        + "\n"
-        + "w2GbaModePaletteData:\tdsb $80\t\t; $de00\n"
-        + "\n"
-        + "; The \"base\" palettes on a screen.\n"
-        + "w2AreaBgPalettes:\tdsb $40\t\t; $de80\n"
-        + "w2AreaSprPalettes:\tdsb $40\t\t; $dec0\n"
-        + "\n"
-        + "; The palettes that are copied over during vblank\n"
-        + "w2BgPalettesBuffer:\tdsb $40\t\t; $df00\n"
-        + "w2SprPalettesBuffer:\tdsb $40\t\t; $df40\n"
-        + "\n"
-        + "; The \"base\" palettes have \"fading\" operations applied, and the result is written here.\n"
-        + "w2FadingBgPalettes:\tdsb $40\t\t; $df80\n"
-        + "w2FadingSprPalettes:\tdsb $40\t\t; $dfc0\n"
-        + "\n"
-        + ".ENDS";
+    // Source for source : ages-disasm wram.s#2548
+    var source =
+        ".RAMSECTION \"RAM 2\" BANK 2 SLOT 3\n"
+            + "\n"
+            + "; $d000 used as part of the routine for redrawing the collapsed d2 cave in the present\n"
+            + "w2Filler1:\t\t\tdsb $0800\n"
+            + "\n"
+            + "; This is a list of values for scrollX or scrollY registers to make the screen turn all\n"
+            + "; wavy (ie. in underwater areas).\n"
+            + "w2WaveScrollValues:\t\tdsb $80\t; $d800/$d800\n"
+            + "\n"
+            + "w2Filler7:\t\t\tdsb $80\n"
+            + "\n"
+            + "; Tree refill data also used for child and an event in room $2f7\n"
+            + "w2SeedTreeRefillData:\t\tdsb NUM_SEED_TREES*8 ; $d900/3:dfc0\n"
+            + "\n"
+            + ".ifdef ROM_SEASONS\n"
+            + "w2Filler9:\t\t\tdsb $40\n"
+            + ".endif\n"
+            + "\n"
+            + "; Bitset of positions where objects (mostly npcs) are residing. When one of these bits is\n"
+            + "; set, this will prevent Link from time-warping onto the corresponding tile.\n"
+            + "w2SolidObjectPositions:\t\t\tdsb $010 ; $d980\n"
+            + "\n"
+            + "w2Filler6:\t\t\tdsb $70\n"
+            + "\n"
+            + "; Used as the \"source\" palette when fading between two sets of palettes\n"
+            + "w2ColorComponentBuffer1:\tdsb $090 ; $da00\n"
+            + "\n"
+            + "; Keeps a history of Link's path when objects (Impa) are following Link.\n"
+            + "; Consists of 16 entries of 3 bytes each: direction, Y position, X position.\n"
+            + "w2LinkWalkPath:\t\t\tdsb $030 ; $da90\n"
+            + "\n"
+            + "w2ChangedTileQueue:\t\tdsb $040 ; $dac0\n"
+            + "\n"
+            + "; Used as the \"destination\" palette when fading between two sets of palettes\n"
+            + "w2ColorComponentBuffer2:\tdsb $090 ; $db00\n"
+            + "\n"
+            + "w2AnimationQueue:\t\tdsb $20\t; $db90\n"
+            + "\n"
+            + "w2Filler4:\t\t\tdsb $50\n"
+            + "\n"
+            + "; Each $40 bytes is one floor\n"
+            + "w2DungeonLayout:\tdsb $100\t; $dc00\n"
+            + "\n"
+            + "w2Filler2: dsb $100\n"
+            + "\n"
+            + "w2GbaModePaletteData:\tdsb $80\t\t; $de00\n"
+            + "\n"
+            + "; The \"base\" palettes on a screen.\n"
+            + "w2AreaBgPalettes:\tdsb $40\t\t; $de80\n"
+            + "w2AreaSprPalettes:\tdsb $40\t\t; $dec0\n"
+            + "\n"
+            + "; The palettes that are copied over during vblank\n"
+            + "w2BgPalettesBuffer:\tdsb $40\t\t; $df00\n"
+            + "w2SprPalettesBuffer:\tdsb $40\t\t; $df40\n"
+            + "\n"
+            + "; The \"base\" palettes have \"fading\" operations applied, and the result is written here.\n"
+            + "w2FadingBgPalettes:\tdsb $40\t\t; $df80\n"
+            + "w2FadingSprPalettes:\tdsb $40\t\t; $dfc0\n"
+            + "\n"
+            + ".ENDS";
 
     final String outfile = "test.out";
     final String inputFile = "test.s";
@@ -266,7 +259,7 @@ public class SourceParserTest {
 
     assertTrue(node instanceof DirectiveNode);
     var directiveNode = (DirectiveNode) node;
-    var arguments = (RamsectionArgumentsNode)directiveNode.getArguments();
+    var arguments = (RamsectionArgumentsNode) directiveNode.getArguments();
 
     assertEquals("RAM 2", arguments.get(NAME));
     assertEquals("2", arguments.get(BANK));
@@ -274,10 +267,11 @@ public class SourceParserTest {
     var body = directiveNode.getBody();
     DefinitionNode randomLabel = (DefinitionNode) body.getChildren().get(3);
     assertEquals("w2SeedTreeRefillData", randomLabel.getLabel());
-    
+
     DirectiveNode ifNode = (DirectiveNode) body.getChildren().get(4);
     assertEquals("IFDEF", ifNode.getDirectiveType().getName());
-    randomLabel = (DefinitionNode) body.getChildren().get(5);//test that we are getting the right type
+    randomLabel =
+        (DefinitionNode) body.getChildren().get(5); // test that we are getting the right type
   }
 
   @Test
@@ -339,25 +333,28 @@ public class SourceParserTest {
 
   @ParameterizedTest
   @CsvSource({
-      ".IF 5 > 10",
-      ".IFDEF LABEL",
-      ".IFDEFM \\5",
-      ".IFEQ 4 4", // Two constant expressions
-      ".IFEQ 4 * 4 BERRIES", // A math experssion and a label
-      ".IFEXISTS \"FileName String\"",
-      ".IFGR 4 * 4 BERRIES",
-      ".IFGR 4 4 ",
-      ".IFGREQ 4 * 4 BERRIES",
-      ".IFGREQ 4 BERRIES",
-      ".IFLE BERRIES 45",
-      ".IFLEEQ BERRIES @JAMMING",
-      ".IFNDEF LABEL",
-      ".IFNDEFM \\5",
-      ".IFNEQ BERRIES :JAMMING",
+    ".IF 5 > 10",
+    ".IFDEF LABEL",
+    ".IFDEFM \\5",
+    ".IFEQ 4 4", // Two constant expressions
+    ".IFEQ 4 * 4 BERRIES", // A math experssion and a label
+    ".IFEXISTS \"FileName String\"",
+    ".IFGR 4 * 4 BERRIES",
+    ".IFGR 4 4 ",
+    ".IFGREQ 4 * 4 BERRIES",
+    ".IFGREQ 4 BERRIES",
+    ".IFLE BERRIES 45",
+    ".IFLEEQ BERRIES @JAMMING",
+    ".IFNDEF LABEL",
+    ".IFNDEFM \\5",
+    ".IFNEQ BERRIES :JAMMING",
   })
   public void parseIfs(String ifStatement) {
     var source =
-        ifStatement + "\n .db 1, \"Two\", 3 \n" + " .else \n " + ".db 42.0,  5, \"Six\"\n"
+        ifStatement
+            + "\n .db 1, \"Two\", 3 \n"
+            + " .else \n "
+            + ".db 42.0,  5, \"Six\"\n"
             + ".endif";
     final String outfile = "test.out";
     final String inputFile = "test.s";
@@ -423,17 +420,33 @@ public class SourceParserTest {
     parser.nextNode();
     var enumNode = (EnumNode) parser.nextNode();
 
-    assertEquals(AllDirectives.IFDEF,
+    assertEquals(
+        AllDirectives.IFDEF,
         ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getDirectiveType());
-    assertEquals("monster",
-        ((DefinitionNode) ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7)))
-            .getBody()).getThenBody().getChildren().get(0)).getLabel());
-    assertEquals("dragon",
-        ((DefinitionNode) ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7)))
-            .getBody()).getElseBody().getChildren().get(0)).getLabel());
-    assertEquals(AllDirectives.IFDEF,
-        ((DirectiveNode) ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7)))
-            .getBody()).getThenBody().getChildren().get(1)).getDirectiveType());
+    assertEquals(
+        "monster",
+        ((DefinitionNode)
+                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                    .getThenBody()
+                    .getChildren()
+                    .get(0))
+            .getLabel());
+    assertEquals(
+        "dragon",
+        ((DefinitionNode)
+                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                    .getElseBody()
+                    .getChildren()
+                    .get(0))
+            .getLabel());
+    assertEquals(
+        AllDirectives.IFDEF,
+        ((DirectiveNode)
+                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                    .getThenBody()
+                    .getChildren()
+                    .get(1))
+            .getDirectiveType());
   }
 
   @Test
@@ -471,15 +484,32 @@ public class SourceParserTest {
     SourceParser parser = new SourceParser(scanner);
     StructNode structNode = (StructNode) parser.nextNode();
 
-    assertEquals(AllDirectives.IFDEF,
+    assertEquals(
+        AllDirectives.IFDEF,
         ((DirectiveNode) (structNode.getBody().getChildren().get(0))).getDirectiveType());
-    assertEquals("age",
-        ((DefinitionNode) ((DirectiveBodyNode) ((IfBodyNode) ((DirectiveNode) (structNode.getBody()
-            .getChildren().get(0))).getBody()).getElseBody()).getChildren().get(0)).getLabel());
-    assertEquals(2,
-        ((DefinitionNode) ((DirectiveBodyNode) ((IfBodyNode) ((DirectiveNode) (structNode.getBody()
-            .getChildren().get(0))).getBody()).getThenBody()).getChildren().get(0)).getSize().evaluateInt());
-
+    assertEquals(
+        "age",
+        ((DefinitionNode)
+                ((DirectiveBodyNode)
+                        ((IfBodyNode)
+                                ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
+                                    .getBody())
+                            .getElseBody())
+                    .getChildren()
+                    .get(0))
+            .getLabel());
+    assertEquals(
+        2,
+        ((DefinitionNode)
+                ((DirectiveBodyNode)
+                        ((IfBodyNode)
+                                ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
+                                    .getBody())
+                            .getThenBody())
+                    .getChildren()
+                    .get(0))
+            .getSize()
+            .evaluateInt());
   }
 
   @Test
@@ -563,9 +593,7 @@ public class SourceParserTest {
     assertEquals("mon", ((DefinitionNode) enumBody.getChildren().get(8)).getStructName().get());
   }
 
-  /**
-   * Only if directives are allowed inside of a DirectiveBody
-   */
+  /** Only if directives are allowed inside of a DirectiveBody */
   @Test
   public void parseEnumBodyWithDirectiveThrowsParseException() {
     final String enumSource =
@@ -609,8 +637,8 @@ public class SourceParserTest {
   }
 
   /**
-   * Sections can have a lot of permuations of type, size, etc.  See the section Node for the stuff
-   * I will need to write.
+   * Sections can have a lot of permuations of type, size, etc. See the section Node for the stuff I
+   * will need to write.
    */
   @Test
   public void testSectionBasic() {
@@ -632,19 +660,49 @@ public class SourceParserTest {
 
     SourceParser parser = new SourceParser(scanner);
 
-    assertTimeout(Duration.ofSeconds(1),()->{
-      SectionNode node = (SectionNode) parser.nextNode();
-      assertEquals(AllDirectives.SECTION, ((DirectiveNode)node).getDirectiveType());
-      assertEquals("EmptyVectors", node.getName());
-      assertEquals(SectionStatus.SEMIFREE, node.getStatus());
+    assertTimeout(
+        Duration.ofSeconds(1),
+        () -> {
+          SectionNode node = (SectionNode) parser.nextNode();
+          assertEquals(AllDirectives.SECTION, ((DirectiveNode) node).getDirectiveType());
+          assertEquals("EmptyVectors", node.getName());
+          assertEquals(SectionStatus.SEMIFREE, node.getStatus());
 
-      Node emptyHandlerLabelNode = node.getBody().getChildren().get(0);
-      assertEquals(NodeTypes.LABEL, emptyHandlerLabelNode.getType());
-      Node rtiOpLabel =node.getBody().getChildren().get(1);
-      assertEquals(NodeTypes.OPCODE, rtiOpLabel.getType());
-    });
-
-
+          Node emptyHandlerLabelNode = node.getBody().getChildren().get(0);
+          assertEquals(NodeTypes.LABEL, emptyHandlerLabelNode.getType());
+          Node rtiOpLabel = node.getBody().getChildren().get(1);
+          assertEquals(NodeTypes.OPCODE, rtiOpLabel.getType());
+        });
   }
 
+  /** macro_1 is a basic macro with no variables or lookups or anything. */
+  @Test
+  public void testDefineMacro1BasicMacro() throws IOException {
+    final String macroSource =
+        IOUtils.toString(
+            SourceParserTest.class
+                .getClassLoader()
+                .getResourceAsStream("define-marco-1.s"),
+            "UTF-8");
+    final String outfile = "define_macro_1.out";
+    final String inputFile = "define_macro_1.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(macroSource), inputFile, lineNumber);
+
+    var scanner = data.startRead(OpCodeZ80.OPCODES);
+
+    SourceParser parser = new SourceParser(scanner);
+
+    MacroNode node = (MacroNode) parser.nextNode();
+    assertEquals("wait_1s", node.getName());
+
+    var body = node.getBody();
+    assertEquals(NodeTypes.OPCODE, body.getChildren().get(0).getType());
+    assertEquals(NodeTypes.LABEL, body.getChildren().get(1).getType());
+    assertEquals("-", ((LabelNode)body.getChildren().get(1)).getLabelName());
+    assertEquals(NodeTypes.OPCODE, body.getChildren().get(2).getType());
+        
+  }
 }

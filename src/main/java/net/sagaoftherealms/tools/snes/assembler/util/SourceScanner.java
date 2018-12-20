@@ -8,9 +8,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
-/**
- * A stateful object that is used to read data from a {@link SourceFileDataMap}
- */
+/** A stateful object that is used to read data from a {@link SourceFileDataMap} */
 public class SourceScanner {
 
   private final SourceFileDataMap source;
@@ -67,9 +65,9 @@ public class SourceScanner {
       type = TokenTypes.NUMBER;
     } else if ((!tokenString.equals("@"))
         && (Character.isAlphabetic(tokenString.charAt(0))
-        || tokenString.charAt(0) == '_'
-        || tokenString.charAt(0) == ':'
-        || tokenString.charAt(0) == '@')) {
+            || tokenString.charAt(0) == '_'
+            || tokenString.charAt(0) == ':'
+            || tokenString.charAt(0) == '@')) {
       if (opCodes.contains(tokenString.toUpperCase())) {
         type = TokenTypes.OPCODE;
       } else {
@@ -77,7 +75,7 @@ public class SourceScanner {
       }
     } else if (tokenString.length() == 1 && operators.contains(tokenString.charAt(0))) {
       type = operatorType(tokenString.charAt(0));
-    } else if (tokenString.matches("\\-+") || tokenString.matches("\\++")) {
+    } else if (tokenString.matches("\\-+:?") || tokenString.matches("\\++:?")) {
       type = TokenTypes.LABEL;
     } else {
       throw new IllegalArgumentException("Could not get TokenType for " + tokenString);
@@ -127,21 +125,30 @@ public class SourceScanner {
       return numberToken(sourceString, character);
     } else if (character == '\'') {
       return characterToken(sourceString);
-    } else if (Character.isAlphabetic(character) || character == '_' || character == '@'
+    } else if (Character.isAlphabetic(character)
+        || character == '_'
+        || character == '@'
         || character == ':') {
       return labelToken(sourceString, character);
     } else if (operators.contains(character)) {
-      if (character == '-' || character == '+') {
-        if ((linePosition ) < sourceString.length()) {
-          var nextCharacter = sourceString.charAt(linePosition );
-          String toReturn = character+ "";
-          while(((linePosition) < sourceString.length()) && nextCharacter == character) {//This is a label of the --- or +++ variety
+      if (character == '-' || character == '+') { // This is a label of the --- or +++ variety
+        if ((linePosition) < sourceString.length()) {
+          var nextCharacter = sourceString.charAt(linePosition);
+          String toReturn = character + "";
+          while (((linePosition) < sourceString.length())
+              && nextCharacter == character) { // This is a label of the --- or +++ variety
             toReturn += nextCharacter;
             linePosition++;
             if ((linePosition) < sourceString.length()) {
               nextCharacter = sourceString.charAt(linePosition);
             }
           }
+          
+          if ((linePosition) < sourceString.length() && sourceString.charAt(linePosition)== ':') {
+            toReturn += nextCharacter;
+            linePosition++;
+          }
+          
           return toReturn;
         }
       }
@@ -169,7 +176,9 @@ public class SourceScanner {
       character = sourceString.charAt(linePosition);
       linePosition++;
 
-    } while (!Character.isWhitespace(character) && character != '.' && !operators.contains(character));
+    } while (!Character.isWhitespace(character)
+        && character != '.'
+        && !operators.contains(character));
 
     if (character == '.' || operators.contains(character)) {
       linePosition--;
@@ -204,10 +213,9 @@ public class SourceScanner {
 
   private String numberToken(String sourceString, char character) {
     var chars =
-        new Character[]{
-            'A', 'B', 'C', 'D', 'E', 'F', 'H', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            'a',
-            'b', 'c', 'd', 'e', 'f', 'h', '.', '$', '%'
+        new Character[] {
+          'A', 'B', 'C', 'D', 'E', 'F', 'H', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',
+          'b', 'c', 'd', 'e', 'f', 'h', '.', '$', '%'
         };
     final List<Character> allowedCharacters = Arrays.asList(chars);
     StringBuilder builder = new StringBuilder().append(character);

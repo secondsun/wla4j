@@ -5,8 +5,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBo
 
 public class IfBodyNode extends DirectiveBodyNode {
 
-  public IfBodyNode(Node thenBody,
-      Node elseBody) {
+  public IfBodyNode(Node thenBody, Node elseBody) {
     this.addChild(thenBody);
     this.addChild(elseBody);
   }
@@ -18,5 +17,4 @@ public class IfBodyNode extends DirectiveBodyNode {
   public Node getElseBody() {
     return this.getChildren().get(1);
   }
-
 }

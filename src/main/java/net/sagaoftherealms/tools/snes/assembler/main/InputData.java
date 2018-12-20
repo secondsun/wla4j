@@ -115,8 +115,7 @@ public class InputData {
           input++;
           for (;
               input < input_end && inputArray[input] != 0x0A && inputArray[input] != 0x0D;
-              input++) {
-          }
+              input++) {}
 
           break;
         case '*':
@@ -124,8 +123,7 @@ public class InputData {
             /* clear a commented line */
             for (;
                 input < input_end && inputArray[input] != 0x0A && inputArray[input] != 0x0D;
-                input++) {
-            }
+                input++) {}
 
           } else {
             /* multiplication! */
@@ -141,8 +139,7 @@ public class InputData {
             while (got_chars_on_line == 0) {
               for (;
                   input < input_end && inputArray[input] != '/' && inputArray[input] != 0x0A;
-                  input++) {
-              }
+                  input++) {}
 
               if (input >= input_end) {
                 throw new RuntimeException(
@@ -181,8 +178,7 @@ public class InputData {
 
           for (;
               input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09);
-              input++) {
-          }
+              input++) {}
 
           got_chars_on_line = 1;
           if (z == 1) {
@@ -259,8 +255,7 @@ public class InputData {
 
           for (;
               input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09);
-              input++) {
-          }
+              input++) {}
           got_chars_on_line = 1;
           break;
 
@@ -293,8 +288,7 @@ public class InputData {
             input++;
             for (;
                 input < input_end && (inputArray[input] == ' ' || inputArray[input] == 0x09);
-                input++) {
-            }
+                input++) {}
             got_chars_on_line = 1;
           }
           break;
@@ -319,9 +313,7 @@ public class InputData {
     return buffer;
   }
 
-  /**
-   * Pretty prints the processed source
-   */
+  /** Pretty prints the processed source */
   public String prettyPrint() {
     return combinedSourceFile.toString();
   }

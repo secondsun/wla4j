@@ -23,7 +23,7 @@ public class SourceParser {
 
   /**
    * This will create a node from the location of the parser in the source scanner. This will move
-   * the current token, has side effects, etc.  Needless to say it is not thread safe.
+   * the current token, has side effects, etc. Needless to say it is not thread safe.
    *
    * @return the nextNode that the current token is on.
    */
@@ -38,16 +38,18 @@ public class SourceParser {
         return directiveNode;
       case NUMBER:
         break;
-      case LABEL: {
-        var labelNode = new LabelNode(token);
-        consumeAndClear(TokenTypes.LABEL);
-        return labelNode;
-      }
+      case LABEL:
+        {
+          var labelNode = new LabelNode(token);
+          consumeAndClear(TokenTypes.LABEL);
+          return labelNode;
+        }
       case MINUS:
-      case PLUS: {
-        LabelNode labelNode = createUnnamedLabel(token);
-        return labelNode;
-      }
+      case PLUS:
+        {
+          LabelNode labelNode = createUnnamedLabel(token);
+          return labelNode;
+        }
       case LT:
         break;
       case GT:
@@ -100,15 +102,13 @@ public class SourceParser {
 
     consumeAndClear(EOL, END_OF_INPUT);
     return opcode;
-
   }
 
   private LabelNode createUnnamedLabel(Token token) {
     StringBuilder labelNameBuilder = new StringBuilder(10);
     Token initialToken = token;
 
-    while (PLUS.equals(token.getType()) ||
-        MINUS.equals(token.getType())) {
+    while (PLUS.equals(token.getType()) || MINUS.equals(token.getType())) {
       switch (token.getType()) {
         case PLUS:
           labelNameBuilder.append('+');
@@ -128,9 +128,7 @@ public class SourceParser {
     return label;
   }
 
-  /**
-   * Confirms that the current token is expected and advances to the next token.
-   */
+  /** Confirms that the current token is expected and advances to the next token. */
   public void consume(TokenTypes... types) {
     final var typesList = Arrays.asList(types);
     if (typesList.contains(token.getType())) {
@@ -152,7 +150,7 @@ public class SourceParser {
   }
 
   /**
-   * The token that the parser is ready to consume. Calling nextNode will change this value.  If you
+   * The token that the parser is ready to consume. Calling nextNode will change this value. If you
    * need the token of a node, call this before you call next node.
    *
    * @return the current token under the parser.
@@ -165,7 +163,7 @@ public class SourceParser {
 
     consume(TokenTypes.DIRECTIVE);
 
-    var node = DirectiveUtils.createDirectiveNode(directiveName);
+    var node = DirectiveUtils.createDirectiveNode(directiveName, getCurrentToken());
     var nodeParser = DirectiveUtils.getParser(node.getDirectiveType());
     node.setArguments(nodeParser.arguments(this));
     node.setBody(nodeParser.body(this));
@@ -180,9 +178,7 @@ public class SourceParser {
     return null;
   }
 
-  /**
-   * Move the token past any whitespace / comments
-   */
+  /** Move the token past any whitespace / comments */
   public void clearWhiteSpaceTokens() {
     var token = getCurrentToken();
 

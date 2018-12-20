@@ -4,7 +4,11 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveAr
 
 public class RamsectionArgumentsNode extends DirectiveArgumentsNode {
   public enum RamsectionArguments {
-    BANK,NAME,SLOT,APPEND_TO, ALIGN
+    BANK,
+    NAME,
+    SLOT,
+    APPEND_TO,
+    ALIGN
   }
 
   public RamsectionArgumentsNode() {
@@ -34,7 +38,6 @@ public class RamsectionArgumentsNode extends DirectiveArgumentsNode {
       case APPEND_TO:
         arguments.set(4, value);
         break;
-
     }
   }
 
@@ -52,9 +55,7 @@ public class RamsectionArgumentsNode extends DirectiveArgumentsNode {
 
       case APPEND_TO:
         return arguments.get(4);
-
     }
     throw new IllegalArgumentException("Unknown Key");
   }
-
 }

@@ -10,13 +10,9 @@ import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenType
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.BodyDefinitionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
@@ -51,41 +47,39 @@ public class RamSectionParser extends BodyDefinitionParser {
             arguments.put(BANK, TokenUtil.getInt(token) + "");
             parser.consume(TokenTypes.NUMBER);
           } else {
-            throw new ParseException("Bank may only be specified once",
-                token);
+            throw new ParseException("Bank may only be specified once", token);
           }
           break;
         case "SLOT":
           parser.consume(LABEL);
           token = parser.getCurrentToken();
           if (arguments.get(SLOT) == null) {
-            arguments.put(SLOT, TokenUtil.getInt(token) + "");//TYPECHECK
+            arguments.put(SLOT, TokenUtil.getInt(token) + ""); // TYPECHECK
             parser.consume(TokenTypes.NUMBER);
           } else {
-            throw new ParseException("The slot of an section may only be specified once",
-                token);
+            throw new ParseException("The slot of an section may only be specified once", token);
           }
           break;
         case "ALIGN":
           parser.consume(LABEL);
           token = parser.getCurrentToken();
           if (arguments.get(ALIGN) == null) {
-            arguments.put(ALIGN, TokenUtil.getInt(token) + "");//TYPECHECK
+            arguments.put(ALIGN, TokenUtil.getInt(token) + ""); // TYPECHECK
             parser.consume(TokenTypes.NUMBER);
           } else {
-            throw new ParseException("The alignment of an section may only be specified once",
-                token);
+            throw new ParseException(
+                "The alignment of an section may only be specified once", token);
           }
           break;
         case "APPENDTO":
           parser.consume(LABEL);
           token = parser.getCurrentToken();
           if (arguments.get(APPEND_TO) == null) {
-            arguments.put(APPEND_TO, token.getString());//TYPECHECK
+            arguments.put(APPEND_TO, token.getString()); // TYPECHECK
             parser.consume(TokenTypes.LABEL);
           } else {
-            throw new ParseException("The appendto of an section may only be specified once",
-                token);
+            throw new ParseException(
+                "The appendto of an section may only be specified once", token);
           }
           break;
         default:
@@ -101,5 +95,4 @@ public class RamSectionParser extends BodyDefinitionParser {
     parser.consumeAndClear(TokenTypes.EOL);
     return arguments;
   }
-
 }

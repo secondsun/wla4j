@@ -21,14 +21,14 @@ public class SourceAnalyzerTest {
         "Struct should define a __sideof__.  See https://wla-dx.readthedocs.io/en/latest/asmdiv.html#struct-enemy-object");
   }
 
-
   @Test
   public void testLabelFailsIfOutputLibrary() {
     fail("See pass_1.c#788");
   }
+
   @Test
   public void testLabelFailsIfNoMemoryPosition() {
-    //Org or orga have to be set before labels can be defined.
+    // Org or orga have to be set before labels can be defined.
     fail("See pass_1.c#792");
   }
 

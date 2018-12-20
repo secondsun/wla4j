@@ -70,21 +70,21 @@ public class SourceScannerTest {
 
   @ParameterizedTest
   @CsvSource({
-      "',', COMMA",
-      "|, OR",
-      "&, AND",
-      "^, POWER",
-      "+, PLUS",
-      "-, MINUS",
-      "'#', MODULO",
-      "~, XOR",
-      "'/ ', DIVIDE",
-      "<, LT",
-      ">, GT",
-      "[, LEFT_BRACKET",
-      "], RIGHT_BRACKET",
-      "(, LEFT_PAREN",
-      "), RIGHT_PAREN"
+    "',', COMMA",
+    "|, OR",
+    "&, AND",
+    "^, POWER",
+    "+, PLUS",
+    "-, MINUS",
+    "'#', MODULO",
+    "~, XOR",
+    "'/ ', DIVIDE",
+    "<, LT",
+    ">, GT",
+    "[, LEFT_BRACKET",
+    "], RIGHT_BRACKET",
+    "(, LEFT_PAREN",
+    "), RIGHT_PAREN"
   })
   public void testOperators(String sourceLine, String tokenType) {
     final String outfile = "test.out";
@@ -136,16 +136,16 @@ public class SourceScannerTest {
 
   @ParameterizedTest
   @CsvSource({
-      "0, 0", // dec
-      "1, 1", // dec
-      "0.0, 0.0", // dec
-      "0.1, 0.1", // dec
-      "0ah, 10", // Hex
-      "$100, 256", // Hex
-      "$100.w, 256", // Hex with size
-      "'''x''', 120", // Char
-      "'''0''', 48", // Char
-      "%0101, 5" // binary
+    "0, 0", // dec
+    "1, 1", // dec
+    "0.0, 0.0", // dec
+    "0.1, 0.1", // dec
+    "0ah, 10", // Hex
+    "$100, 256", // Hex
+    "$100.w, 256", // Hex with size
+    "'''x''', 120", // Char
+    "'''0''', 48", // Char
+    "%0101, 5" // binary
   })
   public void numberTokens(String sourceLine, double value) {
     final String outfile = "test.out";
@@ -193,10 +193,10 @@ public class SourceScannerTest {
    */
   @ParameterizedTest
   @CsvSource({
-      ".IF, IF",
-      ".ELSE, ELSE,",
-      ".8BIT, 8BIT,",
-      ".ELSEIF, ELSEIF",
+    ".IF, IF",
+    ".ELSE, ELSE,",
+    ".8BIT, 8BIT,",
+    ".ELSEIF, ELSEIF",
   })
   public void testSimpleParseDirectiveToken(String sourceLine, String expectedDirective) {
     final String outfile = "test.out";
@@ -216,9 +216,9 @@ public class SourceScannerTest {
 
   @ParameterizedTest
   @CsvSource({
-      "10.b, NUMBER, '10', .b",
-      "'$20.w', NUMBER, '$20', .w",
-      "test.l, LABEL, test, .l, ",
+    "10.b, NUMBER, '10', .b",
+    "'$20.w', NUMBER, '$20', .w",
+    "test.l, LABEL, test, .l, ",
   })
   public void testValueSizeTypeToken(
       String sourceLine, String valueTokenType, String valueTokenString, String expectedValueSize) {
@@ -256,17 +256,17 @@ public class SourceScannerTest {
 
   @ParameterizedTest
   @CsvSource({
-      "label, label", // basic label, no :
-      "label2:, label2", // basic label with colon
-      ":label2, label2", // basic label with colon at beginning
-      "_label, label",
-      // underscore label IE local label (see
-      // https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)
-      "@label.b, label", // Child label
-      "@@@@label, label", // Deeply nested child label
-      "---, ''",//unnamed label
-      "+++, ''",//unnamed label
-      "NUM_SEED_TREES*8, 'NUM_SEED_TREES'"//label during a 
+    "label, label", // basic label, no :
+    "label2:, label2", // basic label with colon
+    ":label2, label2", // basic label with colon at beginning
+    "_label, label",
+    // underscore label IE local label (see
+    // https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)
+    "@label.b, label", // Child label
+    "@@@@label, label", // Deeply nested child label
+    "---:, '---'", // unnamed label
+    "+++, '+++'", // unnamed label
+    "NUM_SEED_TREES*8, 'NUM_SEED_TREES'" // label during a
   })
   public void testBasicLabel(String sourceLine, String labelName) {
     final String outfile = "test.out";
@@ -403,13 +403,13 @@ public class SourceScannerTest {
 
   @ParameterizedTest
   @CsvSource({
-      "!, NOT, ''",
-      "<=, LT, EQUAL",
-      ">=, GT, EQUAL",
-      "==, EQUAL, EQUAL",
-      "\\2, ESCAPE, NUMBER",
-      "\\!, ESCAPE, NOT",
-      "\\@, ESCAPE, AT",
+    "!, NOT, ''",
+    "<=, LT, EQUAL",
+    ">=, GT, EQUAL",
+    "==, EQUAL, EQUAL",
+    "\\2, ESCAPE, NUMBER",
+    "\\!, ESCAPE, NOT",
+    "\\@, ESCAPE, AT",
   })
   public void scanIfAndMacroOperators(String sourceLine, String operator1, String operator2) {
     final String outfile = "test.out";
@@ -429,6 +429,7 @@ public class SourceScannerTest {
       assertEquals(TokenTypes.valueOf(operator2), token.getType());
     }
   }
+
   @Test
   public void complexScanTest() {
     var sourceLine = "NUM_SEED_TREES*8";
@@ -443,7 +444,5 @@ public class SourceScannerTest {
     assertEquals(TokenTypes.LABEL, scanner.getNextToken().getType());
     assertEquals(TokenTypes.MULTIPLY, scanner.getNextToken().getType());
     assertEquals(TokenTypes.NUMBER, scanner.getNextToken().getType());
-    
   }
-  
 }

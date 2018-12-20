@@ -7,14 +7,16 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamSectionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 public final class DirectiveUtils {
 
-  private DirectiveUtils() {
-  }
+  private DirectiveUtils() {}
 
   public static DirectiveParser getParser(AllDirectives type) {
     switch (type) {
@@ -51,12 +53,21 @@ public final class DirectiveUtils {
         return new SectionParser();
       case RAMSECTION:
         return new RamSectionParser();
+      case MACRO:
+        return new MacroParser();
       default:
         return new GenericDirectiveParser(type);
     }
   }
 
-  public static DirectiveNode createDirectiveNode(String directiveName) {
+  /**
+   * Creates the appropriate class of directive node
+   * 
+   * @param directiveName the name of the directive
+   * @param token the token that the directive begins at
+   * @return a directive node with all of its arguments and body
+   */
+  public static DirectiveNode createDirectiveNode(String directiveName, Token token) {
     AllDirectives directive = AllDirectives.valueOf(directiveName.replace(".", "").toUpperCase());
     DirectiveNode node;
     switch (directive) {
@@ -69,6 +80,9 @@ public final class DirectiveUtils {
         break;
       case SECTION:
         node = new SectionNode();
+        break;
+      case MACRO:
+        node = new MacroNode(token);
         break;
       case IF:
 
@@ -153,9 +167,6 @@ public final class DirectiveUtils {
       case FREAD:
 
       case FSIZE:
-
-      case MACRO:
-
       case ENDM:
 
       case SHIFT:

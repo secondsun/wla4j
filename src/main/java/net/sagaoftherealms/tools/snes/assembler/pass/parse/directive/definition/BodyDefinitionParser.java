@@ -28,7 +28,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
 
   private final AllDirectives endDirective;
   private final ExpressionParser expressionParserUtil = new ExpressionParser();
-  
+
   public BodyDefinitionParser(AllDirectives type) {
     super(type);
     switch (type) {
@@ -77,7 +77,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
   private Node makeIfNode(SourceParser parser, Token token) {
     parser.consumeAndClear(TokenTypes.DIRECTIVE);
     var directive = AllDirectives.valueOf(token.getString().replace(".", "").toUpperCase());
-    var ifNode = DirectiveUtils.createDirectiveNode(directive.getName());
+    var ifNode = DirectiveUtils.createDirectiveNode(directive.getName(), token);
     if (!IfParser.IF_DIRECTIVES.contains(directive)) {
       throw new ParseException("Directive was not an IF style directive", token);
     }
@@ -91,7 +91,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
 
   private Node makeDefinitionNode(SourceParser parser, Token token) {
     parser.consumeAndClear(TokenTypes.LABEL);
-    
+
     var bodyNode = new DefinitionNode(TokenUtil.getLabelName(token));
 
     token = parser.getCurrentToken();
@@ -109,27 +109,30 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
         bodyNode.setSize(2);
         break;
       case "DS":
-      case "DSB": {
-        var expression = expressionParserUtil.expressionNode(parser);
-        bodyNode.setSize(expression);
-        break;
-      }
-      case "DSW": {//We have to fake a double expression
-        var expression = expressionParserUtil.expressionNode(parser);
-        
-        var constant = new ConstantNode(NodeTypes.NUMERIC_CONSTANT);
-        constant.setValue("2");
-        
-        var doubleExpression = new ExpressionNode();
-        doubleExpression.addChild(expression);
+      case "DSB":
+        {
+          var expression = expressionParserUtil.expressionNode(parser);
+          bodyNode.setSize(expression);
+          break;
+        }
+      case "DSW":
+        { // We have to fake a double expression
+          var expression = expressionParserUtil.expressionNode(parser);
 
-        doubleExpression.addChild(constant);
-        doubleExpression.setOperationType(TokenTypes.MULTIPLY);
-        bodyNode.setSize(doubleExpression);
+          var constant = new ConstantNode(NodeTypes.NUMERIC_CONSTANT);
+          constant.setValue("2");
 
-        break;
-      }
-      case "INSTANCEOF"://TODO: Sizes of structs may be expressions, but I don't want to deal with that yet
+          var doubleExpression = new ExpressionNode();
+          doubleExpression.addChild(expression);
+
+          doubleExpression.addChild(constant);
+          doubleExpression.setOperationType(TokenTypes.MULTIPLY);
+          bodyNode.setSize(doubleExpression);
+
+          break;
+        }
+      case "INSTANCEOF": // TODO: Sizes of structs may be expressions, but I don't want to deal with
+                         // that yet
         token = parser.getCurrentToken();
         parser.consumeAndClear(TokenTypes.LABEL);
 
@@ -147,7 +150,6 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
     }
 
     return bodyNode;
-
   }
 
   private class IfInDefinitionBodyParser extends IfParser {
@@ -164,7 +166,8 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
       var currentBody = thenBody;
       var token = parser.getCurrentToken();
 
-      while (token != null && !token.getString().equalsIgnoreCase(".endif")
+      while (token != null
+          && !token.getString().equalsIgnoreCase(".endif")
           && token.getType() != TokenTypes.END_OF_INPUT) {
         var tokenString = token.getString().toUpperCase().replace(".", "");
         switch (tokenString) {
@@ -192,12 +195,10 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
         }
 
         token = parser.getCurrentToken();
-
       }
-      parser.consumeAndClear(TokenTypes.DIRECTIVE);//Consume endif
+      parser.consumeAndClear(TokenTypes.DIRECTIVE); // Consume endif
 
       return new IfBodyNode(thenBody, elseBody);
     }
   }
-
 }

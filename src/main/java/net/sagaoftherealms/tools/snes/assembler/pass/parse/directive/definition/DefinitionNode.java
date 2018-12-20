@@ -37,14 +37,14 @@ public class DefinitionNode extends Node {
   public void setSize(int size) {
     ExpressionNode node = new ExpressionNode();
     node.addChild(new ConstantNode(NodeTypes.NUMERIC_CONSTANT));
-    ((ConstantNode)node.getChildren().get(0)).setValue(size + "");
+    ((ConstantNode) node.getChildren().get(0)).setValue(size + "");
     this.size = node;
   }
 
   public void setSize(ExpressionNode size) {
     this.size = size;
   }
-  
+
   public Optional<String> getStructName() {
     return Optional.ofNullable(structName);
   }
