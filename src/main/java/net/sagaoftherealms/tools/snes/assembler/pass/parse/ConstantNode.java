@@ -22,4 +22,8 @@ public class ConstantNode extends Node {
   public String getValue() {
     return value;
   }
+
+  public int getValueAsInt() {
+    return Integer.parseInt(value);
+  }
 }

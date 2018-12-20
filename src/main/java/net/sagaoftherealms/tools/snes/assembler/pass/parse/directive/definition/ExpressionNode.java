@@ -27,6 +27,23 @@ public class ExpressionNode extends Node {
   public int evaluateInt() {
     if (operation == null) {
       return Integer.parseInt(((ConstantNode)getChildren().get(0)).getValue());
+    } else if (operation == TokenTypes.MULTIPLY) {
+      var leftNode = getChildren().get(0);
+      var rightNode = getChildren().get(1);
+      int leftValue = 0;
+      int rightValue = 0;
+      if (leftNode.getType().equals(NodeTypes.SIZE_EXPRESION)) {
+        leftValue = ((ExpressionNode)leftNode).evaluateInt();
+      } else {
+        leftValue = ((ConstantNode)leftNode).getValueAsInt();
+      }
+
+      if (rightNode.getType().equals(NodeTypes.SIZE_EXPRESION)) {
+        rightValue = ((ExpressionNode)rightNode).evaluateInt();
+      } else {
+        rightValue = ((ConstantNode)rightNode).getValueAsInt();
+      }
+      return leftValue * rightValue;
     }
     throw new IllegalStateException("Not implemented");
   }

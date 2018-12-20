@@ -277,7 +277,7 @@ public class SourceParserTest {
     
     DirectiveNode ifNode = (DirectiveNode) body.getChildren().get(4);
     assertEquals("IFDEF", ifNode.getDirectiveType().getName());
-    randomLabel = (DefinitionNode) body.getChildren().get(5);
+    randomLabel = (DefinitionNode) body.getChildren().get(5);//test that we are getting the right type
   }
 
   @Test
@@ -328,11 +328,11 @@ public class SourceParserTest {
 
     var body = enumNode.getBody();
     assertEquals(5, body.getChildren().size());
-    assertEquals(1, ((DefinitionNode) body.getChildren().get(0)).getSize());
-    assertEquals(1, ((DefinitionNode) body.getChildren().get(1)).getSize());
-    assertEquals(2, ((DefinitionNode) body.getChildren().get(2)).getSize());
-    assertEquals(16, ((DefinitionNode) body.getChildren().get(3)).getSize());
-    assertEquals(32, ((DefinitionNode) body.getChildren().get(4)).getSize());
+    assertEquals(1, ((DefinitionNode) body.getChildren().get(0)).getSize().evaluateInt());
+    assertEquals(1, ((DefinitionNode) body.getChildren().get(1)).getSize().evaluateInt());
+    assertEquals(2, ((DefinitionNode) body.getChildren().get(2)).getSize().evaluateInt());
+    assertEquals(16, ((DefinitionNode) body.getChildren().get(3)).getSize().evaluateInt());
+    assertEquals(32, ((DefinitionNode) body.getChildren().get(4)).getSize().evaluateInt());
     assertEquals("SEASON_SPRING", ((DefinitionNode) body.getChildren().get(0)).getLabel());
     assertEquals("SEASON_SUMMER", ((DefinitionNode) body.getChildren().get(1)).getLabel());
   }
