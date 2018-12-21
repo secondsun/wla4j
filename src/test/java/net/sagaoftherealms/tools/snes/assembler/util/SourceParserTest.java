@@ -375,8 +375,26 @@ public class SourceParserTest {
   }
 
   @Test
-  public void remindSummersToMakeDBAndFriendsUseExpressionNodes() {
-    fail("Not that expression nodes are a thing, we should use those and begin to carry type info in the AllDirectivesDirectives.  See .DB as an example where this could be done.");
+  public void remindSummersToMakeDBAndSimilarDirectivesUseExpressionNodes() {
+    fail("Now that expression nodes are a thing, we should use those and begin to carry type info in the AllDirectivesDirectives.  See .DB as an example where this could be done.");
+  }
+  
+  @Test
+  public void handleAsciiCommands() {
+    fail("\n"
+        + "ASCII commands work with .DB and .ASC strings. They are as follows:\n"
+        + "'\\0' -> insert null byte\n"
+        + "'\\x' -> insert hex character\n"
+        + "'\\>' -> set highest bit (0x80) of preceding character\n"
+        + "'\\<' -> set highest bit (0x80) of proceeding character\n"
+        + "\n"
+        + ".ASC hex characters are NOT remapped. This is useful if you need to write special characters. Example:\n"
+        + ".ASC \"My special character: \"\n"
+        + ".DB $59\n"
+        + "...becomes\n"
+        + ".ASC \"My special character: \\x59\"\n"
+        + "=============================\n"
+        + ".DL for 65816 works just like you'd expect it. It write the bank byte when used with labels. :D");
   }
   
   @Test
@@ -771,5 +789,35 @@ public class SourceParserTest {
     assertEquals(2, dbArgs.size());
     assertEquals("\\1", dbArgs.get(1));
   }
-  
+
+  /** macro_3 is a basic macro with labels inside that refer to macro arguments by number*/
+  @Test
+  public void testLargeFile() throws IOException {
+    final String macroSource =
+        IOUtils.toString(
+            SourceParserTest.class
+                .getClassLoader()
+                .getResourceAsStream("parseLargeFiles/script_commands.s"),
+            "UTF-8");
+    final String outfile = "define_macro_3.out";
+    final String inputFile = "parseMacro/define_macro_3.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(macroSource), inputFile, lineNumber);
+
+    var scanner = data.startRead(OpCodeZ80.OPCODES);
+
+    SourceParser parser = new SourceParser(scanner);
+
+    var node = parser.nextNode();
+    
+    while (node != null) {
+      System.out.println(node);
+      node = parser.nextNode();
+    }
+    
+  }
+
+
 }

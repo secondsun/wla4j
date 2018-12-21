@@ -24,7 +24,9 @@ public final class DirectiveUtils {
         return new EnumParser();
       case STRUCT:
         return new StructParser();
-
+      case IFDEFM:
+      case IFNDEFM:
+        return new IfDefForMacrosParser(type);
       case IF:
 
       case IFDEF:
@@ -32,10 +34,6 @@ public final class DirectiveUtils {
       case IFEXISTS:
 
       case IFNDEF:
-
-      case IFDEFM:
-
-      case IFNDEFM:
 
       case IFEQ:
 
@@ -84,6 +82,8 @@ public final class DirectiveUtils {
       case MACRO:
         node = new MacroNode(token);
         break;
+      case IFDEFM:
+      case IFNDEFM:
       case IF:
 
       case IFDEF:
@@ -92,9 +92,7 @@ public final class DirectiveUtils {
 
       case IFNDEF:
 
-      case IFDEFM:
-
-      case IFNDEFM:
+      
 
       case IFEQ:
 
