@@ -10,6 +10,6 @@ public class StructNode extends DirectiveNode {
   }
 
   public String getName() {
-    return getArguments().get(0).trim();
+    return getArguments().getString(0).trim();
   }
 }

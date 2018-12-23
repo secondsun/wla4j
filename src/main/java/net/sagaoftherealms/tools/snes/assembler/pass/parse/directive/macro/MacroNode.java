@@ -25,7 +25,7 @@ public class MacroNode extends DirectiveNode {
   }
 
   public String getName() {
-    return getArguments().get(0);
+    return getArguments().getString(0);
   }
 
 }

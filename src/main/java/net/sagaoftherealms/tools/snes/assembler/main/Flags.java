@@ -113,7 +113,7 @@ public class Flags {
         case "-I":
           {
             if (count + 1 < flagc) {
-              /* get arg */
+              /* getString arg */
               parse_and_set_incdir(flags[count + 1], NO);
             } else {
               throw new RuntimeException("Unknown Flag " + flags[count] + ":" + flags[count + 1]);

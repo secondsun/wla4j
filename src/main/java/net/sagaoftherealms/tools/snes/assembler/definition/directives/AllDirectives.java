@@ -68,7 +68,8 @@ public enum AllDirectives {
   DSTRUCT(new AllDirective(".DSTRUCT l ?(INSTANCEOF) l ?(DATA) []{xsf}")),
   DSW(new AllDirective(".DSW x, x")),
   DB(new AllDirective(".DB []{lxsf}")),
-  BYT(new AllDirective(".BYT []{xsf}")),
+  BYTE(new AllDirective(".BYTE []{lxsf}")),
+  BYT(new AllDirective(".BYT []{lxsf}")),
   DBM(new AllDirective(".DBM l []{xsf}")),
   SYM(new AllDirective(".SYM l")),
   SYMBOL(new AllDirective(".SYMBOL l")),
@@ -79,7 +80,7 @@ public enum AllDirectives {
   ASCTABLE(new AllDirective(".ASCTABLE")),
   ASC(new AllDirective(".ASC s")),
   DW(new AllDirective(".DW []{xc}")),
-  WORD(new AllDirective(".WORD .DW ")),
+  WORD(new AllDirective(".WORD []{xc} ")),
   DWM(new AllDirective(".DWM l []{x}")),
   DEFINE(new AllDirective(".DEFINE l []{xs}")),
   DEF(new AllDirective(".DEF l []{xs}")),
@@ -105,10 +106,10 @@ public enum AllDirectives {
   REPEAT(new AllDirective(".REPEAT x ?(INDEX l)")),
   REPT(new AllDirective(".REPT x ?(INDEX l)")),
   ENDR(new AllDirective(".ENDR")),
-  ENUM(new AllDirective(".ENUM x ?{ASC|DESC} ?(EXPORT)")),
-  ENDE(new AllDirective(".ENDE")),
-  STRUCT(new AllDirective(".STRUCT l")),
-  ENDST(new AllDirective(".ENDST")),
+  ENUM(new AllDirective(".ENUM x ?{ASC|DESC} ?(EXPORT)")),/*EnumParser*/
+  ENDE(new AllDirective(".ENDE")),/*EnumParser*/
+  STRUCT(new AllDirective(".STRUCT l")),/*StructParser*/
+  ENDST(new AllDirective(".ENDST")),/*StructParser*/
   MEMORYMAP(new AllDirective(".MEMORYMAP")),
   ENDME(new AllDirective(".ENDME")),
   ROMBANKMAP(new AllDirective(".ROMBANKMAP")),
@@ -188,112 +189,108 @@ public enum AllDirectives {
         case 'e':
           builder.append("(5 + 6)");
           break;
-        case '{':
-          {
-            patternIndex++;
+        case '{': {
+          patternIndex++;
+          var newPatternBuilder = new StringBuilder();
+          var test = pattern.charAt(patternIndex);
+          while (test != '}') {
+            newPatternBuilder.append(test);
+            test = pattern.charAt(++patternIndex);
+          }
+
+          var newPattern = newPatternBuilder.toString();
+          builder.append(
+              generateDirectiveLine(
+                  "" + newPattern.charAt(r.nextInt(newPattern.length())), false));
+        }
+        break;
+        case '[': {
+          patternIndex++; // ]
+          if (pattern.charAt(++patternIndex) == '(') {
+
             var newPatternBuilder = new StringBuilder();
+            newPatternBuilder.append('(');
+            var test = pattern.charAt(++patternIndex);
+            while (test != ')') {
+              newPatternBuilder.append(test);
+              test = pattern.charAt(++patternIndex);
+            }
+            newPatternBuilder.append(')');
+
+            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
+            builder.append(',');
+            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
+            builder.append(',');
+            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
+          } else {
+
+            var newPatternBuilder = new StringBuilder();
+            newPatternBuilder.append('{');
+            var test = pattern.charAt(++patternIndex);
+            while (test != '}') {
+              newPatternBuilder.append(test);
+              test = pattern.charAt(++patternIndex);
+            }
+            newPatternBuilder.append('}');
+            var newPattern = newPatternBuilder.toString();
+
+            builder.append(
+                generateDirectiveLine(
+                    "" + newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1), false));
+            builder.append(',');
+            builder.append(
+                generateDirectiveLine(
+                    "" + newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1), false));
+            builder.append(',');
+            builder.append(
+                generateDirectiveLine(
+                    "" + newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1), false));
+          }
+        }
+        break;
+        case '?': {
+          //                    if (!r.nextBoolean()) {
+          //                        break;
+          //                    }
+          patternIndex++; // ?
+
+          if (pattern.charAt(patternIndex++) == '(') { // (
+            var newPatternBuilder = new StringBuilder();
+            newPatternBuilder.append('(');
+            var test = pattern.charAt(patternIndex);
+            while (test != ')') {
+              newPatternBuilder.append(test);
+              test = pattern.charAt(++patternIndex);
+            }
+            newPatternBuilder.append(')');
+            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
+          } else {
+            // assume }
+            var newPatternBuilder = new StringBuilder();
+
             var test = pattern.charAt(patternIndex);
             while (test != '}') {
               newPatternBuilder.append(test);
               test = pattern.charAt(++patternIndex);
             }
 
-            var newPattern = newPatternBuilder.toString();
-            builder.append(
-                generateDirectiveLine(
-                    "" + newPattern.charAt(r.nextInt(newPattern.length())), false));
+            String[] choices = newPatternBuilder.toString().split("\\|");
+            builder.append(choices[r.nextInt(choices.length)]);
           }
-          break;
-        case '[':
-          {
-            patternIndex++; // ]
-            if (pattern.charAt(++patternIndex) == '(') {
+        }
+        break;
+        case '(': {
+          patternIndex++; // (
 
-              var newPatternBuilder = new StringBuilder();
-              newPatternBuilder.append('(');
-              var test = pattern.charAt(++patternIndex);
-              while (test != ')') {
-                newPatternBuilder.append(test);
-                test = pattern.charAt(++patternIndex);
-              }
-              newPatternBuilder.append(')');
-
-              builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-              builder.append(',');
-              builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-              builder.append(',');
-              builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-            } else {
-
-              var newPatternBuilder = new StringBuilder();
-              newPatternBuilder.append('{');
-              var test = pattern.charAt(++patternIndex);
-              while (test != '}') {
-                newPatternBuilder.append(test);
-                test = pattern.charAt(++patternIndex);
-              }
-              newPatternBuilder.append('}');
-              var newPattern = newPatternBuilder.toString();
-
-              builder.append(
-                  generateDirectiveLine(
-                      "" + newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1), false));
-              builder.append(',');
-              builder.append(
-                  generateDirectiveLine(
-                      "" + newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1), false));
-              builder.append(',');
-              builder.append(
-                  generateDirectiveLine(
-                      "" + newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1), false));
-            }
+          var newPatternBuilder = new StringBuilder();
+          var test = pattern.charAt(patternIndex);
+          while (test != ')') {
+            newPatternBuilder.append(test);
+            test = pattern.charAt(++patternIndex);
           }
-          break;
-        case '?':
-          {
-            //                    if (!r.nextBoolean()) {
-            //                        break;
-            //                    }
-            patternIndex++; // ?
-
-            if (pattern.charAt(patternIndex++) == '(') { // (
-              var newPatternBuilder = new StringBuilder();
-              newPatternBuilder.append('(');
-              var test = pattern.charAt(patternIndex);
-              while (test != ')') {
-                newPatternBuilder.append(test);
-                test = pattern.charAt(++patternIndex);
-              }
-              newPatternBuilder.append(')');
-              builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-            } else {
-              // assume }
-              var newPatternBuilder = new StringBuilder();
-
-              var test = pattern.charAt(patternIndex);
-              while (test != '}') {
-                newPatternBuilder.append(test);
-                test = pattern.charAt(++patternIndex);
-              }
-
-              String[] choices = newPatternBuilder.toString().split("\\|");
-              builder.append(choices[r.nextInt(choices.length)]);
-            }
-          }
-          break;
-        case '(':
-          {
-            patternIndex++; // (
-
-            var newPatternBuilder = new StringBuilder();
-            var test = pattern.charAt(patternIndex);
-            while (test != ')') {
-              newPatternBuilder.append(test);
-              test = pattern.charAt(++patternIndex);
-            }
-            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-          }
-          break;
+          builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
+        }
+        break;
 
         default:
           builder.append(patternCharacter);

@@ -1,5 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionParser.expressionNode;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.DIRECTIVE;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.NUMBER;
@@ -27,8 +28,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 public abstract class BodyDefinitionParser extends GenericDirectiveParser {
 
   private final AllDirectives endDirective;
-  private final ExpressionParser expressionParserUtil = new ExpressionParser();
-
   public BodyDefinitionParser(AllDirectives type) {
     super(type);
     switch (type) {
@@ -111,18 +110,18 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
       case "DS":
       case "DSB":
         {
-          var expression = expressionParserUtil.expressionNode(parser);
+          var expression = expressionNode(parser);
           bodyNode.setSize(expression);
           break;
         }
       case "DSW":
         { // We have to fake a double expression
-          var expression = expressionParserUtil.expressionNode(parser);
+          var expression = expressionNode(parser);
 
           var constant = new ConstantNode(NodeTypes.NUMERIC_CONSTANT);
           constant.setValue("2");
 
-          var doubleExpression = new ExpressionNode();
+          var doubleExpression = new NumericExpressionNode();
           doubleExpression.addChild(expression);
 
           doubleExpression.addChild(constant);

@@ -14,7 +14,7 @@ public class DefinitionNode extends Node {
 
   private final String label;
   private String structName;
-  private ExpressionNode size;
+  private NumericExpressionNode size;
 
   public DefinitionNode(String label) {
     super(NodeTypes.DIRECTIVE_BODY);
@@ -25,7 +25,7 @@ public class DefinitionNode extends Node {
     return label;
   }
 
-  public ExpressionNode getSize() {
+  public NumericExpressionNode getSize() {
     return size;
   }
 
@@ -35,13 +35,13 @@ public class DefinitionNode extends Node {
    * @param size number of bytes
    */
   public void setSize(int size) {
-    ExpressionNode node = new ExpressionNode();
+    NumericExpressionNode node = new NumericExpressionNode();
     node.addChild(new ConstantNode(NodeTypes.NUMERIC_CONSTANT));
     ((ConstantNode) node.getChildren().get(0)).setValue(size + "");
     this.size = node;
   }
 
-  public void setSize(ExpressionNode size) {
+  public void setSize(NumericExpressionNode size) {
     this.size = size;
   }
 

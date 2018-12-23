@@ -2,7 +2,12 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfDefForMacrosParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefineByteParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefineByteSeriesParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefineWordParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefineWordSeriesParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
@@ -53,6 +58,18 @@ public final class DirectiveUtils {
         return new RamSectionParser();
       case MACRO:
         return new MacroParser();
+      case DB:
+      case BYT:
+      case BYTE:
+        return new DefineByteParser(type);
+      case DW:
+      case WORD:
+        return new DefineWordParser(type);
+      case DS:
+      case DSB:
+        return new DefineByteSeriesParser(type);
+      case DSW:
+        return new DefineWordSeriesParser(type);
       default:
         return new GenericDirectiveParser(type);
     }
@@ -91,8 +108,6 @@ public final class DirectiveUtils {
       case IFEXISTS:
 
       case IFNDEF:
-
-      
 
       case IFEQ:
 
@@ -206,8 +221,8 @@ public final class DirectiveUtils {
       case DSW:
 
       case DB:
-
       case BYT:
+      case BYTE:
 
       case DBM:
 

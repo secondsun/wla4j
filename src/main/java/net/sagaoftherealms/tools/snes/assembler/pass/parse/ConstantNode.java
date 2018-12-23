@@ -15,6 +15,11 @@ public class ConstantNode extends Node {
     }
   }
 
+  public ConstantNode(int value) {
+    super(NodeTypes.NUMERIC_CONSTANT);
+    this.value = value + "";
+  }
+
   public void setValue(String value) {
     this.value = value;
   }

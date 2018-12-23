@@ -1,8 +1,9 @@
-package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
+package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 

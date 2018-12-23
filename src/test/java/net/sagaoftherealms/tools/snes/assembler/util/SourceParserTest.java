@@ -18,7 +18,6 @@ import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeZ80;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
@@ -32,6 +31,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode.SectionStatus;
@@ -58,8 +58,7 @@ public class SourceParserTest {
     var scanner = data.startRead(Opcodes65816.opt_table);
     var parser = new SourceParser(scanner);
 
-    ExpressionParser expressionParser = new ExpressionParser();
-    var expressionNode = expressionParser.expressionNode(parser);
+    var expressionNode = ExpressionParser.expressionNode(parser);
 
     assertEquals(NodeTypes.LABEL, expressionNode.getChildren().get(0).getType());
     assertEquals(NodeTypes.NUMERIC_CONSTANT, expressionNode.getChildren().get(1).getType());
@@ -68,14 +67,14 @@ public class SourceParserTest {
 
   @ParameterizedTest
   @CsvSource({
-    "'- rti \n jmp -'", // Label, opcode newline opcode
-    "'--- rti \n jmp ---'", // Label, opcode newline opcode
-    "'+ rti \n jmp +'", // Label, opcode newline opcode
-    "'++ rti \n jmp ++'", // Label, opcode newline opcode
-    "'+++ rti \n jmp +++'", // Label, opcode newline opcode
-    "'-- rti \n jmp --'", // Label, opcode newline opcode
-    "'__ rti \n jmp _f'", // Label, opcode newline opcode
-    "'__ rti \n jmp _b'" // Label, opcode newline opcode
+      "'- rti \n jmp -'", // Label, opcode newline opcode
+      "'--- rti \n jmp ---'", // Label, opcode newline opcode
+      "'+ rti \n jmp +'", // Label, opcode newline opcode
+      "'++ rti \n jmp ++'", // Label, opcode newline opcode
+      "'+++ rti \n jmp +++'", // Label, opcode newline opcode
+      "'-- rti \n jmp --'", // Label, opcode newline opcode
+      "'__ rti \n jmp _f'", // Label, opcode newline opcode
+      "'__ rti \n jmp _b'" // Label, opcode newline opcode
   })
   public void testAnonymousLabelNode(String sourceLine) {
     final String outfile = "test.out";
@@ -104,7 +103,7 @@ public class SourceParserTest {
 
   @Test
   public void testShiftVsGetByteNode() {
-    fail("This test will test >,<, >>,<< are handled as get byte and bit shift nodes");
+    fail("This test will test >,<, >>,<< are handled as getString byte and bit shift nodes");
   }
 
   /**
@@ -322,32 +321,32 @@ public class SourceParserTest {
 
     var body = enumNode.getBody();
     assertEquals(5, body.getChildren().size());
-    assertEquals(1, ((DefinitionNode) body.getChildren().get(0)).getSize().evaluateInt());
-    assertEquals(1, ((DefinitionNode) body.getChildren().get(1)).getSize().evaluateInt());
-    assertEquals(2, ((DefinitionNode) body.getChildren().get(2)).getSize().evaluateInt());
-    assertEquals(16, ((DefinitionNode) body.getChildren().get(3)).getSize().evaluateInt());
-    assertEquals(32, ((DefinitionNode) body.getChildren().get(4)).getSize().evaluateInt());
+    assertEquals(1, (int) ((DefinitionNode) body.getChildren().get(0)).getSize().evaluate());
+    assertEquals(1, (int) ((DefinitionNode) body.getChildren().get(1)).getSize().evaluate());
+    assertEquals(2, (int) ((DefinitionNode) body.getChildren().get(2)).getSize().evaluate());
+    assertEquals(16, (int) ((DefinitionNode) body.getChildren().get(3)).getSize().evaluate());
+    assertEquals(32, (int) ((DefinitionNode) body.getChildren().get(4)).getSize().evaluate());
     assertEquals("SEASON_SPRING", ((DefinitionNode) body.getChildren().get(0)).getLabel());
     assertEquals("SEASON_SUMMER", ((DefinitionNode) body.getChildren().get(1)).getLabel());
   }
 
   @ParameterizedTest
   @CsvSource({
-    ".IF 5 > 10",
-    ".IFDEF LABEL",
-    ".IFDEFM \\5",
-    ".IFEQ 4 4", // Two constant expressions
-    ".IFEQ 4 * 4 BERRIES", // A math experssion and a label
-    ".IFEXISTS \"FileName String\"",
-    ".IFGR 4 * 4 BERRIES",
-    ".IFGR 4 4 ",
-    ".IFGREQ 4 * 4 BERRIES",
-    ".IFGREQ 4 BERRIES",
-    ".IFLE BERRIES 45",
-    ".IFLEEQ BERRIES @JAMMING",
-    ".IFNDEF LABEL",
-    ".IFNDEFM \\5",
-    ".IFNEQ BERRIES :JAMMING",
+      ".IF 5 > 10",
+      ".IFDEF LABEL",
+      ".IFDEFM \\5",
+      ".IFEQ 4 4", // Two constant expressions
+      ".IFEQ 4 * 4 BERRIES", // A math experssion and a label
+      ".IFEXISTS \"FileName String\"",
+      ".IFGR 4 * 4 BERRIES",
+      ".IFGR 4 4 ",
+      ".IFGREQ 4 * 4 BERRIES",
+      ".IFGREQ 4 BERRIES",
+      ".IFLE BERRIES 45",
+      ".IFLEEQ BERRIES @JAMMING",
+      ".IFNDEF LABEL",
+      ".IFNDEFM \\5",
+      ".IFNEQ BERRIES :JAMMING",
   })
   public void parseIfs(String ifStatement) {
     var source =
@@ -370,17 +369,55 @@ public class SourceParserTest {
     var thenNode = (DirectiveBodyNode) ifNode.getBody().getChildren().get(0);
     var elseNode = (DirectiveBodyNode) ifNode.getBody().getChildren().get(1);
 
-    assertEquals("Two", ((DirectiveNode) thenNode.getChildren().get(0)).getArguments().get(1));
-    assertEquals("5", ((DirectiveNode) elseNode.getChildren().get(0)).getArguments().get(1));
+    assertEquals("Two",
+        ((DirectiveNode) thenNode.getChildren().get(0)).getArguments().getString(1));
+    assertEquals("5", ((DirectiveNode) elseNode.getChildren().get(0)).getArguments().getString(1));
   }
 
   @Test
   public void remindSummersToMakeDBAndSimilarDirectivesUseExpressionNodes() {
-    fail("Now that expression nodes are a thing, we should use those and begin to carry type info in the AllDirectivesDirectives.  See .DB as an example where this could be done.");
+    fail(
+        "Now that expression nodes are a thing, we should use those and begin to carry type info in the AllDirectivesDirectives.  See .DB as an example where this could be done.");
   }
-  
 
-  
+  @Test
+  public void testDefineByteParser() {
+    fail("");
+  }
+
+  @Test
+  public void testDefineWordParser() {
+    fail("");
+  }
+
+  @Test
+  public void testDefineByteSeriesParser() {
+    fail("");
+  }
+
+  @Test
+  public void testDefineWordSeriesParser() {
+    fail("");
+  }
+
+  @Test
+  public void handleAsciiCommands() {
+    fail("\n"
+        + "ASCII commands work with .DB and .ASC strings. They are as follows:\n"
+        + "'\\0' -> insert null byte\n"
+        + "'\\x' -> insert hex character\n"
+        + "'\\>' -> set highest bit (0x80) of preceding character\n"
+        + "'\\<' -> set highest bit (0x80) of proceeding character\n"
+        + "\n"
+        + ".ASC hex characters are NOT remapped. This is useful if you need to write special characters. Example:\n"
+        + ".ASC \"My special character: \"\n"
+        + ".DB $59\n"
+        + "...becomes\n"
+        + ".ASC \"My special character: \\x59\"\n"
+        + "=============================\n"
+        + ".DL for 65816 works just like you'd expect it. It write the bank byte when used with labels. :D");
+  }
+
   @Test
   public void parseEnumBodyWithIfDirective() {
     var source =
@@ -433,26 +470,26 @@ public class SourceParserTest {
     assertEquals(
         "monster",
         ((DefinitionNode)
-                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
-                    .getThenBody()
-                    .getChildren()
-                    .get(0))
+            ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                .getThenBody()
+                .getChildren()
+                .get(0))
             .getLabel());
     assertEquals(
         "dragon",
         ((DefinitionNode)
-                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
-                    .getElseBody()
-                    .getChildren()
-                    .get(0))
+            ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                .getElseBody()
+                .getChildren()
+                .get(0))
             .getLabel());
     assertEquals(
         AllDirectives.IFDEF,
         ((DirectiveNode)
-                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
-                    .getThenBody()
-                    .getChildren()
-                    .get(1))
+            ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                .getThenBody()
+                .getChildren()
+                .get(1))
             .getDirectiveType());
   }
 
@@ -497,26 +534,26 @@ public class SourceParserTest {
     assertEquals(
         "age",
         ((DefinitionNode)
-                ((DirectiveBodyNode)
-                        ((IfBodyNode)
-                                ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
-                                    .getBody())
-                            .getElseBody())
-                    .getChildren()
-                    .get(0))
+            ((DirectiveBodyNode)
+                ((IfBodyNode)
+                    ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
+                        .getBody())
+                    .getElseBody())
+                .getChildren()
+                .get(0))
             .getLabel());
     assertEquals(
         2,
-        ((DefinitionNode)
-                ((DirectiveBodyNode)
-                        ((IfBodyNode)
-                                ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
-                                    .getBody())
-                            .getThenBody())
-                    .getChildren()
-                    .get(0))
+        (int) ((DefinitionNode)
+            ((DirectiveBodyNode)
+                ((IfBodyNode)
+                    ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
+                        .getBody())
+                    .getThenBody())
+                .getChildren()
+                .get(0))
             .getSize()
-            .evaluateInt());
+            .evaluate());
   }
 
   @Test
@@ -538,8 +575,8 @@ public class SourceParserTest {
     var body = structNode.getBody();
 
     assertEquals(2, body.getChildren().size());
-    assertEquals(2, ((DefinitionNode) body.getChildren().get(0)).getSize().evaluateInt());
-    assertEquals(1, ((DefinitionNode) body.getChildren().get(1)).getSize().evaluateInt());
+    assertEquals(2, (int) ((DefinitionNode) body.getChildren().get(0)).getSize().evaluate());
+    assertEquals(1, (int) ((DefinitionNode) body.getChildren().get(1)).getSize().evaluate());
     assertEquals("name", ((DefinitionNode) body.getChildren().get(0)).getLabel());
     assertEquals("age", ((DefinitionNode) body.getChildren().get(1)).getLabel());
     assertEquals("mon", structNode.getName());
@@ -585,22 +622,24 @@ public class SourceParserTest {
     assertEquals("mon", structNode.getName());
     assertEquals(0xA000, Integer.parseInt(enumNode.getAddress()));
     assertEquals(9, enumBody.getChildren().size());
-    assertEquals(1, ((DefinitionNode) enumBody.getChildren().get(0)).getSize().evaluateInt());
-    assertEquals(2, ((DefinitionNode) enumBody.getChildren().get(2)).getSize().evaluateInt());
+    assertEquals(1, (int) ((DefinitionNode) enumBody.getChildren().get(0)).getSize().evaluate());
+    assertEquals(2, (int) ((DefinitionNode) enumBody.getChildren().get(2)).getSize().evaluate());
 
     assertEquals("name", ((DefinitionNode) structBody.getChildren().get(0)).getLabel());
     assertEquals("age", ((DefinitionNode) structBody.getChildren().get(1)).getLabel());
     assertTrue(((DefinitionNode) structBody.getChildren().get(1)).getStructName().isEmpty());
     assertEquals("mon", structNode.getName());
-    assertEquals(3, ((DefinitionNode) enumBody.getChildren().get(7)).getSize().evaluateInt());
+    assertEquals(3, (int) ((DefinitionNode) enumBody.getChildren().get(7)).getSize().evaluate());
     assertEquals("monster", ((DefinitionNode) enumBody.getChildren().get(7)).getLabel());
     assertEquals("mon", ((DefinitionNode) enumBody.getChildren().get(7)).getStructName().get());
-    assertEquals(1, ((DefinitionNode) enumBody.getChildren().get(8)).getSize().evaluateInt());
+    assertEquals(1, (int) ((DefinitionNode) enumBody.getChildren().get(8)).getSize().evaluate());
     assertEquals("dragon", ((DefinitionNode) enumBody.getChildren().get(8)).getLabel());
     assertEquals("mon", ((DefinitionNode) enumBody.getChildren().get(8)).getStructName().get());
   }
 
-  /** Only if directives are allowed inside of a DirectiveBody */
+  /**
+   * Only if directives are allowed inside of a DirectiveBody
+   */
   @Test
   public void parseEnumBodyWithDirectiveThrowsParseException() {
     final String enumSource =
@@ -682,7 +721,9 @@ public class SourceParserTest {
         });
   }
 
-  /** macro_1 is a basic macro with no variables or lookups or anything. */
+  /**
+   * macro_1 is a basic macro with no variables or lookups or anything.
+   */
   @Test
   public void testDefineMacro1BasicMacro() throws IOException {
     final String macroSource =
@@ -708,12 +749,14 @@ public class SourceParserTest {
     var body = node.getBody();
     assertEquals(NodeTypes.OPCODE, body.getChildren().get(0).getType());
     assertEquals(NodeTypes.LABEL, body.getChildren().get(1).getType());
-    assertEquals("-", ((LabelNode)body.getChildren().get(1)).getLabelName());
+    assertEquals("-", ((LabelNode) body.getChildren().get(1)).getLabelName());
     assertEquals(NodeTypes.OPCODE, body.getChildren().get(2).getType());
 
   }
 
-  /** macro_2 is a basic macro with two variables */
+  /**
+   * macro_2 is a basic macro with two variables
+   */
   @Test
   public void testDefineMacro2DeclaredVariables() throws IOException {
     final String macroSource =
@@ -737,13 +780,15 @@ public class SourceParserTest {
     assertEquals("Engine_FillMemory", node.getName());
 
     var arguments = node.getArguments();
-    assertEquals("value", arguments.get(1));
-    assertEquals("value2", arguments.get(2));
-    assertEquals("value3", arguments.get(3));
+    assertEquals("value", arguments.getString(1));
+    assertEquals("value2", arguments.getString(2));
+    assertEquals("value3", arguments.getString(3));
   }
 
 
-  /** macro_3 is a basic macro with labels inside that refer to macro arguments by number*/
+  /**
+   * macro_3 is a basic macro with labels inside that refer to macro arguments by number
+   */
   @Test
   public void testDefineMacro3DeclaredVariables() throws IOException {
     final String macroSource =
@@ -764,17 +809,19 @@ public class SourceParserTest {
     SourceParser parser = new SourceParser(scanner);
 
     MacroNode node = (MacroNode) parser.nextNode();
-    
+
     var arguments = node.getArguments();
     assertEquals(1, arguments.size());
     var body = node.getBody();
     DirectiveNode dbNode = (DirectiveNode) body.getChildren().get(0);
     var dbArgs = dbNode.getArguments();
     assertEquals(2, dbArgs.size());
-    assertEquals("\\1", dbArgs.get(1));
+    assertEquals("\\1", dbArgs.getString(1));
   }
 
-  /** macro_3 is a basic macro with labels inside that refer to macro arguments by number*/
+  /**
+   * macro_3 is a basic macro with labels inside that refer to macro arguments by number
+   */
   @Test
   public void testLargeFile() throws IOException {
     final String macroSource =
@@ -795,12 +842,12 @@ public class SourceParserTest {
     SourceParser parser = new SourceParser(scanner);
 
     var node = parser.nextNode();
-    
+
     while (node != null) {
       System.out.println(node);
       node = parser.nextNode();
     }
-    
+
   }
 
 

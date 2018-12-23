@@ -1,6 +1,7 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section;
 
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 
 public class SectionArgumentsNode extends DirectiveArgumentsNode {
 
@@ -19,28 +20,28 @@ public class SectionArgumentsNode extends DirectiveArgumentsNode {
   public void put(SectionParser.KEYS key, String value) {
     switch (key) {
       case NAME:
-        arguments.set(0, value);
+        arguments.set(0, new StringExpressionNode(value));
         break;
       case BANKHEADER:
-        arguments.set(1, value);
+        arguments.set(1, new StringExpressionNode(value));
         break;
       case NAMESPACE:
-        arguments.set(2, value);
+        arguments.set(2, new StringExpressionNode(value));
         break;
       case SIZE:
-        arguments.set(3, value);
+        arguments.set(3, new StringExpressionNode(value));
         break;
       case ALIGN:
-        arguments.set(4, value);
+        arguments.set(4, new StringExpressionNode(value));
         break;
       case STATUS:
-        arguments.set(5, value);
+        arguments.set(5, new StringExpressionNode(value));
         break;
       case APPEND_TO:
-        arguments.set(6, value);
+        arguments.set(6, new StringExpressionNode(value));
         break;
       case RETURNORG:
-        arguments.set(7, value);
+        arguments.set(7, new StringExpressionNode(value));
         break;
     }
   }
@@ -48,21 +49,21 @@ public class SectionArgumentsNode extends DirectiveArgumentsNode {
   public String get(SectionParser.KEYS key) {
     switch (key) {
       case NAME:
-        return arguments.get(0);
+        return (String) arguments.get(0).evaluate();
       case BANKHEADER:
-        return arguments.get(1);
+        return (String) arguments.get(1).evaluate();
       case NAMESPACE:
-        return arguments.get(2);
+        return (String) arguments.get(2).evaluate();
       case SIZE:
-        return arguments.get(3);
+        return (String) arguments.get(3).evaluate();
       case ALIGN:
-        return arguments.get(4);
+        return (String) arguments.get(4).evaluate();
       case STATUS:
-        return arguments.get(5);
+        return (String) arguments.get(5).evaluate();
       case APPEND_TO:
-        return arguments.get(6);
+        return (String) arguments.get(6).evaluate();
       case RETURNORG:
-        return arguments.get(7);
+        return (String) arguments.get(7).evaluate();
     }
     throw new IllegalArgumentException("Unknown Key");
   }
