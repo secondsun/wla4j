@@ -83,8 +83,8 @@ public final class TokenUtil {
     }
     String labelString = token.getString();
 
-    if (labelString.matches("__+") || labelString.matches("_+f")|| labelString.matches("_+b")) {
-      //__+ is an anonymous label and _+f/_+b are special commands.
+    if (labelString.matches("__+") || labelString.matches("_+f") || labelString.matches("_+b")) {
+      // __+ is an anonymous label and _+f/_+b are special commands.
     } else {
 
       while (labelString.startsWith("@") || labelString.startsWith("_")) {

@@ -18,8 +18,7 @@ public class DefineByteParser extends GenericDirectiveParser {
 
   private static final List<AllDirectives> types = Arrays.asList(AllDirectives.DB, BYT, BYTE);
 
-  public DefineByteParser(
-      AllDirectives type) {
+  public DefineByteParser(AllDirectives type) {
     super(type);
     if (!types.contains(type)) {
       throw new IllegalArgumentException(type + " not supported.  Use one of " + types);
@@ -47,12 +46,12 @@ public class DefineByteParser extends GenericDirectiveParser {
     }
 
     if (arguments.size() == 0) {
-      throw new ParseException("At least one byte definition is required.", parser.getCurrentToken());
+      throw new ParseException(
+          "At least one byte definition is required.", parser.getCurrentToken());
     }
 
     parser.consumeAndClear(EOL, END_OF_INPUT);
 
     return arguments;
-
   }
 }

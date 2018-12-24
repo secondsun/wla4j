@@ -29,6 +29,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 public abstract class BodyDefinitionParser extends GenericDirectiveParser {
 
   private final AllDirectives endDirective;
+
   public BodyDefinitionParser(AllDirectives type) {
     super(type);
     switch (type) {
@@ -112,7 +113,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
       case "DSB":
         {
           var expression = expressionNode(parser);
-          bodyNode.setSize((NumericExpressionNode)expression);
+          bodyNode.setSize((NumericExpressionNode) expression);
           parser.consumeAndClear(EOL);
           break;
         }
@@ -134,7 +135,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
           break;
         }
       case "INSTANCEOF": // TODO: Sizes of structs may be expressions, but I don't want to deal with
-                         // that yet
+        // that yet
         token = parser.getCurrentToken();
         parser.consumeAndClear(TokenTypes.LABEL);
 

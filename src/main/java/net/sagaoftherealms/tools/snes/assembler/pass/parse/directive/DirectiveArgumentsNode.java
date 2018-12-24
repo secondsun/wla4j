@@ -23,6 +23,7 @@ public class DirectiveArgumentsNode extends Node {
     arguments.add(new StringExpressionNode(argumentValue));
     return this;
   }
+
   public DirectiveArgumentsNode add(ExpressionNode argumentValue) {
     arguments.add(argumentValue);
     return this;
@@ -37,7 +38,6 @@ public class DirectiveArgumentsNode extends Node {
     return arguments.size();
   }
 
-
   protected String safeGet(int index) {
     var argument = arguments.get(index);
     if (argument == null) {
@@ -45,7 +45,5 @@ public class DirectiveArgumentsNode extends Node {
     } else {
       return (String) argument.evaluate();
     }
-
   }
-
 }

@@ -7,6 +7,5 @@ public class AllDirective extends Directive {
     if (s.contains("}") && !s.endsWith("}") && s.split("}")[1].contains(",")) {
       throw new IllegalArgumentException("Directives may not have commas after arrays");
     }
-
   }
 }

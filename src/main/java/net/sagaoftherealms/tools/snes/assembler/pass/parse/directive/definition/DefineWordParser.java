@@ -12,8 +12,7 @@ public class DefineWordParser extends GenericDirectiveParser {
 
   private static final List<AllDirectives> types = Arrays.asList(DW, WORD);
 
-  public DefineWordParser(
-      AllDirectives type) {
+  public DefineWordParser(AllDirectives type) {
     super(type);
     if (!types.contains(type)) {
       throw new IllegalArgumentException(type + " not supported.  Use one of " + types);

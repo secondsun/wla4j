@@ -63,19 +63,19 @@ public class SourceParserTest {
 
     assertEquals(NodeTypes.LABEL, expressionNode.getChildren().get(0).getType());
     assertEquals(NodeTypes.NUMERIC_CONSTANT, expressionNode.getChildren().get(1).getType());
-    assertEquals(TokenTypes.MULTIPLY, ((NumericExpressionNode)expressionNode).getOperationType());
+    assertEquals(TokenTypes.MULTIPLY, ((NumericExpressionNode) expressionNode).getOperationType());
   }
 
   @ParameterizedTest
   @CsvSource({
-      "'- rti \n jmp -'", // Label, opcode newline opcode
-      "'--- rti \n jmp ---'", // Label, opcode newline opcode
-      "'+ rti \n jmp +'", // Label, opcode newline opcode
-      "'++ rti \n jmp ++'", // Label, opcode newline opcode
-      "'+++ rti \n jmp +++'", // Label, opcode newline opcode
-      "'-- rti \n jmp --'", // Label, opcode newline opcode
-      "'__ rti \n jmp _f'", // Label, opcode newline opcode
-      "'__ rti \n jmp _b'" // Label, opcode newline opcode
+    "'- rti \n jmp -'", // Label, opcode newline opcode
+    "'--- rti \n jmp ---'", // Label, opcode newline opcode
+    "'+ rti \n jmp +'", // Label, opcode newline opcode
+    "'++ rti \n jmp ++'", // Label, opcode newline opcode
+    "'+++ rti \n jmp +++'", // Label, opcode newline opcode
+    "'-- rti \n jmp --'", // Label, opcode newline opcode
+    "'__ rti \n jmp _f'", // Label, opcode newline opcode
+    "'__ rti \n jmp _b'" // Label, opcode newline opcode
   })
   public void testAnonymousLabelNode(String sourceLine) {
     final String outfile = "test.out";
@@ -333,21 +333,21 @@ public class SourceParserTest {
 
   @ParameterizedTest
   @CsvSource({
-      ".IF 5 > 10",
-      ".IFDEF LABEL",
-      ".IFDEFM \\5",
-      ".IFEQ 4 4", // Two constant expressions
-      ".IFEQ 4 * 4 BERRIES", // A math experssion and a label
-      ".IFEXISTS \"FileName String\"",
-      ".IFGR 4 * 4 BERRIES",
-      ".IFGR 4 4 ",
-      ".IFGREQ 4 * 4 BERRIES",
-      ".IFGREQ 4 BERRIES",
-      ".IFLE BERRIES 45",
-      ".IFLEEQ BERRIES @JAMMING",
-      ".IFNDEF LABEL",
-      ".IFNDEFM \\5",
-      ".IFNEQ BERRIES :JAMMING",
+    ".IF 5 > 10",
+    ".IFDEF LABEL",
+    ".IFDEFM \\5",
+    ".IFEQ 4 4", // Two constant expressions
+    ".IFEQ 4 * 4 BERRIES", // A math experssion and a label
+    ".IFEXISTS \"FileName String\"",
+    ".IFGR 4 * 4 BERRIES",
+    ".IFGR 4 4 ",
+    ".IFGREQ 4 * 4 BERRIES",
+    ".IFGREQ 4 BERRIES",
+    ".IFLE BERRIES 45",
+    ".IFLEEQ BERRIES @JAMMING",
+    ".IFNDEF LABEL",
+    ".IFNDEFM \\5",
+    ".IFNEQ BERRIES :JAMMING",
   })
   public void parseIfs(String ifStatement) {
     var source =
@@ -370,8 +370,8 @@ public class SourceParserTest {
     var thenNode = (DirectiveBodyNode) ifNode.getBody().getChildren().get(0);
     var elseNode = (DirectiveBodyNode) ifNode.getBody().getChildren().get(1);
 
-    assertEquals("Two",
-        ((DirectiveNode) thenNode.getChildren().get(0)).getArguments().getString(1));
+    assertEquals(
+        "Two", ((DirectiveNode) thenNode.getChildren().get(0)).getArguments().getString(1));
     assertEquals("5", ((DirectiveNode) elseNode.getChildren().get(0)).getArguments().getString(1));
   }
 
@@ -397,20 +397,21 @@ public class SourceParserTest {
 
   @Test
   public void handleAsciiCommands() {
-    fail("\n"
-        + "ASCII commands work with .DB and .ASC strings. They are as follows:\n"
-        + "'\\0' -> insert null byte\n"
-        + "'\\x' -> insert hex character\n"
-        + "'\\>' -> set highest bit (0x80) of preceding character\n"
-        + "'\\<' -> set highest bit (0x80) of proceeding character\n"
-        + "\n"
-        + ".ASC hex characters are NOT remapped. This is useful if you need to write special characters. Example:\n"
-        + ".ASC \"My special character: \"\n"
-        + ".DB $59\n"
-        + "...becomes\n"
-        + ".ASC \"My special character: \\x59\"\n"
-        + "=============================\n"
-        + ".DL for 65816 works just like you'd expect it. It write the bank byte when used with labels. :D");
+    fail(
+        "\n"
+            + "ASCII commands work with .DB and .ASC strings. They are as follows:\n"
+            + "'\\0' -> insert null byte\n"
+            + "'\\x' -> insert hex character\n"
+            + "'\\>' -> set highest bit (0x80) of preceding character\n"
+            + "'\\<' -> set highest bit (0x80) of proceeding character\n"
+            + "\n"
+            + ".ASC hex characters are NOT remapped. This is useful if you need to write special characters. Example:\n"
+            + ".ASC \"My special character: \"\n"
+            + ".DB $59\n"
+            + "...becomes\n"
+            + ".ASC \"My special character: \\x59\"\n"
+            + "=============================\n"
+            + ".DL for 65816 works just like you'd expect it. It write the bank byte when used with labels. :D");
   }
 
   @Test
@@ -465,26 +466,26 @@ public class SourceParserTest {
     assertEquals(
         "monster",
         ((DefinitionNode)
-            ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
-                .getThenBody()
-                .getChildren()
-                .get(0))
+                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                    .getThenBody()
+                    .getChildren()
+                    .get(0))
             .getLabel());
     assertEquals(
         "dragon",
         ((DefinitionNode)
-            ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
-                .getElseBody()
-                .getChildren()
-                .get(0))
+                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                    .getElseBody()
+                    .getChildren()
+                    .get(0))
             .getLabel());
     assertEquals(
         AllDirectives.IFDEF,
         ((DirectiveNode)
-            ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
-                .getThenBody()
-                .getChildren()
-                .get(1))
+                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                    .getThenBody()
+                    .getChildren()
+                    .get(1))
             .getDirectiveType());
   }
 
@@ -529,26 +530,27 @@ public class SourceParserTest {
     assertEquals(
         "age",
         ((DefinitionNode)
-            ((DirectiveBodyNode)
-                ((IfBodyNode)
-                    ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
-                        .getBody())
-                    .getElseBody())
-                .getChildren()
-                .get(0))
+                ((DirectiveBodyNode)
+                        ((IfBodyNode)
+                                ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
+                                    .getBody())
+                            .getElseBody())
+                    .getChildren()
+                    .get(0))
             .getLabel());
     assertEquals(
         2,
-        (int) ((DefinitionNode)
-            ((DirectiveBodyNode)
-                ((IfBodyNode)
-                    ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
-                        .getBody())
-                    .getThenBody())
-                .getChildren()
-                .get(0))
-            .getSize()
-            .evaluate());
+        (int)
+            ((DefinitionNode)
+                    ((DirectiveBodyNode)
+                            ((IfBodyNode)
+                                    ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
+                                        .getBody())
+                                .getThenBody())
+                        .getChildren()
+                        .get(0))
+                .getSize()
+                .evaluate());
   }
 
   @Test
@@ -632,9 +634,7 @@ public class SourceParserTest {
     assertEquals("mon", ((DefinitionNode) enumBody.getChildren().get(8)).getStructName().get());
   }
 
-  /**
-   * Only if directives are allowed inside of a DirectiveBody
-   */
+  /** Only if directives are allowed inside of a DirectiveBody */
   @Test
   public void parseEnumBodyWithDirectiveThrowsParseException() {
     final String enumSource =
@@ -719,9 +719,7 @@ public class SourceParserTest {
         });
   }
 
-  /**
-   * macro_1 is a basic macro with no variables or lookups or anything.
-   */
+  /** macro_1 is a basic macro with no variables or lookups or anything. */
   @Test
   public void testDefineMacro1BasicMacro() throws IOException {
     final String macroSource =
@@ -749,12 +747,9 @@ public class SourceParserTest {
     assertEquals(NodeTypes.LABEL, body.getChildren().get(1).getType());
     assertEquals("-", ((LabelNode) body.getChildren().get(1)).getLabelName());
     assertEquals(NodeTypes.OPCODE, body.getChildren().get(2).getType());
-
   }
 
-  /**
-   * macro_2 is a basic macro with two variables
-   */
+  /** macro_2 is a basic macro with two variables */
   @Test
   public void testDefineMacro2DeclaredVariables() throws IOException {
     final String macroSource =
@@ -783,10 +778,7 @@ public class SourceParserTest {
     assertEquals("value3", arguments.getString(3));
   }
 
-
-  /**
-   * macro_3 is a basic macro with labels inside that refer to macro arguments by number
-   */
+  /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */
   @Test
   public void testDefineMacro3DeclaredVariables() throws IOException {
     final String macroSource =
@@ -814,12 +806,13 @@ public class SourceParserTest {
     DirectiveNode dbNode = (DirectiveNode) body.getChildren().get(0);
     var dbArgs = dbNode.getArguments();
     assertEquals(2, dbArgs.size());
-    assertEquals("\\1", ((LabelNode)((NumericExpressionNode)dbArgs.getChildren().get(1)).getChildren().get(0)).getLabelName());
+    assertEquals(
+        "\\1",
+        ((LabelNode) ((NumericExpressionNode) dbArgs.getChildren().get(1)).getChildren().get(0))
+            .getLabelName());
   }
 
-  /**
-   * macro_3 is a basic macro with labels inside that refer to macro arguments by number
-   */
+  /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */
   @Test
   public void testLargeFile() throws IOException {
     final String macroSource =
@@ -845,8 +838,5 @@ public class SourceParserTest {
       System.out.println(node);
       node = parser.nextNode();
     }
-
   }
-
-
 }

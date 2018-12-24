@@ -1,7 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
 
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ConstantNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 

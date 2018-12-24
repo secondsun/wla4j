@@ -2,7 +2,6 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section;
 
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode;
 
 public class RamsectionArgumentsNode extends DirectiveArgumentsNode {
   public enum RamsectionArguments {

@@ -9,7 +9,6 @@ public class MacroNode extends DirectiveNode {
 
   private final Token startToken;
 
-
   public MacroNode(Token startToken) {
     super(AllDirectives.MACRO);
     this.startToken = startToken;
@@ -27,5 +26,4 @@ public class MacroNode extends DirectiveNode {
   public String getName() {
     return getArguments().getString(0);
   }
-
 }

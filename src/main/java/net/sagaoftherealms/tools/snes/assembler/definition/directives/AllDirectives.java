@@ -1,25 +1,19 @@
 package net.sagaoftherealms.tools.snes.assembler.definition.directives;
 
 /**
- *  x = a whole number
- *  f = a number with a decimal part
- *  c = a character
- *  s = a String value (expands to "some text"
- *  l = a label (which will be a string)
+ * x = a whole number f = a number with a decimal part c = a character s = a String value (expands
+ * to "some text" l = a label (which will be a string)
  *
- *  t = a boolean expression
- *  e = a integer expression
+ * <p>t = a boolean expression e = a integer expression
  *
- *  {x|y} One or more of x, y...
- *  []{} = A comma separated List of types in the braces (see .DB in
- *  https://wla-dx.readthedocs.io/en/latest/asmdiv.html)
+ * <p>{x|y} One or more of x, y... []{} = A comma separated List of types in the braces (see .DB in
+ * https://wla-dx.readthedocs.io/en/latest/asmdiv.html)
  *
- *  ? = Optional
+ * <p>? = Optional
  *
- *  (pattern) a pattern
+ * <p>(pattern) a pattern
  */
 public enum AllDirectives {
-
   EIGHT_BIT(new AllDirective(".8BIT")),
   SIXTEEN_BIT(new AllDirective(".16BIT")),
   TWENTYFOUR_BIT(new AllDirective(".24BIT")),
@@ -107,10 +101,10 @@ public enum AllDirectives {
   REPEAT(new AllDirective(".REPEAT x ?(INDEX l)")),
   REPT(new AllDirective(".REPT x ?(INDEX l)")),
   ENDR(new AllDirective(".ENDR")),
-  ENUM(new AllDirective(".ENUM x ?{ASC|DESC} ?(EXPORT)")),/*EnumParser*/
-  ENDE(new AllDirective(".ENDE")),/*EnumParser*/
-  STRUCT(new AllDirective(".STRUCT l")),/*StructParser*/
-  ENDST(new AllDirective(".ENDST")),/*StructParser*/
+  ENUM(new AllDirective(".ENUM x ?{ASC|DESC} ?(EXPORT)")), /*EnumParser*/
+  ENDE(new AllDirective(".ENDE")), /*EnumParser*/
+  STRUCT(new AllDirective(".STRUCT l")), /*StructParser*/
+  ENDST(new AllDirective(".ENDST")), /*StructParser*/
   MEMORYMAP(new AllDirective(".MEMORYMAP")),
   ENDME(new AllDirective(".ENDME")),
   ROMBANKMAP(new AllDirective(".ROMBANKMAP")),
@@ -144,16 +138,11 @@ public enum AllDirectives {
     this.pattern = directive.getPattern();
   }
 
-
   public String getName() {
     return name;
   }
 
-
   public String getPattern() {
     return pattern;
   }
-
-
-
 }

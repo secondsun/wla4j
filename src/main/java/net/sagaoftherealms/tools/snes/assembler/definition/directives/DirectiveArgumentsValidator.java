@@ -194,7 +194,8 @@ public final class DirectiveArgumentsValidator {
 
   private boolean matchInt(Token token) {
     return token.getType().equals(TokenTypes.NUMBER)
-        && (token.getString().startsWith("$") || token.getString().matches("^\\d+$")); // any number of digits
+        && (token.getString().startsWith("$")
+            || token.getString().matches("^\\d+$")); // any number of digits
   }
 
   interface Matcher {
@@ -421,7 +422,7 @@ public final class DirectiveArgumentsValidator {
       if (hasMatched
           && !oneOfPattern.contains(
               "e")) { // As one of implies, it can only match one.  However expressions are hard to
-                      // do because they require multiple tokens to be matched possible.
+        // do because they require multiple tokens to be matched possible.
         return false;
       }
 

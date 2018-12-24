@@ -14,7 +14,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 /** Parses expressions in the body definition. */
 public class ExpressionParser {
 
-  private ExpressionParser(){}
+  private ExpressionParser() {}
 
   private static final List<TokenTypes> factorTypes =
       Arrays.asList(TokenTypes.NUMBER, TokenTypes.LABEL);
@@ -31,7 +31,6 @@ public class ExpressionParser {
     }
 
     NumericExpressionNode returnNode = new NumericExpressionNode();
-
 
     boolean parsing = true;
     while (parsing) {
@@ -73,14 +72,16 @@ public class ExpressionParser {
     return returnNode;
   }
 
-  private static void addNumberFactor(SourceParser parser, NumericExpressionNode returnNode, Token token) {
+  private static void addNumberFactor(
+      SourceParser parser, NumericExpressionNode returnNode, Token token) {
     ConstantNode numberNode = new ConstantNode(NodeTypes.NUMERIC_CONSTANT);
     numberNode.setValue(token.getString());
     parser.consume(TokenTypes.NUMBER);
     returnNode.addChild(numberNode);
   }
 
-  private static void addLabelFactor(SourceParser parser, NumericExpressionNode returnNode, Token token) {
+  private static void addLabelFactor(
+      SourceParser parser, NumericExpressionNode returnNode, Token token) {
     LabelNode labelNode = new LabelNode(token);
     parser.consume(TokenTypes.LABEL);
     returnNode.addChild(labelNode);

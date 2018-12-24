@@ -29,10 +29,8 @@ public class SectionParser implements DirectiveParser {
     var token = parser.getCurrentToken();
     var node = parser.nextNode();
 
-    while (node != null ) {
+    while (node != null) {
       if (node.getType().equals(NodeTypes.DIRECTIVE)) {
-
-
 
         var directiveNode = (DirectiveNode) node;
         var directive = directiveNode.getDirectiveType();

@@ -125,7 +125,8 @@ public class SourceScanner {
       return directiveToken(sourceString);
     } else if (Character.isDigit(character) || character == '$' || character == '%') {
       return numberToken(sourceString, character);
-    } else if (character == '\'' ) {//Escape character unless it is \1 \2 etc then it is a macro label.
+    } else if (character
+        == '\'') { // Escape character unless it is \1 \2 etc then it is a macro label.
       return characterToken(sourceString);
     } else if (Character.isAlphabetic(character)
         || character == '_'
@@ -146,12 +147,12 @@ public class SourceScanner {
               nextCharacter = sourceString.charAt(linePosition);
             }
           }
-          
-          if ((linePosition) < sourceString.length() && sourceString.charAt(linePosition)== ':') {
+
+          if ((linePosition) < sourceString.length() && sourceString.charAt(linePosition) == ':') {
             toReturn += nextCharacter;
             linePosition++;
           }
-          
+
           return toReturn;
         }
       }
