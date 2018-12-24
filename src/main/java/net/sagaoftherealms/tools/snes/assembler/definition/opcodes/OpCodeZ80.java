@@ -1147,12 +1147,20 @@ public class OpCodeZ80 extends OpCode {
     new OpCodeZ80("E", 0x100, -1, 0, 0)
   };
 
-  private final int hex_x;
+  private final int hexX;
   private final int value;
 
-  public OpCodeZ80(String op, int hex, int type, int hex_x, int value) {
+  public OpCodeZ80(String op, int hex, int type, int hexX, int value) {
     super(op, hex, type);
-    this.hex_x = hex_x;
+    this.hexX = hexX;
     this.value = value;
+  }
+
+  public int getHexX() {
+    return hexX;
+  }
+
+  public int getValue() {
+    return value;
   }
 }

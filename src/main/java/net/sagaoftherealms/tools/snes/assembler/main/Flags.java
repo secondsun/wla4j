@@ -44,8 +44,8 @@ public class Flags {
 
   public Result parse() {
     int count;
-    int asm_name_def = 0;
-    StringBuilder str_build = null;
+    int asmnameDef = 0;
+    StringBuilder strBuild = null;
     int flagc = flags.length;
 
     for (count = 0; count < flags.length; count++) {
@@ -89,18 +89,18 @@ public class Flags {
             if (count + 1 < flagc) {
               if (count + 3 < flagc) {
                 if (!(flags[count + 2].equals("="))) {
-                  str_build =
+                  strBuild =
                       new StringBuilder(
                           (flags[count + 1].length()) + (flags[count + 3]).length() + 2);
-                  str_build.append(String.format("%s=%s", flags[count + 1], flags[count + 3]));
-                  parse_and_add_definition(str_build.toString(), NO);
-                  str_build = null;
+                  strBuild.append(String.format("%s=%s", flags[count + 1], flags[count + 3]));
+                  parseAndAddDefinition(strBuild.toString(), NO);
+                  strBuild = null;
                   count += 2;
                 } else {
-                  parse_and_add_definition(flags[count + 1], NO);
+                  parseAndAddDefinition(flags[count + 1], NO);
                 }
               } else {
-                parse_and_add_definition(flags[count + 1], NO);
+                parseAndAddDefinition(flags[count + 1], NO);
               }
             } else {
               throw new RuntimeException("parse error");
@@ -114,7 +114,7 @@ public class Flags {
           {
             if (count + 1 < flagc) {
               /* getString arg */
-              parse_and_set_incdir(flags[count + 1], NO);
+              parseAndSetIncdir(flags[count + 1], NO);
             } else {
               throw new RuntimeException("Unknown Flag " + flags[count] + ":" + flags[count + 1]);
             }
@@ -159,15 +159,15 @@ public class Flags {
             if (count == flags.length - 1) {
               asmName = (flags[count]);
               count++;
-              asm_name_def++;
+              asmnameDef++;
             } else {
               /* legacy support? */
               if (flags[count].equals("-D")) {
                 /* old define */
-                parse_and_add_definition(flags[count], YES);
+                parseAndAddDefinition(flags[count], YES);
               } else if (flags[count].equals("-I")) {
                 /* old include directory */
-                parse_and_set_incdir(flags[count], YES);
+                parseAndSetIncdir(flags[count], YES);
                 continue;
               } else {
                 throw new RuntimeException("Unknown Flag " + flags[count]);
@@ -178,20 +178,20 @@ public class Flags {
       }
     }
 
-    if (asm_name_def <= 0) {
+    if (asmnameDef <= 0) {
       throw new RuntimeException("No assembly name definition passed.");
     }
 
     return Result.SUCCEEDED;
   }
 
-  private Result parse_and_set_incdir(String flag, Defines.YesNo contains_flag) {
+  private Result parseAndSetIncdir(String flag, Defines.YesNo containsFlag) {
     try {
       String name;
       int i;
 
       /* skip the flag? */
-      if (contains_flag == YES) {
+      if (containsFlag == YES) {
         flag = flag.substring(2);
       }
 
@@ -206,7 +206,7 @@ public class Flags {
     }
   }
 
-  void parse_and_add_definition(String flag, Defines.YesNo contains_flag) {
+  void parseAndAddDefinition(String flag, Defines.YesNo containsFlag) {
 
     String n;
     String flagsAfterSplit[];
@@ -214,7 +214,7 @@ public class Flags {
     int i;
 
     /* skip the flag? */
-    if (contains_flag == YES) {
+    if (containsFlag == YES) {
       flag = flag.substring(2);
     }
 
@@ -238,19 +238,19 @@ public class Flags {
             throw new RuntimeException(e);
           }
 
-          add_a_new_definition(key, intValue, null, DEFINITION_TYPE_VALUE);
+          addANewDefinition(key, intValue, null, DEFINITION_TYPE_VALUE);
         } else if (value.matches("[0-9]+")) {
           try {
             intValue = Integer.parseInt(value);
           } catch (Exception e) {
             throw new RuntimeException(e);
           }
-          add_a_new_definition(key, intValue, null, DEFINITION_TYPE_VALUE);
+          addANewDefinition(key, intValue, null, DEFINITION_TYPE_VALUE);
         } else {
-          add_a_new_definition(key, 0, value, DEFINITION_TYPE_STRING);
+          addANewDefinition(key, 0, value, DEFINITION_TYPE_STRING);
         }
       } else {
-        add_a_new_definition(key, 0.0, null, DEFINITION_TYPE_VALUE);
+        addANewDefinition(key, 0.0, null, DEFINITION_TYPE_VALUE);
       }
     }
   }
@@ -258,10 +258,10 @@ public class Flags {
   public void redefine(
       String key, double doubleValue, String stringVal, Defines.DefinitionType type) {
     // Originally had two, now just have one
-    add_a_new_definition(key, doubleValue, stringVal, type);
+    addANewDefinition(key, doubleValue, stringVal, type);
   }
 
-  public void add_a_new_definition(
+  public void addANewDefinition(
       String key, double doubleValue, String stringVal, Defines.DefinitionType type) {
     var definition = definitions.get(key);
     // Original code has a null check here, but this is Java we don't care about strings and memeory

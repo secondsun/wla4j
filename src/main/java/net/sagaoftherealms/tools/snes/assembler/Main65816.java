@@ -9,7 +9,6 @@ import static net.sagaoftherealms.tools.snes.assembler.main.Flags.Result.SUCCEED
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 
@@ -18,20 +17,13 @@ public class Main65816 {
 
   private static final String wla_version =
       "65816 Macro Assembler for Java based on WLA 65816 Macro Assembler v9.8a.";
-  private static HashMap defines_map;
-  private static HashMap global_unique_label_map;
-  private static HashMap namespace_map;
-  private static boolean commandline_parsing;
 
   private static Flags flags;
   private static String finalName;
-  private static File gba_tmp_file;
+  private static File gbaTmpFile;
 
   public static void main(String... args) {
     try {
-      defines_map = new HashMap();
-      global_unique_label_map = new HashMap();
-      namespace_map = new HashMap();
       flags = new Flags(args);
 
       if (flags.getOutputFormat() == OUTPUT_NONE) {
@@ -51,36 +43,19 @@ public class Main65816 {
         throw new RuntimeException("Input and output files have same name");
       }
 
-      gba_tmp_file = File.createTempFile("wla", "tmp");
+      gbaTmpFile = File.createTempFile("wla", "tmp");
 
       /* small inits */
       if (flags.isExtraDefinitions()) {
-        generate_extra_definitions();
+        generateExtraDefinitions();
       }
 
-      commandline_parsing = false;
+      boolean commandline_parsing = false;
 
       /* start the process */
 
       InputData data = new InputData(flags);
       data.includeFile(flags.getAsmName());
-      //            new Pass1(data).pass();
-      //
-      //
-      //            if (pass_1() == FAILED)
-      //
-      //                if (pass_2() == FAILED)
-      //                    return 1;
-      //            if (pass_3() == FAILED)
-      //                return 1;
-      //            if (flags.listfile_data == YES) {
-      //                if (listfile_collect() == FAILED)
-      //                    return 1;
-      //            }
-      //            if (pass_4() == FAILED)
-      //                return 1;
-      //
-      //            return 0;
 
     } catch (IOException e) {
       e.printStackTrace();
@@ -89,16 +64,16 @@ public class Main65816 {
     }
   }
 
-  private static void generate_extra_definitions() {
+  private static void generateExtraDefinitions() {
     String dateString;
 
     /* generate WLA_TIME */
     dateString = new Date().toString();
 
-    flags.add_a_new_definition("WLA_TIME", 0.0, dateString, DEFINITION_TYPE_STRING);
-    flags.add_a_new_definition("wla_time", 0.0, dateString, DEFINITION_TYPE_STRING);
-    flags.add_a_new_definition("WLA_VERSION", 0.0, wla_version, DEFINITION_TYPE_STRING);
-    flags.add_a_new_definition("wla_version", 0.0, wla_version, DEFINITION_TYPE_STRING);
+    flags.addANewDefinition("WLA_TIME", 0.0, dateString, DEFINITION_TYPE_STRING);
+    flags.addANewDefinition("wla_time", 0.0, dateString, DEFINITION_TYPE_STRING);
+    flags.addANewDefinition("WLA_VERSION", 0.0, wla_version, DEFINITION_TYPE_STRING);
+    flags.addANewDefinition("wla_version", 0.0, wla_version, DEFINITION_TYPE_STRING);
   }
 
   private static void printDefaultMessage() {
@@ -123,8 +98,8 @@ public class Main65816 {
   }
 
   private static void proceduresAtExit() {
-    if (gba_tmp_file != null) {
-      gba_tmp_file.deleteOnExit();
+    if (gbaTmpFile != null) {
+      gbaTmpFile.deleteOnExit();
     }
   }
 }

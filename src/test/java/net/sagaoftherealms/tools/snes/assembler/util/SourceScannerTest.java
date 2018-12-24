@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.common.base.Strings;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.stream.Stream;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeSpc700;
@@ -22,6 +23,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class SourceScannerTest {
+
+  private static final Random random = new Random();
 
   public static Stream<Arguments> opcodeGenerator65816() {
     return Arrays.stream(Opcodes65816.opt_table)
@@ -387,7 +390,7 @@ public class SourceScannerTest {
     Arrays.stream(AllDirectives.values())
         .forEach(
             it -> {
-              var sourceLine = AllDirectives.generateDirectiveLine(it.getPattern(), true);
+              var sourceLine = generateDirectiveLine(it.getPattern(), true);
               var data = new InputData(new Flags("main.s"));
               data.includeFile($(sourceLine), "main.s", 0);
 
@@ -445,4 +448,170 @@ public class SourceScannerTest {
     assertEquals(TokenTypes.MULTIPLY, scanner.getNextToken().getType());
     assertEquals(TokenTypes.NUMBER, scanner.getNextToken().getType());
   }
+
+  public static String generateDirectiveLine(String pattern, boolean skipFirst) {
+
+    StringBuilder builder = new StringBuilder();
+    int patternIndex = 0;
+
+    char patternCharacter = pattern.charAt(patternIndex);
+
+    while (patternCharacter != ' ' && skipFirst) {
+
+      builder.append(patternCharacter);
+      patternIndex = patternIndex + 1;
+      if (patternIndex < pattern.length()) {
+        patternCharacter = pattern.charAt(patternIndex);
+      } else {
+        break;
+      }
+    }
+
+    for (; patternIndex <= pattern.length(); patternIndex++) {
+      if (patternIndex < pattern.length()) {
+        patternCharacter = pattern.charAt(patternIndex);
+      } else {
+        break;
+      }
+      switch (patternCharacter) {
+        case ')':
+          break;
+        case 'x':
+          builder.append(random.nextInt(256));
+          break;
+        case 'f':
+          builder.append(random.nextInt(256)).append(".").append(random.nextInt(10));
+          break;
+        case 'c':
+          builder.append((char) (random.nextInt(26) + 'A'));
+          break;
+        case 's':
+        case 'l':
+          builder.append('"').append(randomString(10)).append('"');
+          break;
+        case 't':
+          builder.append("x != y");
+          break;
+        case 'e':
+          builder.append("(5 + 6)");
+          break;
+        case '{': {
+          patternIndex++;
+          var newPatternBuilder = new StringBuilder();
+          var test = pattern.charAt(patternIndex);
+          while (test != '}') {
+            newPatternBuilder.append(test);
+            test = pattern.charAt(++patternIndex);
+          }
+
+          var newPattern = newPatternBuilder.toString();
+          builder.append(
+              generateDirectiveLine(
+                  "" + newPattern.charAt(random.nextInt(newPattern.length())), false));
+        }
+        break;
+        case '[': {
+          patternIndex++; // ]
+          if (pattern.charAt(++patternIndex) == '(') {
+
+            var newPatternBuilder = new StringBuilder();
+            newPatternBuilder.append('(');
+            var test = pattern.charAt(++patternIndex);
+            while (test != ')') {
+              newPatternBuilder.append(test);
+              test = pattern.charAt(++patternIndex);
+            }
+            newPatternBuilder.append(')');
+
+            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
+            builder.append(',');
+            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
+            builder.append(',');
+            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
+          } else {
+
+            var newPatternBuilder = new StringBuilder();
+            newPatternBuilder.append('{');
+            var test = pattern.charAt(++patternIndex);
+            while (test != '}') {
+              newPatternBuilder.append(test);
+              test = pattern.charAt(++patternIndex);
+            }
+            newPatternBuilder.append('}');
+            var newPattern = newPatternBuilder.toString();
+
+            builder.append(
+                generateDirectiveLine(
+                    "" + newPattern.charAt(random.nextInt(newPattern.length() - 2) + 1), false));
+            builder.append(',');
+            builder.append(
+                generateDirectiveLine(
+                    "" + newPattern.charAt(random.nextInt(newPattern.length() - 2) + 1), false));
+            builder.append(',');
+            builder.append(
+                generateDirectiveLine(
+                    "" + newPattern.charAt(random.nextInt(newPattern.length() - 2) + 1), false));
+          }
+        }
+        break;
+        case '?': {
+          //                    if (!random.nextBoolean()) {
+          //                        break;
+          //                    }
+          patternIndex++; // ?
+
+          if (pattern.charAt(patternIndex++) == '(') { // (
+            var newPatternBuilder = new StringBuilder();
+            newPatternBuilder.append('(');
+            var test = pattern.charAt(patternIndex);
+            while (test != ')') {
+              newPatternBuilder.append(test);
+              test = pattern.charAt(++patternIndex);
+            }
+            newPatternBuilder.append(')');
+            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
+          } else {
+            // assume }
+            var newPatternBuilder = new StringBuilder();
+
+            var test = pattern.charAt(patternIndex);
+            while (test != '}') {
+              newPatternBuilder.append(test);
+              test = pattern.charAt(++patternIndex);
+            }
+
+            String[] choices = newPatternBuilder.toString().split("\\|");
+            builder.append(choices[random.nextInt(choices.length)]);
+          }
+        }
+        break;
+        case '(': {
+          patternIndex++; // (
+
+          var newPatternBuilder = new StringBuilder();
+          var test = pattern.charAt(patternIndex);
+          while (test != ')') {
+            newPatternBuilder.append(test);
+            test = pattern.charAt(++patternIndex);
+          }
+          builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
+        }
+        break;
+
+        default:
+          builder.append(patternCharacter);
+      }
+    }
+    return builder.toString();
+  }
+
+  private static String randomString(int i) {
+    var b = new StringBuilder(i);
+    for (int x = 0; x < i; x++) {
+      b.append((char) (random.nextInt(26) + 'A'));
+    }
+    return b.toString();
+  }
+
+
 }

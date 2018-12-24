@@ -1,24 +1,25 @@
 package net.sagaoftherealms.tools.snes.assembler.definition.directives;
 
-import java.util.Random;
-
+/**
+ *  x = a whole number
+ *  f = a number with a decimal part
+ *  c = a character
+ *  s = a String value (expands to "some text"
+ *  l = a label (which will be a string)
+ *
+ *  t = a boolean expression
+ *  e = a integer expression
+ *
+ *  {x|y} One or more of x, y...
+ *  []{} = A comma separated List of types in the braces (see .DB in
+ *  https://wla-dx.readthedocs.io/en/latest/asmdiv.html)
+ *
+ *  ? = Optional
+ *
+ *  (pattern) a pattern
+ */
 public enum AllDirectives {
-  // x = a whole number
-  // f = a number with a decimal part
-  // c = a character
-  // s = a String value (expands to "some text"
-  // l = a label (which will be a string)
 
-  // t = a boolean expression
-  // e = a integer expression
-
-  // {x|y} One or more of x, y...
-  // []{} = A comma separated List of types in the braces (see .DB in
-  // https://wla-dx.readthedocs.io/en/latest/asmdiv.html)
-
-  // ? = Optional
-
-  // (pattern) a pattern
   EIGHT_BIT(new AllDirective(".8BIT")),
   SIXTEEN_BIT(new AllDirective(".16BIT")),
   TWENTYFOUR_BIT(new AllDirective(".24BIT")),
@@ -143,194 +144,16 @@ public enum AllDirectives {
     this.pattern = directive.getPattern();
   }
 
-  public static String generateDirectiveLine(String pattern, boolean skipFirst) {
-    Random r = new Random();
-    StringBuilder builder = new StringBuilder();
-    int patternIndex = 0;
-
-    char patternCharacter = pattern.charAt(patternIndex);
-
-    while (patternCharacter != ' ' && skipFirst) {
-
-      builder.append(patternCharacter);
-      patternIndex = patternIndex + 1;
-      if (patternIndex < pattern.length()) {
-        patternCharacter = pattern.charAt(patternIndex);
-      } else {
-        break;
-      }
-    }
-
-    for (; patternIndex <= pattern.length(); patternIndex++) {
-      if (patternIndex < pattern.length()) {
-        patternCharacter = pattern.charAt(patternIndex);
-      } else {
-        break;
-      }
-      switch (patternCharacter) {
-        case ')':
-          break;
-        case 'x':
-          builder.append(r.nextInt(256));
-          break;
-        case 'f':
-          builder.append(r.nextInt(256)).append(".").append(r.nextInt(10));
-          break;
-        case 'c':
-          builder.append((char) (r.nextInt(26) + 'A'));
-          break;
-        case 's':
-        case 'l':
-          builder.append('"').append(randomString(10)).append('"');
-          break;
-        case 't':
-          builder.append("x != y");
-          break;
-        case 'e':
-          builder.append("(5 + 6)");
-          break;
-        case '{': {
-          patternIndex++;
-          var newPatternBuilder = new StringBuilder();
-          var test = pattern.charAt(patternIndex);
-          while (test != '}') {
-            newPatternBuilder.append(test);
-            test = pattern.charAt(++patternIndex);
-          }
-
-          var newPattern = newPatternBuilder.toString();
-          builder.append(
-              generateDirectiveLine(
-                  "" + newPattern.charAt(r.nextInt(newPattern.length())), false));
-        }
-        break;
-        case '[': {
-          patternIndex++; // ]
-          if (pattern.charAt(++patternIndex) == '(') {
-
-            var newPatternBuilder = new StringBuilder();
-            newPatternBuilder.append('(');
-            var test = pattern.charAt(++patternIndex);
-            while (test != ')') {
-              newPatternBuilder.append(test);
-              test = pattern.charAt(++patternIndex);
-            }
-            newPatternBuilder.append(')');
-
-            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-            builder.append(',');
-            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-            builder.append(',');
-            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-          } else {
-
-            var newPatternBuilder = new StringBuilder();
-            newPatternBuilder.append('{');
-            var test = pattern.charAt(++patternIndex);
-            while (test != '}') {
-              newPatternBuilder.append(test);
-              test = pattern.charAt(++patternIndex);
-            }
-            newPatternBuilder.append('}');
-            var newPattern = newPatternBuilder.toString();
-
-            builder.append(
-                generateDirectiveLine(
-                    "" + newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1), false));
-            builder.append(',');
-            builder.append(
-                generateDirectiveLine(
-                    "" + newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1), false));
-            builder.append(',');
-            builder.append(
-                generateDirectiveLine(
-                    "" + newPattern.charAt(r.nextInt(newPattern.length() - 2) + 1), false));
-          }
-        }
-        break;
-        case '?': {
-          //                    if (!r.nextBoolean()) {
-          //                        break;
-          //                    }
-          patternIndex++; // ?
-
-          if (pattern.charAt(patternIndex++) == '(') { // (
-            var newPatternBuilder = new StringBuilder();
-            newPatternBuilder.append('(');
-            var test = pattern.charAt(patternIndex);
-            while (test != ')') {
-              newPatternBuilder.append(test);
-              test = pattern.charAt(++patternIndex);
-            }
-            newPatternBuilder.append(')');
-            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-          } else {
-            // assume }
-            var newPatternBuilder = new StringBuilder();
-
-            var test = pattern.charAt(patternIndex);
-            while (test != '}') {
-              newPatternBuilder.append(test);
-              test = pattern.charAt(++patternIndex);
-            }
-
-            String[] choices = newPatternBuilder.toString().split("\\|");
-            builder.append(choices[r.nextInt(choices.length)]);
-          }
-        }
-        break;
-        case '(': {
-          patternIndex++; // (
-
-          var newPatternBuilder = new StringBuilder();
-          var test = pattern.charAt(patternIndex);
-          while (test != ')') {
-            newPatternBuilder.append(test);
-            test = pattern.charAt(++patternIndex);
-          }
-          builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-        }
-        break;
-
-        default:
-          builder.append(patternCharacter);
-      }
-    }
-    return builder.toString();
-  }
-
-  private static String randomString(int i) {
-    var r = new Random();
-    var b = new StringBuilder(i);
-    for (int x = 0; x < i; x++) {
-      b.append((char) (r.nextInt(26) + 'A'));
-    }
-    return b.toString();
-  }
 
   public String getName() {
     return name;
   }
 
+
   public String getPattern() {
     return pattern;
   }
 
-  // x = a whole number
-  // f = a number with a decimal part
-  // c = a character
-  // s = a String value (expands to "some text"
-  // l = a label (which will be a string)
 
-  // t = a boolean expression
-  // e = a integer expression
-
-  // {x|y} One or more of x, y...
-  // {}[] = A comma separated List of types in the parenthesis (see .DB in
-  // https://wla-dx.readthedocs.io/en/latest/asmdiv.html)
-
-  // ? = Optional
-
-  // (pattern) a pattern
 
 }

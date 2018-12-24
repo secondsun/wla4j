@@ -8,7 +8,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 public class MacroNode extends DirectiveNode {
 
   private final Token startToken;
-  private String name;
+
 
   public MacroNode(Token startToken) {
     super(AllDirectives.MACRO);

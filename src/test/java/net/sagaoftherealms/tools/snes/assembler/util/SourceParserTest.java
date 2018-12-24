@@ -376,12 +376,6 @@ public class SourceParserTest {
   }
 
   @Test
-  public void remindSummersToMakeDBAndSimilarDirectivesUseExpressionNodes() {
-    fail(
-        "Now that expression nodes are a thing, we should use those and begin to carry type info in the AllDirectivesDirectives.  See .DB as an example where this could be done.");
-  }
-
-  @Test
   public void testDefineByteParser() {
     fail("");
   }
