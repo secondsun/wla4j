@@ -83,6 +83,11 @@ public final class DirectiveUtils {
    * @return a directive node with all of its arguments and body
    */
   public static DirectiveNode createDirectiveNode(String directiveName, Token token) {
+    //A few directive enums don't match the source pattern.  We do a manual mapping here.
+    switch (directiveName.toUpperCase()) {
+      case ".8BIT":
+        directiveName = ".EIGHT_BIT";
+    }
     AllDirectives directive = AllDirectives.valueOf(directiveName.replace(".", "").toUpperCase());
     DirectiveNode node;
     switch (directive) {

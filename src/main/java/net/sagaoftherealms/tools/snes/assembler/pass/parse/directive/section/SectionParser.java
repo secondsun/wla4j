@@ -29,10 +29,18 @@ public class SectionParser implements DirectiveParser {
     var token = parser.getCurrentToken();
     var node = parser.nextNode();
 
-    while (node != null && !node.getType().equals(endDirective)) {
+    while (node != null ) {
       if (node.getType().equals(NodeTypes.DIRECTIVE)) {
+
+
+
         var directiveNode = (DirectiveNode) node;
         var directive = directiveNode.getDirectiveType();
+
+        if (directive.equals(endDirective)) {
+          break;
+        }
+
         switch (directive) {
           case SECTION:
           case RAMSECTION:
@@ -41,6 +49,8 @@ public class SectionParser implements DirectiveParser {
           case SLOT:
           case BANK:
             throw new ParseException("You may not use this directive inside a section", token);
+          default:
+            break;
         }
       }
 

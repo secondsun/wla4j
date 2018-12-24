@@ -689,7 +689,8 @@ public class SourceParserTest {
             + "EmptyHandler:\n"
             + "       rti\n"
             + "\n"
-            + ".ENDS";
+            + ".ENDS\n"
+            + ".8BIT\n";
     final String outfile = "test.out";
     final String inputFile = "test.s";
     final int lineNumber = 0;
@@ -713,6 +714,8 @@ public class SourceParserTest {
           assertEquals(NodeTypes.LABEL, emptyHandlerLabelNode.getType());
           Node rtiOpLabel = node.getBody().getChildren().get(1);
           assertEquals(NodeTypes.OPCODE, rtiOpLabel.getType());
+          DirectiveNode eightBit = (DirectiveNode) parser.nextNode();
+          assertNotNull(eightBit);
         });
   }
 
