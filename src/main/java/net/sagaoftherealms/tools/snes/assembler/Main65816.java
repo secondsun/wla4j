@@ -15,7 +15,7 @@ import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 /** @author summers */
 public class Main65816 {
 
-  private static final String wla_version =
+  private static final String WLA_VERSION =
       "65816 Macro Assembler for Java based on WLA 65816 Macro Assembler v9.8a.";
 
   private static Flags flags;
@@ -72,8 +72,8 @@ public class Main65816 {
 
     flags.addANewDefinition("WLA_TIME", 0.0, dateString, DEFINITION_TYPE_STRING);
     flags.addANewDefinition("wla_time", 0.0, dateString, DEFINITION_TYPE_STRING);
-    flags.addANewDefinition("WLA_VERSION", 0.0, wla_version, DEFINITION_TYPE_STRING);
-    flags.addANewDefinition("wla_version", 0.0, wla_version, DEFINITION_TYPE_STRING);
+    flags.addANewDefinition("WLA_VERSION", 0.0, WLA_VERSION, DEFINITION_TYPE_STRING);
+    flags.addANewDefinition("WLA_VERSION", 0.0, WLA_VERSION, DEFINITION_TYPE_STRING);
   }
 
   private static void printDefaultMessage() {
