@@ -379,23 +379,7 @@ public class SourceParserTest {
     fail("Now that expression nodes are a thing, we should use those and begin to carry type info in the AllDirectivesDirectives.  See .DB as an example where this could be done.");
   }
   
-  @Test
-  public void handleAsciiCommands() {
-    fail("\n"
-        + "ASCII commands work with .DB and .ASC strings. They are as follows:\n"
-        + "'\\0' -> insert null byte\n"
-        + "'\\x' -> insert hex character\n"
-        + "'\\>' -> set highest bit (0x80) of preceding character\n"
-        + "'\\<' -> set highest bit (0x80) of proceeding character\n"
-        + "\n"
-        + ".ASC hex characters are NOT remapped. This is useful if you need to write special characters. Example:\n"
-        + ".ASC \"My special character: \"\n"
-        + ".DB $59\n"
-        + "...becomes\n"
-        + ".ASC \"My special character: \\x59\"\n"
-        + "=============================\n"
-        + ".DL for 65816 works just like you'd expect it. It write the bank byte when used with labels. :D");
-  }
+
   
   @Test
   public void parseEnumBodyWithIfDirective() {

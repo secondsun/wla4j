@@ -407,7 +407,7 @@ public class SourceScannerTest {
     "<=, LT, EQUAL",
     ">=, GT, EQUAL",
     "==, EQUAL, EQUAL",
-    "\\2, ESCAPE, NUMBER",
+    "\\2,LABEL, END_OF_INPUT",
     "\\!, ESCAPE, NOT",
     "\\@, ESCAPE, AT",
   })

@@ -125,12 +125,12 @@ public class SourceScanner {
       return directiveToken(sourceString);
     } else if (Character.isDigit(character) || character == '$' || character == '%') {
       return numberToken(sourceString, character);
-    } else if (character == '\'' && !Character.isDigit(sourceString.charAt(linePosition))) {//Escape character unless it is \1 \2 etc then it is a macro label.
+    } else if (character == '\'' ) {//Escape character unless it is \1 \2 etc then it is a macro label.
       return characterToken(sourceString);
     } else if (Character.isAlphabetic(character)
         || character == '_'
         || character == '@'
-        || character == '\\'
+        || (character == '\\' && Character.isDigit(sourceString.charAt(linePosition)))
         || character == ':') {
       return labelToken(sourceString, character);
     } else if (operators.contains(character)) {
