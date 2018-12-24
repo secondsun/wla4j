@@ -46,17 +46,17 @@ public class RamsectionArgumentsNode extends DirectiveArgumentsNode {
   public String get(RamsectionArguments key) {
     switch (key) {
       case NAME:
-        return (String) arguments.get(0).evaluate();
+        return safeGet(0);
       case BANK:
-        return (String) arguments.get(1).evaluate();
+        return safeGet(1);
       case SLOT:
-        return (String) arguments.get(2).evaluate();
+        return safeGet(2);
 
       case ALIGN:
-        return (String) arguments.get(3).evaluate();
+        return safeGet(3);
 
       case APPEND_TO:
-        return (String) arguments.get(4).evaluate();
+        return safeGet(4);
     }
     throw new IllegalArgumentException("Unknown Key");
   }

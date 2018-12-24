@@ -2,6 +2,7 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition
 
 import static net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives.BYT;
 import static net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives.BYTE;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.COMMA;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
 
@@ -35,9 +36,14 @@ public class DefineByteParser extends GenericDirectiveParser {
   public DirectiveArgumentsNode arguments(SourceParser parser) {
     DirectiveArgumentsNode arguments = new DirectiveArgumentsNode();
 
-
-    while (parser.getCurrentToken().getType() != EOL && parser.getCurrentToken().getType() != END_OF_INPUT) {
+    var token = parser.getCurrentToken();
+    while (token.getType() != EOL && token.getType() != END_OF_INPUT) {
       arguments.add(ExpressionParser.expressionNode(parser));
+      token = parser.getCurrentToken();
+      while (token.getType().equals(COMMA)) {
+        parser.consumeAndClear(COMMA);
+        token = parser.getCurrentToken();
+      }
     }
 
     if (arguments.size() == 0) {

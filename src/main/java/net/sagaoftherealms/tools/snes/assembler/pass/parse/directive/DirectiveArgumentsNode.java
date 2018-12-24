@@ -1,6 +1,7 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
@@ -15,7 +16,7 @@ public class DirectiveArgumentsNode extends Node {
   }
 
   public String getString(int index) {
-    return (String)(arguments.get(index).evaluate());
+    return (arguments.get(index).evaluate()) + "";
   }
 
   public DirectiveArgumentsNode add(String argumentValue) {
@@ -27,7 +28,24 @@ public class DirectiveArgumentsNode extends Node {
     return this;
   }
 
+  @Override
+  public List<Node> getChildren() {
+    return Collections.unmodifiableList(arguments);
+  }
+
   public int size() {
     return arguments.size();
   }
+
+
+  protected String safeGet(int index) {
+    var argument = arguments.get(index);
+    if (argument == null) {
+      return null;
+    } else {
+      return (String) argument.evaluate();
+    }
+
+  }
+
 }

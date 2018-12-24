@@ -8,20 +8,13 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 /**
  * This class represents an expression that defines the size for a definition in a struct, enum, etc
  */
-public class NumericExpressionNode extends Node implements ExpressionNode<Integer> {
+public class NumericExpressionNode extends ExpressionNode<Integer> {
 
   private TokenTypes operation;
 
   public NumericExpressionNode() {
     super(NodeTypes.NUMERIC_EXPRESION);
   }
-
-  public NumericExpressionNode(int value) {
-    super(NodeTypes.NUMERIC_EXPRESION);
-    addChild(new ConstantNode(value));
-  }
-
-
 
   public TokenTypes getOperationType() {
     return operation;

@@ -49,22 +49,23 @@ public class SectionArgumentsNode extends DirectiveArgumentsNode {
   public String get(SectionParser.KEYS key) {
     switch (key) {
       case NAME:
-        return (String) arguments.get(0).evaluate();
+        return safeGet(0);
       case BANKHEADER:
-        return (String) arguments.get(1).evaluate();
+        return safeGet(1);
       case NAMESPACE:
-        return (String) arguments.get(2).evaluate();
+        return safeGet(2);
       case SIZE:
-        return (String) arguments.get(3).evaluate();
+        return safeGet(3);
       case ALIGN:
-        return (String) arguments.get(4).evaluate();
+        return safeGet(4);
       case STATUS:
-        return (String) arguments.get(5).evaluate();
+        return safeGet(5);
       case APPEND_TO:
-        return (String) arguments.get(6).evaluate();
+        return safeGet(6);
       case RETURNORG:
-        return (String) arguments.get(7).evaluate();
+        return safeGet(7);
     }
     throw new IllegalArgumentException("Unknown Key");
   }
+
 }

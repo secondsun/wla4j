@@ -7,6 +7,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 
@@ -20,11 +21,18 @@ public class ExpressionParser {
   private static final List<TokenTypes> operatorTypes =
       Arrays.asList(TokenTypes.MULTIPLY, TokenTypes.DIVIDE, TokenTypes.PLUS, TokenTypes.MINUS);
 
-  public static NumericExpressionNode expressionNode(SourceParser parser) {
+  public static ExpressionNode expressionNode(SourceParser parser) {
+
+    var token = parser.getCurrentToken();
+
+    if (token.getType().equals(TokenTypes.STRING)) {
+      parser.consume(TokenTypes.STRING);
+      return new StringExpressionNode(token.getString());
+    }
 
     NumericExpressionNode returnNode = new NumericExpressionNode();
 
-    var token = parser.getCurrentToken();
+
     boolean parsing = true;
     while (parsing) {
       switch (token.getType()) {
@@ -58,19 +66,23 @@ public class ExpressionParser {
       }
     }
 
+    if (returnNode.getOperationType() != null && returnNode.getChildren().size() < 2) {
+      throw new ParseException("Invalid expression", token);
+    }
+
     return returnNode;
   }
 
   private static void addNumberFactor(SourceParser parser, NumericExpressionNode returnNode, Token token) {
     ConstantNode numberNode = new ConstantNode(NodeTypes.NUMERIC_CONSTANT);
     numberNode.setValue(token.getString());
-    parser.consumeAndClear(TokenTypes.NUMBER);
+    parser.consume(TokenTypes.NUMBER);
     returnNode.addChild(numberNode);
   }
 
   private static void addLabelFactor(SourceParser parser, NumericExpressionNode returnNode, Token token) {
     LabelNode labelNode = new LabelNode(token);
-    parser.consumeAndClear(TokenTypes.LABEL);
+    parser.consume(TokenTypes.LABEL);
     returnNode.addChild(labelNode);
   }
 }

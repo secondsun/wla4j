@@ -30,6 +30,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfB
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode;
@@ -62,7 +63,7 @@ public class SourceParserTest {
 
     assertEquals(NodeTypes.LABEL, expressionNode.getChildren().get(0).getType());
     assertEquals(NodeTypes.NUMERIC_CONSTANT, expressionNode.getChildren().get(1).getType());
-    assertEquals(TokenTypes.MULTIPLY, expressionNode.getOperationType());
+    assertEquals(TokenTypes.MULTIPLY, ((NumericExpressionNode)expressionNode).getOperationType());
   }
 
   @ParameterizedTest
@@ -816,7 +817,7 @@ public class SourceParserTest {
     DirectiveNode dbNode = (DirectiveNode) body.getChildren().get(0);
     var dbArgs = dbNode.getArguments();
     assertEquals(2, dbArgs.size());
-    assertEquals("\\1", dbArgs.getString(1));
+    assertEquals("\\1", ((LabelNode)((NumericExpressionNode)dbArgs.getChildren().get(1)).getChildren().get(0)).getLabelName());
   }
 
   /**

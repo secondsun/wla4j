@@ -3,6 +3,7 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition
 import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionParser.expressionNode;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.DIRECTIVE;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.NUMBER;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
@@ -111,13 +112,15 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
       case "DSB":
         {
           var expression = expressionNode(parser);
-          bodyNode.setSize(expression);
+          bodyNode.setSize((NumericExpressionNode)expression);
+          parser.consumeAndClear(EOL);
           break;
         }
       case "DSW":
-        { // We have to fake a double expression
+        {
           var expression = expressionNode(parser);
 
+          // We have to fake a double expression
           var constant = new ConstantNode(NodeTypes.NUMERIC_CONSTANT);
           constant.setValue("2");
 
@@ -127,7 +130,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
           doubleExpression.addChild(constant);
           doubleExpression.setOperationType(TokenTypes.MULTIPLY);
           bodyNode.setSize(doubleExpression);
-
+          parser.consumeAndClear(EOL);
           break;
         }
       case "INSTANCEOF": // TODO: Sizes of structs may be expressions, but I don't want to deal with
