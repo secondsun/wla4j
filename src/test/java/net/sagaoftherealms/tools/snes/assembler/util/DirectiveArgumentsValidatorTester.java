@@ -171,11 +171,4 @@ public class DirectiveArgumentsValidatorTester {
     assertTrue(validator.accept(new Token(testLine,"4", TokenTypes.LABEL)));
   }
 
-  @Test
-  public void validateBooleanExpression() {
-    DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("t");
-    assertTrue(validator.accept(new Token(testLine,"4", TokenTypes.NUMBER)));
-    assertTrue(validator.accept(new Token(testLine,">", TokenTypes.GT)));
-    assertTrue(validator.accept(new Token(testLine,"4", TokenTypes.NUMBER)));
-  }
 }

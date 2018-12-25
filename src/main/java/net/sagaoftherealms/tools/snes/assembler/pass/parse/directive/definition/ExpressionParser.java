@@ -2,9 +2,12 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition
 
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.AND;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.DIVIDE;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LEFT_PAREN;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.MINUS;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.MULTIPLY;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.PLUS;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.RIGHT_BRACKET;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.RIGHT_PAREN;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +27,7 @@ public class ExpressionParser {
   private ExpressionParser() {}
 
   private static final List<TokenTypes> factorTypes =
-      Arrays.asList(TokenTypes.NUMBER, TokenTypes.LABEL);
+      Arrays.asList(TokenTypes.NUMBER, TokenTypes.LABEL, LEFT_PAREN);
   private static final List<TokenTypes> operatorTypes =
       Arrays.asList(MULTIPLY, TokenTypes.DIVIDE, TokenTypes.PLUS, MINUS, TokenTypes.GT, TokenTypes.LT, TokenTypes.AND, TokenTypes.OR, TokenTypes.EQUAL);
 
@@ -42,6 +45,19 @@ public class ExpressionParser {
     boolean parsing = true;
     while (parsing) {
       switch (token.getType()) {
+        case LEFT_PAREN:
+          parser.consume(LEFT_PAREN);
+
+          addExpressionFactor(parser, returnNode, token);
+
+          parser.consume(RIGHT_PAREN);
+
+          token = parser.getCurrentToken();
+          if (!operatorTypes.contains(token.getType())) {
+            parsing = false;
+          }
+
+          break;
         case LABEL:
           addLabelFactor(parser, returnNode, token);
           token = parser.getCurrentToken();
@@ -133,6 +149,12 @@ public class ExpressionParser {
     }
 
     return returnNode;
+  }
+
+  private static void addExpressionFactor(SourceParser parser, NumericExpressionNode returnNode,
+      Token token) {
+    NumericExpressionNode expressionNodeNode = (NumericExpressionNode) expressionNode(parser);
+    returnNode.addChild(expressionNodeNode);
   }
 
   private static boolean calculateLt(SourceParser parser,

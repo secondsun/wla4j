@@ -29,6 +29,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNo
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
@@ -177,6 +178,11 @@ public class SourceParserTest {
         () -> {
           parser.nextNode();
         });
+  }
+
+  @Test
+  public void testExpressions() {
+
   }
 
   @Test
@@ -830,6 +836,32 @@ public class SourceParserTest {
         "\\1",
         ((LabelNode) ((NumericExpressionNode) dbArgs.getChildren().get(1)).getChildren().get(0))
             .getLabelName());
+  }
+
+  @ParameterizedTest
+  @CsvSource({"2*81, 162",
+              "2+1, 3",
+              "21-1, 20",
+              "20/2, 10",
+              "(20 + 2)/2, 11",
+              "20 + (2/2), 21",
+              "8 | 2, 10",
+              "7 & 4, 4",
+              "2<<1, 4",
+              "2>>1, 1"})
+  public void testExpressions(String expression, int value) {
+    final String outfile = "script_commands.out";
+    final String inputFile = "script_commands.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(expression), inputFile, lineNumber);
+    var scanner = data.startRead(OpCodeZ80.OPCODES);
+
+    SourceParser parser = new SourceParser(scanner);
+
+    var node = ExpressionParser.expressionNode(parser);
+    assertEquals((int)node.evaluate(), value);
   }
 
   /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */

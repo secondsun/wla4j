@@ -83,13 +83,7 @@ public class IfParser extends GenericDirectiveParser {
       }
     } else if (node.getType() == NodeTypes.DIRECTIVE
         && ((DirectiveNode) node).getDirectiveType() != AllDirectives.ENDIF) {
-
-    } else {
       throw new ParseException("Expected End or else", parser.getCurrentToken());
-    }
-
-    if (((DirectiveNode) node).getDirectiveType() != AllDirectives.ENDIF) {
-      throw new ParseException("Expected End", parser.getCurrentToken());
     }
 
     return new IfBodyNode(thenBody, elseBody);
