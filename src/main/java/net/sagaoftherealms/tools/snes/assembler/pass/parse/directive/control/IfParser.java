@@ -1,12 +1,19 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.COMMA;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
+
 import java.util.EnumSet;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.GenericDirectiveParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionParser;
 
 public class IfParser extends GenericDirectiveParser {
 
@@ -31,6 +38,25 @@ public class IfParser extends GenericDirectiveParser {
       throw new IllegalArgumentException(
           ("If directive required.  Directive provided was actually " + type));
     }
+  }
+
+  public DirectiveArgumentsNode arguments(SourceParser parser) {
+    DirectiveArgumentsNode arguments = new DirectiveArgumentsNode();
+
+    var token = parser.getCurrentToken();
+    while (token.getType() != EOL && token.getType() != END_OF_INPUT) {
+      arguments.add(ExpressionParser.expressionNode(parser));
+      token = parser.getCurrentToken();
+    }
+
+    if (arguments.size() == 0) {
+      throw new ParseException(
+          "At least one byte definition is required.", parser.getCurrentToken());
+    }
+
+    parser.consumeAndClear(EOL, END_OF_INPUT);
+
+    return arguments;
   }
 
   @Override
@@ -59,11 +85,11 @@ public class IfParser extends GenericDirectiveParser {
         && ((DirectiveNode) node).getDirectiveType() != AllDirectives.ENDIF) {
 
     } else {
-      throw new IllegalStateException("Expected End or else");
+      throw new ParseException("Expected End or else", parser.getCurrentToken());
     }
 
     if (((DirectiveNode) node).getDirectiveType() != AllDirectives.ENDIF) {
-      throw new IllegalStateException("Expected End");
+      throw new ParseException("Expected End", parser.getCurrentToken());
     }
 
     return new IfBodyNode(thenBody, elseBody);

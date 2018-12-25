@@ -70,10 +70,10 @@
 ;		If $ff, it accepts any secret (used with farore).
 .MACRO askforsecret
 	.if \1 >= $10
-	.if \1 < $ff
-		.PRINTT "SCRIPT ERROR: argument to 'askforsecret' out of range.\n"
-		.FAIL
-	.endif
+    .if \1 < $ff
+      .PRINTT "SCRIPT ERROR: argument to 'askforsecret' out of range.\n"
+      .FAIL
+    .endif
 	.endif
 	.db $86 \1
 .ENDM

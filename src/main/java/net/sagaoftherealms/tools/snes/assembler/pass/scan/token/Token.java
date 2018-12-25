@@ -1,11 +1,15 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.scan.token;
 
+import net.sagaoftherealms.tools.snes.assembler.util.SourceDataLine;
+
 public class Token {
 
   private final TokenTypes type;
   private final String string;
+  private final SourceDataLine line;
 
-  public Token(String tokenString, TokenTypes type) {
+  public Token(SourceDataLine line, String tokenString, TokenTypes type) {
+    this.line = line;
     this.string = tokenString;
     this.type = type;
   }
@@ -20,6 +24,7 @@ public class Token {
 
   @Override
   public String toString() {
-    return "Token{" + "type=" + type + ", string='" + string + '\'' + '}';
+    return "Token{" + "line:" + line.toString() + "type=" + type + ", string='" + string + '\'' + '}';
+
   }
 }

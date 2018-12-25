@@ -2,24 +2,25 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition
 
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ConstantNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
-import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 
 /**
  * This class represents an expression that defines the size for a definition in a struct, enum, etc
  */
 public class NumericExpressionNode extends ExpressionNode<Integer> {
 
-  private TokenTypes operation;
+  public enum OperationType {MULTIPLY, ADD, DIVIDE, SUBTRACT, LEFT_SHIFT, RIGHT_SHIFT, GREATER_THAN, LESS_THAN, LESS_THAN_OR_EQUAL, AND, OR, EQUALS, GREATER_THAN_OR_EQUAL};
+
+  private OperationType operation;
 
   public NumericExpressionNode() {
     super(NodeTypes.NUMERIC_EXPRESION);
   }
 
-  public TokenTypes getOperationType() {
+  public OperationType getOperationType() {
     return operation;
   }
 
-  public void setOperationType(TokenTypes type) {
+  public void setOperationType(OperationType type) {
     this.operation = type;
   }
 
@@ -27,7 +28,7 @@ public class NumericExpressionNode extends ExpressionNode<Integer> {
   public Integer evaluate() {
     if (operation == null) {
       return Integer.parseInt(((ConstantNode) getChildren().get(0)).getValue());
-    } else if (operation == TokenTypes.MULTIPLY) {
+    } else if (operation == OperationType.MULTIPLY) {
       var leftNode = getChildren().get(0);
       var rightNode = getChildren().get(1);
       int leftValue = 0;

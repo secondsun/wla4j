@@ -113,4 +113,13 @@ public class SourceDataLine {
   public int getFileId() {
     return fileName.hashCode();
   }
+
+  @Override
+  public String toString() {
+    return "SourceDataLine{" +
+        "fileName='" + fileName + '\'' +
+        ", sourceLineNumber=" + sourceLineNumber +
+        ", dataLine='" + dataLine + '\'' +
+        '}';
+  }
 }

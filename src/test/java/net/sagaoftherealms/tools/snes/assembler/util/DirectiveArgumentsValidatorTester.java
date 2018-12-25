@@ -31,30 +31,32 @@ import org.junit.jupiter.params.provider.CsvSource;
  */
 public class DirectiveArgumentsValidatorTester {
 
+  private final SourceDataLine testLine = new SourceDataLine("test.out", 0, "");
+
   @ParameterizedTest
   @CsvSource({"x, 5", "f,5.0", "c,'''a'''", "c,'''0'''"})
   public void validateNumbers(String pattern, String token) {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator(pattern);
-    assertTrue(validator.accept(new Token(token, TokenTypes.NUMBER)));
+    assertTrue(validator.accept(new Token(testLine, token, TokenTypes.NUMBER)));
   }
 
   @ParameterizedTest
   @CsvSource({"x, 5.1", "x,'''a'''", "f,'''0'''", "c, 5"})
   public void validateNumbersFailures(String pattern, String token) {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator(pattern);
-    assertFalse(validator.accept(new Token(token, TokenTypes.NUMBER)));
+    assertFalse(validator.accept(new Token(testLine, token, TokenTypes.NUMBER)));
   }
 
   @Test
   public void validateStrings() {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("s");
-    assertTrue(validator.accept(new Token("This is a String", TokenTypes.STRING)));
+    assertTrue(validator.accept(new Token(testLine, "This is a String", TokenTypes.STRING)));
   }
 
   @Test
   public void validateLabel() {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("l");
-    assertTrue(validator.accept(new Token("aLabel", TokenTypes.LABEL)));
+    assertTrue(validator.accept(new Token(testLine, "aLabel", TokenTypes.LABEL)));
   }
 
   @ParameterizedTest
@@ -150,30 +152,30 @@ public class DirectiveArgumentsValidatorTester {
   @Test
   public void testOneOf() {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("{xc}");
-    assertTrue(validator.accept(new Token("4", TokenTypes.NUMBER)));
+    assertTrue(validator.accept(new Token(testLine,"4", TokenTypes.NUMBER)));
     validator = new DirectiveArgumentsValidator("{xc}");
-    assertTrue(validator.accept(new Token("c", TokenTypes.NUMBER)));
+    assertTrue(validator.accept(new Token(testLine,"c", TokenTypes.NUMBER)));
     validator = new DirectiveArgumentsValidator("{xc}");
-    assertFalse(validator.accept(new Token("4.5", TokenTypes.NUMBER)));
+    assertFalse(validator.accept(new Token(testLine,"4.5", TokenTypes.NUMBER)));
     validator = new DirectiveArgumentsValidator("{fc}");
-    assertTrue(validator.accept(new Token("4.5", TokenTypes.NUMBER)));
+    assertTrue(validator.accept(new Token(testLine,"4.5", TokenTypes.NUMBER)));
     validator = new DirectiveArgumentsValidator("{es}");
-    assertTrue(validator.accept(new Token("\"Twelve\"", TokenTypes.STRING)));
+    assertTrue(validator.accept(new Token(testLine,"\"Twelve\"", TokenTypes.STRING)));
     validator = new DirectiveArgumentsValidator("{es}");
-    assertTrue(validator.accept(new Token("4", TokenTypes.NUMBER)));
-    assertTrue(validator.accept(new Token("+", TokenTypes.PLUS)));
-    assertTrue(validator.accept(new Token("4", TokenTypes.NUMBER)));
+    assertTrue(validator.accept(new Token(testLine,"4", TokenTypes.NUMBER)));
+    assertTrue(validator.accept(new Token(testLine,"+", TokenTypes.PLUS)));
+    assertTrue(validator.accept(new Token(testLine,"4", TokenTypes.NUMBER)));
     validator = new DirectiveArgumentsValidator("{sl}");
-    assertTrue(validator.accept(new Token("\"Twelve\"", TokenTypes.STRING)));
+    assertTrue(validator.accept(new Token(testLine,"\"Twelve\"", TokenTypes.STRING)));
     validator = new DirectiveArgumentsValidator("{sl}");
-    assertTrue(validator.accept(new Token("4", TokenTypes.LABEL)));
+    assertTrue(validator.accept(new Token(testLine,"4", TokenTypes.LABEL)));
   }
 
   @Test
   public void validateBooleanExpression() {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("t");
-    assertTrue(validator.accept(new Token("4", TokenTypes.NUMBER)));
-    assertTrue(validator.accept(new Token(">", TokenTypes.GT)));
-    assertTrue(validator.accept(new Token("4", TokenTypes.NUMBER)));
+    assertTrue(validator.accept(new Token(testLine,"4", TokenTypes.NUMBER)));
+    assertTrue(validator.accept(new Token(testLine,">", TokenTypes.GT)));
+    assertTrue(validator.accept(new Token(testLine,"4", TokenTypes.NUMBER)));
   }
 }

@@ -4,8 +4,6 @@ package net.sagaoftherealms.tools.snes.assembler.definition.directives;
  * x = a whole number f = a number with a decimal part c = a character s = a String value (expands
  * to "some text" l = a label (which will be a string)
  *
- * <p>t = a boolean expression e = a integer expression
- *
  * <p>{x|y} One or more of x, y... []{} = A comma separated List of types in the braces (see .DB in
  * https://wla-dx.readthedocs.io/en/latest/asmdiv.html)
  *
@@ -82,7 +80,7 @@ public enum AllDirectives {
   EQU(new AllDirective(".EQU l []{xs}")),
   REDEFINE(new AllDirective(".REDEFINE l []{xsL}")),
   REDEF(new AllDirective(".REDEF l []{xsL}")),
-  IF(new AllDirective(".IF t")),
+  IF(new AllDirective(".IF e")),
   IFDEF(new AllDirective(".IFDEF l")),
   IFEXISTS(new AllDirective(".IFEXISTS s")),
   UNDEFINE(new AllDirective(".UNDEFINE l")),

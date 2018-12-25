@@ -37,7 +37,7 @@ public class SourceScanner {
 
   public Token getNextToken() {
     if (endOfInput()) {
-      return new Token("", TokenTypes.END_OF_INPUT);
+      return new Token(getCurrentLine(), "", TokenTypes.END_OF_INPUT);
     }
     String tokenString = getNextTokenString();
     TokenTypes type;
@@ -83,7 +83,7 @@ public class SourceScanner {
       throw new IllegalArgumentException("Could not getString TokenType for " + tokenString);
     }
 
-    return new Token(tokenString, type);
+    return new Token(getCurrentLine(), tokenString, type);
   }
 
   private String getNextTokenString() {

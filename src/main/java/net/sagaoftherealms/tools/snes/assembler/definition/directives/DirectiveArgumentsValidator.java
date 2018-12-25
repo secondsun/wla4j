@@ -106,9 +106,6 @@ public final class DirectiveArgumentsValidator {
         beginNumericExpression();
         return matches(token);
 
-      case 't': // t = a boolean expression
-        beginBooleanExpression();
-        return matches(token);
       case ',':
         return token.getString().equals(",");
       default:
@@ -132,10 +129,6 @@ public final class DirectiveArgumentsValidator {
 
   private void beginNumericExpression() {
     this.specialMatcher = new NumericExpressionMatcher();
-  }
-
-  private void beginBooleanExpression() {
-    this.specialMatcher = new BooleanExpressionMatcher();
   }
 
   private boolean matchString(Token token) {
@@ -319,83 +312,6 @@ public final class DirectiveArgumentsValidator {
     }
   }
 
-  private class BooleanExpressionMatcher implements Matcher {
-
-    final EnumSet<TokenTypes> operatorsSet =
-        EnumSet.of(TokenTypes.EQUAL, TokenTypes.NOT, TokenTypes.LT, TokenTypes.GT);
-    private Token firstArgument;
-    private Token firstTokenOfOperator;
-    private Token secondTokenOfOperator;
-    private Token finalArgument;
-
-    @Override
-    public boolean match(Token token) {
-      if (finalArgument != null) {
-        return false;
-      }
-
-      if (firstArgument == null) {
-        if (token.getType().equals(TokenTypes.NUMBER)
-            || token.getType().equals(TokenTypes.STRING)) {
-          firstArgument = token;
-          return true;
-        } else {
-          return false;
-        }
-      } else if (firstTokenOfOperator == null) {
-        if (operatorsSet.contains(token.getType())) {
-          firstTokenOfOperator = token;
-          return true;
-        }
-        return false;
-      } else if (secondTokenOfOperator == null) {
-        if (firstTokenOfOperator.getType().equals(TokenTypes.GT)
-            || firstTokenOfOperator.getType().equals(TokenTypes.LT)) {
-          // second token is optional
-          // <=, >=
-          if (token.getType().equals(TokenTypes.EQUAL)) {
-            secondTokenOfOperator = token;
-            return true;
-          } else if (token.getType().equals(TokenTypes.NUMBER)
-              || token.getType().equals(TokenTypes.STRING)) {
-            // <, >
-            finalArgument = token;
-            return true;
-          }
-          return false;
-        } else if (firstTokenOfOperator.getType().equals(TokenTypes.NOT)) {
-          // !=
-          if (token.getType().equals(TokenTypes.EQUAL)) {
-            secondTokenOfOperator = token;
-            return true;
-          }
-          return false;
-        } else if (firstTokenOfOperator.getType().equals(TokenTypes.EQUAL)) {
-          // ==
-          if (token.getType().equals(TokenTypes.EQUAL)) {
-            secondTokenOfOperator = token;
-            return true;
-          }
-          return false;
-        }
-        return false;
-      } else {
-        if (token.getType().equals(TokenTypes.NUMBER)
-            || token.getType().equals(TokenTypes.STRING)) {
-          finalArgument = token;
-          return true;
-        } else {
-          return false;
-        }
-      }
-    }
-
-    @Override
-    public boolean isSatisfied() {
-      return finalArgument != null;
-    }
-  }
-
   private class OneOfMatcher implements Matcher {
 
     private final String oneOfPattern;
@@ -408,7 +324,7 @@ public final class DirectiveArgumentsValidator {
       // expression.
       // Then we give priority to expressions in the matcher.  Should even things out.
 
-      if (oneOfPattern.contains("e") || oneOfPattern.contains("t")) {
+      if (oneOfPattern.contains("e") ) {
         oneOfPattern =
             oneOfPattern.replace("l", "").replace("c", "").replace("f", "").replace("x", "");
       }

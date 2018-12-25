@@ -490,6 +490,26 @@ public class SourceParserTest {
   }
 
   @Test
+  /**
+   * DB includes strings, DW does not.
+   * The test sources have DB with string, but I want to enforce the failure case.
+   */
+  public void testDWFailsWithString() {
+    String source = ".dw \"Fail\"";
+    final String outfile = "test.out";
+    final String inputFile = "test.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(source), inputFile, lineNumber);
+
+    var scanner = data.startRead(Opcodes65816.opt_table);
+
+    SourceParser parser = new SourceParser(scanner);
+    assertThrows(ParseException.class, ()->parser.nextNode());
+  }
+
+  @Test
   public void parseStructWithEmbeddedIfDirective() {
     var source =
         ".STRUCT mon                ; check out the documentation on\n"
@@ -821,8 +841,8 @@ public class SourceParserTest {
                 .getClassLoader()
                 .getResourceAsStream("parseLargeFiles/script_commands.s"),
             "UTF-8");
-    final String outfile = "define_macro_3.out";
-    final String inputFile = "parseMacro/define_macro_3.s";
+    final String outfile = "script_commands.out";
+    final String inputFile = "parseLargeFiles/script_commands.s";
     final int lineNumber = 0;
 
     var data = new InputData(new Flags(outfile));

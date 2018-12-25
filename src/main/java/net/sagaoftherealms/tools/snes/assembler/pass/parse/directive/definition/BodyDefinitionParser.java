@@ -17,6 +17,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveUt
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.GenericDirectiveParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode.OperationType;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
@@ -129,7 +130,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
           doubleExpression.addChild(expression);
 
           doubleExpression.addChild(constant);
-          doubleExpression.setOperationType(TokenTypes.MULTIPLY);
+          doubleExpression.setOperationType(OperationType.MULTIPLY);
           bodyNode.setSize(doubleExpression);
           parser.consumeAndClear(EOL);
           break;
