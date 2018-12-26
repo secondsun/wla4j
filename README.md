@@ -1,3 +1,6 @@
+[![SONAR GATE](https://sonarcloud.io/api/project_badges/measure?project=snes-dev-tools%3Anet.saga.snes.dev&metric=alert_status)](https://sonarcloud.io/dashboard?id=snes-dev-tools%3Anet.saga.snes.dev)
+
+
 # SNES Dev Tools
 
 This is a collection of dev tools for snes rom development.  For now I am starting with porting the wla assembler tooling to Java and will move on to making IDE integrations.  From there I will iterate with various basic custom ROM tasks.
