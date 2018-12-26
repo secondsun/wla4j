@@ -19,6 +19,13 @@ public class MacroNode extends DirectiveNode {
   }
 
   @Override
+  public String toString() {
+    return "MacroNode{" +
+        "name=" + getName() +
+        '}';
+  }
+
+  @Override
   public void setArguments(DirectiveArgumentsNode arguments) {
     super.setArguments(arguments);
   }

@@ -2,11 +2,13 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.MINUS;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.PLUS;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
 
 import java.util.Arrays;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveUtils;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.IdentifierNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
@@ -30,26 +32,21 @@ public class SourceParser {
   public Node nextNode() {
     switch (token.getType()) {
       case STRING:
-        break;
+        consume(TokenTypes.STRING);
+        return new StringExpressionNode(token.getString());
       case DIRECTIVE:
         var directiveName = token.getString();
         var directiveNode = directive(directiveName);
         clearWhiteSpaceTokens();
         return directiveNode;
       case NUMBER:
-        break;
+        return ExpressionParser.expressionNode(this);
       case LABEL:
-        {
-          var labelNode = new LabelNode(token);
-          consumeAndClear(TokenTypes.LABEL);
-          return labelNode;
-        }
       case MINUS:
       case PLUS:
-        {
-          LabelNode labelNode = createUnnamedLabel(token);
-          return labelNode;
-        }
+        var definition =  new LabelDefinitionNode(token);
+        consume(token.getType());
+        return definition;
       case LT:
         break;
       case GT:
@@ -59,11 +56,13 @@ public class SourceParser {
       case RIGHT_BRACKET:
         break;
       case LEFT_PAREN:
-        break;
+        var node = ExpressionParser.expressionNode(this);
+        return node;
       case RIGHT_PAREN:
         break;
       case COMMA:
-        break;
+        consume(TokenTypes.COMMA);
+        return nextNode();
       case OR:
         break;
       case AND:
@@ -104,38 +103,16 @@ public class SourceParser {
     return opcode;
   }
 
-  private LabelNode createUnnamedLabel(Token token) {
-    StringBuilder labelNameBuilder = new StringBuilder(10);
-    Token initialToken = token;
-
-    while (PLUS.equals(token.getType()) || MINUS.equals(token.getType())) {
-      switch (token.getType()) {
-        case PLUS:
-          labelNameBuilder.append('+');
-          consumeAndClear(TokenTypes.PLUS);
-          token = getCurrentToken();
-          break;
-        case MINUS:
-          labelNameBuilder.append('-');
-          consumeAndClear(TokenTypes.MINUS);
-          token = getCurrentToken();
-          break;
-        default:
-          throw new ParseException("expected +* or -*.", token);
-      }
-    }
-    var label = new LabelNode(labelNameBuilder.toString(), token);
-    return label;
-  }
-
-  /** Confirms that the current token is expected and advances to the next token. */
+  /**
+   * Confirms that the current token is expected and advances to the next token.
+   */
   public void consume(TokenTypes... types) {
     final var typesList = Arrays.asList(types);
     if (typesList.contains(token.getType())) {
       advanceToken();
     } else {
       throw new ParseException(
-          "Unexpected Type " + token + ".  One of " + typesList + " was expected.",
+          "Unexpected Token.  One of " + typesList + " was expected.",
           getCurrentToken());
     }
   }
@@ -178,7 +155,9 @@ public class SourceParser {
     return null;
   }
 
-  /** Move the token past any whitespace / comments */
+  /**
+   * Move the token past any whitespace / comments
+   */
   public void clearWhiteSpaceTokens() {
     var token = getCurrentToken();
 
@@ -186,5 +165,9 @@ public class SourceParser {
       consume(TokenTypes.EOL);
       token = getCurrentToken();
     }
+  }
+
+  public Token peekNextToken() {
+    return scanner.peekNextToken();
   }
 }

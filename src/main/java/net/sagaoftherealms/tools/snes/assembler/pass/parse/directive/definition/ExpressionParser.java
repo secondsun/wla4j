@@ -2,34 +2,49 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition
 
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.AND;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.DIVIDE;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EQUAL;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.GT;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LEFT_PAREN;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LT;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.MINUS;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.MULTIPLY;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.NOT;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.NUMBER;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.OR;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.PLUS;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.RIGHT_BRACKET;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.RIGHT_PAREN;
 
 import java.util.Arrays;
 import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ConstantNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode.OperationType;
-import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
-/** Parses expressions in the body definition. */
+/**
+ * Parses expressions in the body definition.
+ */
 public class ExpressionParser {
 
-  private ExpressionParser() {}
+  private static List<TokenTypes> equalityTokens = Arrays
+      .asList(NOT, TokenTypes.EQUAL);
+  private static List<TokenTypes> comparisonTokens = Arrays.asList(GT, TokenTypes.LT);
+  private static List<TokenTypes> shiftTokens = Arrays.asList(GT, TokenTypes.LT);
 
-  private static final List<TokenTypes> factorTypes =
+  private static final List<TokenTypes> termTokens =
+      Arrays.asList(TokenTypes.PLUS, MINUS);
+  private static final List<TokenTypes> factorTokens =
+      Arrays.asList(MULTIPLY, DIVIDE);
+  private static final List<TokenTypes> factorNodeTokens =
       Arrays.asList(TokenTypes.NUMBER, TokenTypes.LABEL, LEFT_PAREN);
-  private static final List<TokenTypes> operatorTypes =
-      Arrays.asList(MULTIPLY, TokenTypes.DIVIDE, TokenTypes.PLUS, MINUS, TokenTypes.GT, TokenTypes.LT, TokenTypes.AND, TokenTypes.OR, TokenTypes.EQUAL);
+
+  private ExpressionParser() {
+  }
+
 
   public static ExpressionNode expressionNode(SourceParser parser) {
 
@@ -40,195 +55,208 @@ public class ExpressionParser {
       return new StringExpressionNode(token.getString());
     }
 
-    NumericExpressionNode returnNode = new NumericExpressionNode();
+    return bitwiseOrNode(parser);
 
-    boolean parsing = true;
-    while (parsing) {
+  }
+
+  private static NumericExpressionNode bitwiseOrNode(SourceParser parser) {
+    NumericExpressionNode leftNode = bitWiseAndNode(parser);
+    var token = parser.getCurrentToken();
+    if (TokenTypes.OR.equals(token.getType())) {
+      NumericExpressionNode toReturn = new NumericExpressionNode();
+      toReturn.addChild(leftNode);
+      toReturn.setOperationType(OperationType.OR);
+      parser.consume(OR);
+      toReturn.addChild(bitWiseAndNode(parser));
+      return toReturn;
+    }
+    return leftNode;
+  }
+
+  private static NumericExpressionNode bitWiseAndNode(SourceParser parser) {
+    NumericExpressionNode leftNode = equalityNode(parser);
+    var token = parser.getCurrentToken();
+    if (TokenTypes.AND.equals(token.getType())) {
+      NumericExpressionNode toReturn = new NumericExpressionNode();
+      toReturn.addChild(leftNode);
+      toReturn.setOperationType(OperationType.AND);
+      parser.consume(AND);
+      toReturn.addChild(equalityNode(parser));
+      return toReturn;
+    }
+    return leftNode;
+  }
+
+
+  private static NumericExpressionNode equalityNode(SourceParser parser) {
+    NumericExpressionNode leftNode = comparisonNode(parser);
+    var token = parser.getCurrentToken();
+    if (equalityTokens.contains(token.getType())) {
+      NumericExpressionNode toReturn = new NumericExpressionNode();
+      toReturn.addChild(leftNode);
       switch (token.getType()) {
-        case LEFT_PAREN:
-          parser.consume(LEFT_PAREN);
+        case EQUAL:
+          parser.consume(EQUAL);
+          parser.consume(EQUAL);
+          toReturn.setOperationType(OperationType.EQUALS);
+          break;
+        case NOT:
+          parser.consume(NOT);
+          parser.consume(EQUAL);
+          toReturn.setOperationType(OperationType.NOT_EQUAL);
+          break;
+        default:
+          throw new ParseException("Unexpected comparison.", token);
+      }
+      toReturn.addChild(comparisonNode(parser));
+      return toReturn;
+    }
+    return leftNode;
+  }
 
-          addExpressionFactor(parser, returnNode, token);
+  private static NumericExpressionNode comparisonNode(SourceParser parser) {
+    NumericExpressionNode leftNode = shiftNode(parser);
+    var token = parser.getCurrentToken();
+    if (comparisonTokens.contains(token.getType())) {
+      NumericExpressionNode toReturn = new NumericExpressionNode();
+      toReturn.addChild(leftNode);
+      switch (token.getType()) {
+        case GT:
+          if (parser.peekNextToken().getType().equals(EQUAL)) {
+            parser.consume(GT);
+            parser.consume(EQUAL);
+            toReturn.setOperationType(OperationType.GREATER_THAN_OR_EQUAL);
+          } else {
+            parser.consume(GT);
+            toReturn.setOperationType(OperationType.GREATER_THAN);
 
-          parser.consume(RIGHT_PAREN);
-
-          token = parser.getCurrentToken();
-          if (!operatorTypes.contains(token.getType())) {
-            parsing = false;
-          }
-
-          break;
-        case LABEL:
-          addLabelFactor(parser, returnNode, token);
-          token = parser.getCurrentToken();
-          if (!operatorTypes.contains(token.getType())) {
-            parsing = false;
           }
           break;
-        case NUMBER:
-          addNumberFactor(parser, returnNode, token);
-          token = parser.getCurrentToken();
-          if (!operatorTypes.contains(token.getType())) {
-            parsing = false;
-          }
-          break;
-        case MULTIPLY:
-          returnNode.setOperationType(OperationType.MULTIPLY);
-          parser.consume(MULTIPLY);
-          token = parser.getCurrentToken();
-          if (!factorTypes.contains(token.getType())) {
-            parsing = false;
-          }
-          break;
-        case DIVIDE:
-          returnNode.setOperationType(OperationType.DIVIDE);
-          parser.consume(DIVIDE);
-          token = parser.getCurrentToken();
-          if (!factorTypes.contains(token.getType())) {
-            parsing = false;
-          }
-          break;
-        case PLUS:
-          returnNode.setOperationType(OperationType.ADD);
-          parser.consume(PLUS);
-          token = parser.getCurrentToken();
-          if (!factorTypes.contains(token.getType())) {
-            parsing = false;
-          }
-          break;
-        case MINUS:
-          returnNode.setOperationType(OperationType.SUBTRACT);
-          parser.consume(MINUS);
-          token = parser.getCurrentToken();
-          if (!factorTypes.contains(token.getType())) {
-            parsing = false;
-          }
-          break;
-        case OR:
-          returnNode.setOperationType(OperationType.OR);
-          parser.consume(TokenTypes.OR);
-          token = parser.getCurrentToken();
-          if (!factorTypes.contains(token.getType())) {
-            parsing = false;
-          }
-          break;
-        case AND:
-          returnNode.setOperationType(OperationType.AND);
-          parser.consume(AND);
-          token = parser.getCurrentToken();
-          if (!factorTypes.contains(token.getType())) {
-            parsing = false;
-          }
-          break;
-        case GT: //Right shift >>
-          parser.consume(TokenTypes.GT);
-          parsing = calculateGt(parser, returnNode);
-          token = parser.getCurrentToken();
-          break;
-        case LT: //Left shift <<
-          parser.consume(TokenTypes.LT);
-          parsing = calculateLt(parser, returnNode);
-          token = parser.getCurrentToken();
-          break;
-        case EQUAL: // == equality
-          parser.consume(TokenTypes.EQUAL);
-          parser.consume(TokenTypes.EQUAL);
-          returnNode.setOperationType(OperationType.EQUALS);
-          token = parser.getCurrentToken();
-          if (!factorTypes.contains(token.getType())) {
-            parsing = false;
+        case LT:
+          if (parser.peekNextToken().getType().equals(EQUAL)) {
+            parser.consume(LT);
+            parser.consume(EQUAL);
+            toReturn.setOperationType(OperationType.LESS_THAN_OR_EQUAL);
+          } else {
+            parser.consume(LT);
+            toReturn.setOperationType(OperationType.LESS_THAN);
           }
           break;
         default:
-          throw new ParseException("Unexpected Token in expression", token);
+          throw new ParseException("Unexpected comparison.", token);
       }
+      toReturn.addChild(shiftNode(parser));
+      return toReturn;
     }
-
-    if (returnNode.getOperationType() != null && returnNode.getChildren().size() < 2) {
-      throw new ParseException("Invalid expression", token);
-    }
-
-    return returnNode;
+    return leftNode;
   }
 
-  private static void addExpressionFactor(SourceParser parser, NumericExpressionNode returnNode,
-      Token token) {
-    NumericExpressionNode expressionNodeNode = (NumericExpressionNode) expressionNode(parser);
-    returnNode.addChild(expressionNodeNode);
-  }
-
-  private static boolean calculateLt(SourceParser parser,
-      NumericExpressionNode returnNode) {
-    boolean parsing = true;
-
+  private static NumericExpressionNode shiftNode(SourceParser parser) {
+    NumericExpressionNode leftNode = termNode(parser);
     var token = parser.getCurrentToken();
-    switch (token.getType()) {
-      case NUMBER:
-      case LABEL:
-        returnNode.setOperationType(OperationType.LESS_THAN);
-        break;
-      case EQUAL:
-        returnNode.setOperationType(OperationType.LESS_THAN_OR_EQUAL);
-        parser.consume(TokenTypes.EQUAL);
-        break;
-      case LT:
-        returnNode.setOperationType(OperationType.LEFT_SHIFT);
-        parser.consume(TokenTypes.LT);
-        break;
-      default: throw new ParseException("Was expecting one of =,>,Number,Label", token);
+    if (shiftTokens.contains(token.getType())) {
+      NumericExpressionNode toReturn = new NumericExpressionNode();
+      toReturn.addChild(leftNode);
+      switch (token.getType()) {
+        case GT:
+          if (parser.peekNextToken().getType().equals(GT)) {
+            parser.consume(GT);
+            parser.consume(GT);
+            toReturn.setOperationType(OperationType.RIGHT_SHIFT);
+          } else {
+            return leftNode;
+          }
+          break;
+        case LT:
+          if (parser.peekNextToken().getType().equals(LT)) {
+            parser.consume(LT);
+            parser.consume(LT);
+            toReturn.setOperationType(OperationType.LEFT_SHIFT);
+          } else {
+            return leftNode;
+          }
+          break;
+        default:
+          throw new ParseException("Unexpected shift.", token);
+      }
+      toReturn.addChild(termNode(parser));
+      return toReturn;
     }
-    token = parser.getCurrentToken();
-    if (!factorTypes.contains(token.getType())) {
-      parsing = false;
-    }
-
-    return parsing;
+    return leftNode;
   }
 
-  private static boolean calculateGt(SourceParser parser,
-      NumericExpressionNode returnNode) {
-    boolean parsing = true;
-
+  private static NumericExpressionNode termNode(SourceParser parser) {
+    NumericExpressionNode leftNode = factorNode(parser);
     var token = parser.getCurrentToken();
+    if (termTokens.contains(token.getType())) {
+      NumericExpressionNode toReturn = new NumericExpressionNode();
+      toReturn.addChild(leftNode);
+      switch (token.getType()) {
+        case PLUS:
+          toReturn.setOperationType(OperationType.ADD);
+          parser.consume(PLUS);
+          break;
+        case MINUS:
+          parser.consume(MINUS);
+          toReturn.setOperationType(OperationType.SUBTRACT);
+          break;
+        default:
+          throw new ParseException("Unexpected term.", token);
+      }
+      toReturn.addChild(factorNode(parser));
+      return toReturn;
+    }
+    return leftNode;
+  }
+
+  private static NumericExpressionNode factorNode(SourceParser parser) {
+    var token = parser.getCurrentToken();
+    NumericExpressionNode leftNode;
     switch (token.getType()) {
+      case LEFT_PAREN:
+        parser.consume(LEFT_PAREN);
+        leftNode = bitwiseOrNode(parser);
+        parser.consume(RIGHT_PAREN);
+        break;
+      case MINUS:
+        parser.consume(MINUS);
+        token = parser.getCurrentToken();
+        parser.consume(NUMBER);
+        leftNode = new ConstantNode(-1 * TokenUtil.getInt(token));
+        break;
       case NUMBER:
+        parser.consume(NUMBER);
+        leftNode = new ConstantNode(TokenUtil.getInt(token));
+        break;
       case LABEL:
-        returnNode.setOperationType(OperationType.GREATER_THAN);
+        parser.consume(LABEL);
+        leftNode = new IdentifierNode(token);
         break;
-      case EQUAL:
-        returnNode.setOperationType(OperationType.GREATER_THAN_OR_EQUAL);
-        parser.consume(TokenTypes.EQUAL);
-
-        break;
-      case GT:
-        returnNode.setOperationType(OperationType.RIGHT_SHIFT);
-        parser.consume(TokenTypes.GT);
-
-        break;
-      default: throw new ParseException("Was expecting one of =,>,Number,Label", token);
+      default:
+        throw new ParseException("Unexpected factor.", token);
     }
 
     token = parser.getCurrentToken();
 
-    if (!factorTypes.contains(token.getType())) {
-      parsing = false;
+    if (factorTokens.contains(token.getType())) {
+      NumericExpressionNode toReturn = new NumericExpressionNode();
+      toReturn.addChild(leftNode);
+      switch (token.getType()) {
+        case MULTIPLY:
+          toReturn.setOperationType(OperationType.MULTIPLY);
+          parser.consume(MULTIPLY);
+          break;
+        case DIVIDE:
+          toReturn.setOperationType(OperationType.DIVIDE);
+          parser.consume(DIVIDE);
+          break;
+      }
+      toReturn.addChild(factorNode(parser));
+      return toReturn;
     }
+    return leftNode;
 
-    return parsing;
+
   }
 
-  private static void addNumberFactor(
-      SourceParser parser, NumericExpressionNode returnNode, Token token) {
-    ConstantNode numberNode = new ConstantNode(NodeTypes.NUMERIC_CONSTANT);
-    numberNode.setValue(token.getString());
-    parser.consume(TokenTypes.NUMBER);
-    returnNode.addChild(numberNode);
-  }
-
-  private static void addLabelFactor(
-      SourceParser parser, NumericExpressionNode returnNode, Token token) {
-    LabelNode labelNode = new LabelNode(token);
-    parser.consume(TokenTypes.LABEL);
-    returnNode.addChild(labelNode);
-  }
 }

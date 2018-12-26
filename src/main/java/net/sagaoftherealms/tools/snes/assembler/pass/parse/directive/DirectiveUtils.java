@@ -10,6 +10,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefineWordSeriesParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.RepeatParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
@@ -70,6 +71,9 @@ public final class DirectiveUtils {
         return new DefineByteSeriesParser(type);
       case DSW:
         return new DefineWordSeriesParser(type);
+      case REPEAT:
+      case REPT:
+        return new RepeatParser(type);
       default:
         return new GenericDirectiveParser(type);
     }

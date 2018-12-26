@@ -52,7 +52,7 @@ public class SectionParser implements DirectiveParser {
         }
       }
 
-      if (node.getType() == NodeTypes.LABEL && isBankheader) {
+      if (node.getType() == NodeTypes.LABEL_DEFINITION && isBankheader) {
         throw new ParseException("Labels are not allowed in bankheaders.", token);
       }
 

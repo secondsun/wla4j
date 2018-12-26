@@ -18,7 +18,7 @@ import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeZ80;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelDefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.OpcodeNode;
@@ -29,15 +29,15 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNo
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.IdentifierNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode.OperationType;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode.SectionStatus;
-import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -62,9 +62,9 @@ public class SourceParserTest {
 
     var expressionNode = ExpressionParser.expressionNode(parser);
 
-    assertEquals(NodeTypes.LABEL, expressionNode.getChildren().get(0).getType());
+    assertEquals(NodeTypes.IDENTIFIER_EXPRESSION, expressionNode.getChildren().get(0).getType());
     assertEquals(NodeTypes.NUMERIC_CONSTANT, expressionNode.getChildren().get(1).getType());
-    assertEquals(TokenTypes.MULTIPLY, ((NumericExpressionNode) expressionNode).getOperationType());
+    assertEquals(OperationType.MULTIPLY, ((NumericExpressionNode) expressionNode).getOperationType());
   }
 
   @ParameterizedTest
@@ -89,7 +89,7 @@ public class SourceParserTest {
     var scanner = data.startRead(Opcodes65816.opt_table);
     var parser = new SourceParser(scanner);
 
-    LabelNode node = (LabelNode) parser.nextNode();
+    LabelDefinitionNode node = (LabelDefinitionNode) parser.nextNode();
     OpcodeNode rti = (OpcodeNode) parser.nextNode();
     OpcodeNode jmp = (OpcodeNode) parser.nextNode();
 
@@ -117,7 +117,7 @@ public class SourceParserTest {
    * @param expectedDirective the expected directive sourceLine parses to.
    */
   @ParameterizedTest
-  @CsvSource({"'.DBCOS 0.2, 10, 3.2, 120.0, 1.3', DBCOS, '[.2,10,3.2,120.0,1.3]'"})
+  @CsvSource({"'.DBCOS 0.2, 10, 3.2, 120.0, 1.3\n', DBCOS, '[.2,10,3.2,120.0,1.3]'"})
   public void testParseDirectiveWithArgumentsToken(
       String sourceLine,
       String expectedDirective,
@@ -378,7 +378,7 @@ public class SourceParserTest {
 
     assertEquals(
         "Two", ((DirectiveNode) thenNode.getChildren().get(0)).getArguments().getString(1));
-    assertEquals("5", ((DirectiveNode) elseNode.getChildren().get(0)).getArguments().getString(1));
+     assertEquals("5", ((DirectiveNode) elseNode.getChildren().get(0)).getArguments().getString(1));
   }
 
   @Test
@@ -737,7 +737,7 @@ public class SourceParserTest {
           assertEquals(SectionStatus.SEMIFREE, node.getStatus());
 
           Node emptyHandlerLabelNode = node.getBody().getChildren().get(0);
-          assertEquals(NodeTypes.LABEL, emptyHandlerLabelNode.getType());
+          assertEquals(NodeTypes.LABEL_DEFINITION, emptyHandlerLabelNode.getType());
           Node rtiOpLabel = node.getBody().getChildren().get(1);
           assertEquals(NodeTypes.OPCODE, rtiOpLabel.getType());
           DirectiveNode eightBit = (DirectiveNode) parser.nextNode();
@@ -770,8 +770,8 @@ public class SourceParserTest {
 
     var body = node.getBody();
     assertEquals(NodeTypes.OPCODE, body.getChildren().get(0).getType());
-    assertEquals(NodeTypes.LABEL, body.getChildren().get(1).getType());
-    assertEquals("-", ((LabelNode) body.getChildren().get(1)).getLabelName());
+    assertEquals(NodeTypes.LABEL_DEFINITION, body.getChildren().get(1).getType());
+    assertEquals("-", ((LabelDefinitionNode) body.getChildren().get(1)).getLabelName());
     assertEquals(NodeTypes.OPCODE, body.getChildren().get(2).getType());
   }
 
@@ -834,7 +834,7 @@ public class SourceParserTest {
     assertEquals(2, dbArgs.size());
     assertEquals(
         "\\1",
-        ((LabelNode) ((NumericExpressionNode) dbArgs.getChildren().get(1)).getChildren().get(0))
+        ((IdentifierNode) ((NumericExpressionNode) dbArgs.getChildren().get(1)).getChildren().get(0))
             .getLabelName());
   }
 
@@ -847,7 +847,10 @@ public class SourceParserTest {
               "20 + (2/2), 21",
               "8 | 2, 10",
               "7 & 4, 4",
+              "-5 + 5, 0",
               "2<<1, 4",
+              "512 >> 8 != 1024 >> 8, 1 ",
+              "512 >> 8 != 2, 0 ",
               "2>>1, 1"})
   public void testExpressions(String expression, int value) {
     final String outfile = "script_commands.out";
@@ -861,7 +864,7 @@ public class SourceParserTest {
     SourceParser parser = new SourceParser(scanner);
 
     var node = ExpressionParser.expressionNode(parser);
-    assertEquals((int)node.evaluate(), value);
+    assertEquals( value, (int)node.evaluate());
   }
 
   /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */

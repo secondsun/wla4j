@@ -1,6 +1,16 @@
 package net.sagaoftherealms.tools.snes.assembler.definition.directives;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.MINUS;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.NUMBER;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 
@@ -19,18 +29,23 @@ public final class DirectiveArgumentsValidator {
     }
   }
 
-  public boolean accept(Token token) {
+  public Optional<Node> accept(Token token,
+      SourceParser parser) {
     if (matches(token)) {
       if (specialMatcher == null) {
         advancePattern();
       }
-      return true;
+      return Optional.ofNullable(parser.nextNode());
     } else {
       if (specialMatcher != null && specialMatcher.isSatisfied()) {
         advancePattern();
-        return matches(token);
+        if (matches(token)) {
+          return Optional.ofNullable(parser.nextNode());
+        } else {
+          return Optional.empty();
+        }
       }
-      return false;
+      return Optional.empty();
     }
   }
 
@@ -107,7 +122,12 @@ public final class DirectiveArgumentsValidator {
         return matches(token);
 
       case ',':
-        return token.getString().equals(",");
+        if (token.getString().equals(",")) {
+          return true;
+        } else {
+          advancePattern();//pattern is on comma, commas are optional, scoot on along.
+          return matches(token);
+        }
       default:
         return token.getString().equals(chara + "");
     }
@@ -136,15 +156,15 @@ public final class DirectiveArgumentsValidator {
   }
 
   private boolean matchLabel(Token token) {
-    return token.getType().equals(TokenTypes.LABEL);
+    return token.getType().equals(LABEL);
   }
 
   private boolean matchChar(Token token) {
-    return token.getType().equals(TokenTypes.NUMBER) && token.getString().matches("'[\\w\\d]'");
+    return token.getType().equals(NUMBER) && token.getString().matches("'[\\w\\d]'");
   }
 
   private boolean matchFloat(Token token) {
-    return token.getType().equals(TokenTypes.NUMBER)
+    return token.getType().equals(NUMBER)
         && token
             .getString()
             .matches(
@@ -186,7 +206,7 @@ public final class DirectiveArgumentsValidator {
   }
 
   private boolean matchInt(Token token) {
-    return token.getType().equals(TokenTypes.NUMBER)
+    return token.getType().equals(NUMBER)
         && (token.getString().startsWith("$")
             || token.getString().matches("^\\d+$")); // any number of digits
   }
@@ -260,6 +280,13 @@ public final class DirectiveArgumentsValidator {
               return true;
             }
             break;
+          case 'e':
+            if (Arrays.asList(TokenTypes.LEFT_PAREN, LABEL, NUMBER).contains(token.getType())) {
+              hasMatched = true;
+              expectComma = true;
+              return true;
+            }
+            break;
           case 'l':
             if (matchLabel(token)) {
               hasMatched = true;
@@ -281,34 +308,17 @@ public final class DirectiveArgumentsValidator {
 
   private class NumericExpressionMatcher implements Matcher {
 
-    final EnumSet<TokenTypes> operatorsSet =
-        EnumSet.of(TokenTypes.DIVIDE, TokenTypes.MULTIPLY, TokenTypes.PLUS, TokenTypes.MINUS);
-    private boolean symbolNext = false;
+    final List<TokenTypes> factorTypes =Arrays.asList(MINUS, TokenTypes.LEFT_PAREN,NUMBER, LABEL);
     private boolean matched = false;
 
     @Override
     public boolean match(Token token) {
-      if (!symbolNext) {
-        if (token.getType().equals(TokenTypes.NUMBER) || token.getType().equals(TokenTypes.LABEL)) {
-          matched = true;
-          symbolNext = true;
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        if (operatorsSet.contains(token.getType())) {
-          symbolNext = false;
-          return true;
-        } else {
-          return false;
-        }
-      }
+      return (matched = factorTypes.contains(token.getType()));
     }
 
     @Override
     public boolean isSatisfied() {
-      return matched && symbolNext;
+      return matched;
     }
   }
 

@@ -31,6 +31,7 @@ public class IfParser extends GenericDirectiveParser {
           AllDirectives.IFLEEQ,
           AllDirectives.IFNDEF,
           AllDirectives.IFNDEFM);
+  private final AllDirectives directive;
 
   public IfParser(AllDirectives type) {
     super(type);
@@ -38,20 +39,18 @@ public class IfParser extends GenericDirectiveParser {
       throw new IllegalArgumentException(
           ("If directive required.  Directive provided was actually " + type));
     }
+
+    this.directive = type;
+
   }
 
   public DirectiveArgumentsNode arguments(SourceParser parser) {
     DirectiveArgumentsNode arguments = new DirectiveArgumentsNode();
 
-    var token = parser.getCurrentToken();
-    while (token.getType() != EOL && token.getType() != END_OF_INPUT) {
-      arguments.add(ExpressionParser.expressionNode(parser));
-      token = parser.getCurrentToken();
-    }
+    arguments.add(ExpressionParser.expressionNode(parser));
 
-    if (arguments.size() == 0) {
-      throw new ParseException(
-          "At least one byte definition is required.", parser.getCurrentToken());
+    if (directive.getPattern().trim().split(" ").length > 2) {//Magic knowledge about AllDirectives.  See their patterns
+      arguments.add(ExpressionParser.expressionNode(parser));
     }
 
     parser.consumeAndClear(EOL, END_OF_INPUT);

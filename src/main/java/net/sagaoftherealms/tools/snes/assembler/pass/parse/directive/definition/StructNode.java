@@ -2,6 +2,7 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 
 public class StructNode extends DirectiveNode {
 
@@ -10,6 +11,7 @@ public class StructNode extends DirectiveNode {
   }
 
   public String getName() {
-    return getArguments().getString(0).trim();
+    var idNode = (StringExpressionNode)getArguments().getChildren().get(0);
+    return idNode.evaluate().trim();
   }
 }

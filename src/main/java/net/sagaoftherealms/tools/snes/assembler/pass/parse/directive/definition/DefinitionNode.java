@@ -36,8 +36,7 @@ public class DefinitionNode extends Node {
    */
   public void setSize(int size) {
     NumericExpressionNode node = new NumericExpressionNode();
-    node.addChild(new ConstantNode(NodeTypes.NUMERIC_CONSTANT));
-    ((ConstantNode) node.getChildren().get(0)).setValue(size + "");
+    node.addChild(new ConstantNode(size));
     this.size = node;
   }
 

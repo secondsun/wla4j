@@ -15,6 +15,7 @@ public class SourceScanner {
   private final List<String> opCodes;
   private int lineNumber = 0;
   private int linePosition = 0;
+  private boolean newLineBeginning = true;
 
   public SourceScanner(SourceFileDataMap source, OpCode[] opcodes) {
     this.source = source;
@@ -28,6 +29,7 @@ public class SourceScanner {
 
   public SourceDataLine getNextLine() {
     linePosition = 0;
+    newLineBeginning = true;
     return source.getLine(++lineNumber);
   }
 
@@ -36,10 +38,15 @@ public class SourceScanner {
   }
 
   public Token getNextToken() {
+    return getNextToken(true);
+  }
+
+  private Token getNextToken(boolean advance) {
     if (endOfInput()) {
       return new Token(getCurrentLine(), "", TokenTypes.END_OF_INPUT);
     }
-    String tokenString = getNextTokenString();
+
+    String tokenString = getNextTokenString(advance);
     TokenTypes type;
     final List<Character> operators =
         Arrays.asList(
@@ -86,12 +93,13 @@ public class SourceScanner {
     return new Token(getCurrentLine(), tokenString, type);
   }
 
-  private String getNextTokenString() {
+  private String getNextTokenString(boolean advance) {
 
     final List<Character> operators =
         Arrays.asList(
             ',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')', '!',
             '=', '\\', '@');
+
 
     if (lineNumber == 0) {
       getNextLine();
@@ -100,66 +108,76 @@ public class SourceScanner {
     // getString line where we left off reading
     var line = getCurrentLine();
     var sourceString = line.getDataLine();
-
-    while (linePosition >= sourceString.length()) {
-      getNextLine();
-      line = getCurrentLine();
-      sourceString = line.getDataLine();
-      if (linePosition < sourceString.length()) {
-        return "\n"; // collapse multiple newlines
-      }
-    }
-
-    char character = sourceString.charAt(linePosition);
-    linePosition++;
-
-    // Consume leading whitespace
-    while (Character.isWhitespace(character)) {
-      character = sourceString.charAt(linePosition);
-      linePosition++;
-    }
-
-    if (character == '"') {
-      return stringToken(sourceString);
-    } else if (character == '.') {
-      return directiveToken(sourceString);
-    } else if (Character.isDigit(character) || character == '$' || character == '%') {
-      return numberToken(sourceString, character);
-    } else if (character
-        == '\'') { // Escape character unless it is \1 \2 etc then it is a macro label.
-      return characterToken(sourceString);
-    } else if (Character.isAlphabetic(character)
-        || character == '_'
-        || character == '@'
-        || (character == '\\' && Character.isDigit(sourceString.charAt(linePosition)))
-        || character == ':') {
-      return labelToken(sourceString, character);
-    } else if (operators.contains(character)) {
-      if (character == '-' || character == '+') { // This is a label of the --- or +++ variety
-        if ((linePosition) < sourceString.length()) {
-          var nextCharacter = sourceString.charAt(linePosition);
-          String toReturn = character + "";
-          while (((linePosition) < sourceString.length())
-              && nextCharacter == character) { // This is a label of the --- or +++ variety
-            toReturn += nextCharacter;
-            linePosition++;
-            if ((linePosition) < sourceString.length()) {
-              nextCharacter = sourceString.charAt(linePosition);
-            }
-          }
-
-          if ((linePosition) < sourceString.length() && sourceString.charAt(linePosition) == ':') {
-            toReturn += nextCharacter;
-            linePosition++;
-          }
-
-          return toReturn;
+    var initialLinePosition = linePosition;
+    var initialLineNumber = lineNumber;
+    var initialNewline = newLineBeginning;
+    try {
+      while (linePosition >= sourceString.length()) {
+        getNextLine();
+        line = getCurrentLine();
+        sourceString = line.getDataLine();
+        if (linePosition < sourceString.length()) {
+          return "\n"; // collapse multiple newlines
         }
       }
-      return "" + character;
-    }
 
-    return null;
+      char character = sourceString.charAt(linePosition);
+      linePosition++;
+
+      // Consume leading whitespace
+      while (Character.isWhitespace(character)) {
+        character = sourceString.charAt(linePosition);
+        linePosition++;
+      }
+
+      if (character == '"') {
+        return stringToken(sourceString);
+      } else if (character == '.') {
+        return directiveToken(sourceString);
+      } else if (Character.isDigit(character) || character == '$' || character == '%') {
+        return numberToken(sourceString, character);
+      } else if (character
+          == '\'') { // Escape character unless it is \1 \2 etc then it is a macro label.
+        return characterToken(sourceString);
+      } else if (Character.isAlphabetic(character)
+          || character == '_'
+          || character == '@'
+          || (character == '\\' && Character.isDigit(sourceString.charAt(linePosition)))
+          || character == ':') {
+        return labelToken(sourceString, character);
+      } else if (operators.contains(character)) {
+        if (character == '-' || character == '+') { // This is a label of the --- or +++ variety
+          if ((linePosition) < sourceString.length()) {
+            var nextCharacter = sourceString.charAt(linePosition);
+            String toReturn = character + "";
+            while (((linePosition) < sourceString.length())
+                && nextCharacter == character) { // This is a label of the --- or +++ variety
+              toReturn += nextCharacter;
+              linePosition++;
+              if ((linePosition) < sourceString.length()) {
+                nextCharacter = sourceString.charAt(linePosition);
+              }
+            }
+
+            if ((linePosition) < sourceString.length()
+                && sourceString.charAt(linePosition) == ':') {
+              toReturn += nextCharacter;
+              linePosition++;
+            }
+
+            return toReturn;
+          }
+        }
+        return "" + character;
+      }
+
+      return null;
+    } finally {
+      if (!advance) {
+        linePosition = initialLinePosition;
+        lineNumber = initialLineNumber;
+      }
+    }
   }
 
   private String labelToken(String sourceString, char character) {
@@ -180,9 +198,38 @@ public class SourceScanner {
       character = sourceString.charAt(linePosition);
       linePosition++;
 
+      if (character == '.') {
+        if (linePosition >= sourceString.length()) {
+          break;
+        }
+        var peekCharacter = sourceString.charAt(linePosition);
+        if ((peekCharacter == 'b' || peekCharacter == 'w'|| peekCharacter == 'l' || peekCharacter == 'B' || peekCharacter == 'W'|| peekCharacter == 'L')) {//labels can have a size which is .b .l  or .w
+          if ((linePosition + 1 )>= sourceString.length()) {
+            if (opCodes.contains(builder.toString() + "." + peekCharacter)) {
+              builder.append(builder.toString() + "." + peekCharacter);
+              linePosition+=2;
+            }
+            break;
+          }
+          var peekCharacter2 = sourceString.charAt(linePosition+1);
+          if (Character.isWhitespace(peekCharacter2) || operators.contains(peekCharacter2)) {
+            if (opCodes.contains(builder.toString() + "." + peekCharacter)) {
+              builder.append("." + peekCharacter);
+              linePosition+=2;
+            }
+            break;
+          }
+        }
+        builder.append(character);
+        character = sourceString.charAt(linePosition);
+        linePosition++;
+      }
+
     } while (!Character.isWhitespace(character)
         && character != '.'
         && !operators.contains(character));
+
+
 
     if (character == '.' || operators.contains(character)) {
       linePosition--;
@@ -352,4 +399,11 @@ public class SourceScanner {
     }
     return lineNumber > source.lineCount();
   }
+
+  public Token peekNextToken() {
+    return getNextToken(false);
+  }
+
+
+
 }

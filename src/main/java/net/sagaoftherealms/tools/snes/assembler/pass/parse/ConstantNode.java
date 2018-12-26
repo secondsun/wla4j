@@ -2,18 +2,10 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
 import java.util.Arrays;
 import java.util.List;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode;
 
-public class ConstantNode extends Node {
-
-  private static final List<NodeTypes> CONSTANT_TYPES = Arrays.asList(NodeTypes.NUMERIC_CONSTANT);
+public class ConstantNode extends NumericExpressionNode {
   private String value;
-
-  public ConstantNode(NodeTypes nodeType) {
-    super(nodeType);
-    if (!CONSTANT_TYPES.contains(nodeType)) {
-      throw new IllegalArgumentException(nodeType + " not in " + CONSTANT_TYPES);
-    }
-  }
 
   public ConstantNode(int value) {
     super(NodeTypes.NUMERIC_CONSTANT);
@@ -30,5 +22,10 @@ public class ConstantNode extends Node {
 
   public int getValueAsInt() {
     return Integer.parseInt(value);
+  }
+
+  @Override
+  public Integer evaluate() {
+    return getValueAsInt();
   }
 }

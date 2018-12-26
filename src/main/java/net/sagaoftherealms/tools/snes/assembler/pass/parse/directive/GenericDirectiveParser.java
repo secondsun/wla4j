@@ -1,9 +1,12 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
+import java.util.Optional;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.DirectiveArgumentsValidator;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 
 public class GenericDirectiveParser implements DirectiveParser {
@@ -33,13 +36,17 @@ public class GenericDirectiveParser implements DirectiveParser {
     var token = parser.getCurrentToken();
 
     while (token.getType() != TokenTypes.END_OF_INPUT) {
-      if (validator.accept(token)) {
-        if (token.getType() != TokenTypes.COMMA) {
-          argumentsNode.add(token.getString());
-          parser.consume(
-              token.getType()); // We  have already calculated the fact this is a valid token in the
-          // validator.
+      Optional<Node> potentialNode = validator.accept(token, parser);
+      if (potentialNode.isPresent()) {
+
+        var node = potentialNode.get();
+        if (node instanceof ExpressionNode) {
+          argumentsNode.add((ExpressionNode) node);
         } else {
+          argumentsNode.add(token.getString());
+        }
+        token = parser.getCurrentToken();
+        if (token.getType() == TokenTypes.COMMA) {
           parser.consume(TokenTypes.COMMA);
         }
       } else {

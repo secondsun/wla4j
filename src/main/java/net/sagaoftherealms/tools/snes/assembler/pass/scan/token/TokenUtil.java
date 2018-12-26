@@ -78,7 +78,7 @@ public final class TokenUtil {
   }
 
   public static String getLabelName(Token token) {
-    if (token.getType() != TokenTypes.LABEL) {
+    if (token.getType() != TokenTypes.LABEL && !anonmyousLabel(token)) {
       throw new IllegalArgumentException("Token argument was not a label type");
     }
     String labelString = token.getString();
@@ -93,5 +93,9 @@ public final class TokenUtil {
     }
 
     return labelString.replace(":", "");
+  }
+
+  private static boolean anonmyousLabel(Token token) {
+    return token.getString().matches("[\\-\\+]");
   }
 }

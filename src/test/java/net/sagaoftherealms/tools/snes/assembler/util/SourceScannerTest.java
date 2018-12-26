@@ -30,7 +30,7 @@ public class SourceScannerTest {
     return Arrays.stream(Opcodes65816.opt_table)
         .map(
             opcode -> {
-              var code = opcode.getOp().split(" ")[0].split("\\.")[0];
+              var code = opcode.getOp().split(" ")[0];
               var sourceLine = opcode.getOp();
               sourceLine = sourceLine.replace("x", "0ah");
               sourceLine = sourceLine.replace("?", "0ah");
@@ -266,6 +266,7 @@ public class SourceScannerTest {
     // underscore label IE local label (see
     // https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)
     "@label.b, label", // Child label
+    "label.namespace, label.namespace", // Namespaced Label
     "@@@@label, label", // Deeply nested child label
     "---:, '---'", // unnamed label
     "+++, '+++'", // unnamed label

@@ -123,8 +123,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
           var expression = expressionNode(parser);
 
           // We have to fake a double expression
-          var constant = new ConstantNode(NodeTypes.NUMERIC_CONSTANT);
-          constant.setValue("2");
+          var constant = new ConstantNode(2);
 
           var doubleExpression = new NumericExpressionNode();
           doubleExpression.addChild(expression);
