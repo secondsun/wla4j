@@ -11,7 +11,7 @@ public class StructNode extends DirectiveNode {
   }
 
   public String getName() {
-    var idNode = (StringExpressionNode)getArguments().getChildren().get(0);
+    var idNode = (StringExpressionNode) getArguments().getChildren().get(0);
     return idNode.evaluate().trim();
   }
 }

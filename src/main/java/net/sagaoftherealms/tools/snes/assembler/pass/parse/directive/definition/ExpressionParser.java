@@ -25,26 +25,19 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
-/**
- * Parses expressions in the body definition.
- */
+/** Parses expressions in the body definition. */
 public class ExpressionParser {
 
-  private static List<TokenTypes> equalityTokens = Arrays
-      .asList(NOT, TokenTypes.EQUAL);
+  private static List<TokenTypes> equalityTokens = Arrays.asList(NOT, TokenTypes.EQUAL);
   private static List<TokenTypes> comparisonTokens = Arrays.asList(GT, TokenTypes.LT);
   private static List<TokenTypes> shiftTokens = Arrays.asList(GT, TokenTypes.LT);
 
-  private static final List<TokenTypes> termTokens =
-      Arrays.asList(TokenTypes.PLUS, MINUS);
-  private static final List<TokenTypes> factorTokens =
-      Arrays.asList(MULTIPLY, DIVIDE);
+  private static final List<TokenTypes> termTokens = Arrays.asList(TokenTypes.PLUS, MINUS);
+  private static final List<TokenTypes> factorTokens = Arrays.asList(MULTIPLY, DIVIDE);
   private static final List<TokenTypes> factorNodeTokens =
       Arrays.asList(TokenTypes.NUMBER, TokenTypes.LABEL, LEFT_PAREN);
 
-  private ExpressionParser() {
-  }
-
+  private ExpressionParser() {}
 
   public static ExpressionNode expressionNode(SourceParser parser) {
 
@@ -56,7 +49,6 @@ public class ExpressionParser {
     }
 
     return bitwiseOrNode(parser);
-
   }
 
   private static NumericExpressionNode bitwiseOrNode(SourceParser parser) {
@@ -86,7 +78,6 @@ public class ExpressionParser {
     }
     return leftNode;
   }
-
 
   private static NumericExpressionNode equalityNode(SourceParser parser) {
     NumericExpressionNode leftNode = comparisonNode(parser);
@@ -129,7 +120,6 @@ public class ExpressionParser {
           } else {
             parser.consume(GT);
             toReturn.setOperationType(OperationType.GREATER_THAN);
-
           }
           break;
         case LT:
@@ -255,8 +245,5 @@ public class ExpressionParser {
       return toReturn;
     }
     return leftNode;
-
-
   }
-
 }

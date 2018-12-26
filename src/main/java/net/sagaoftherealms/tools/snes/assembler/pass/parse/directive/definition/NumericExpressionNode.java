@@ -6,24 +6,38 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.ConstantNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 
 /**
- * This class represents an expression that defines the size for a definition in a struct, enum,
- * etc
+ * This class represents an expression that defines the size for a definition in a struct, enum, etc
  */
 public class NumericExpressionNode extends ExpressionNode<Integer> {
 
-  public enum OperationType {MULTIPLY, ADD, DIVIDE, SUBTRACT, LEFT_SHIFT, RIGHT_SHIFT, GREATER_THAN, LESS_THAN, LESS_THAN_OR_EQUAL, AND, OR, EQUALS, NOT_EQUAL, GREATER_THAN_OR_EQUAL}
-
-  ;
+  public enum OperationType {
+    MULTIPLY,
+    ADD,
+    DIVIDE,
+    SUBTRACT,
+    LEFT_SHIFT,
+    RIGHT_SHIFT,
+    GREATER_THAN,
+    LESS_THAN,
+    LESS_THAN_OR_EQUAL,
+    AND,
+    OR,
+    EQUALS,
+    NOT_EQUAL,
+    GREATER_THAN_OR_EQUAL
+  };
 
   private OperationType operation;
-  private static final List<NodeTypes> ALLOWED_TYPES = Arrays.asList(NodeTypes.NUMERIC_EXPRESION,NodeTypes.NUMERIC_CONSTANT, NodeTypes.IDENTIFIER_EXPRESSION);
+  private static final List<NodeTypes> ALLOWED_TYPES =
+      Arrays.asList(
+          NodeTypes.NUMERIC_EXPRESION, NodeTypes.NUMERIC_CONSTANT, NodeTypes.IDENTIFIER_EXPRESSION);
+
   public NumericExpressionNode() {
     super(NodeTypes.NUMERIC_EXPRESION);
   }
 
   public NumericExpressionNode(NodeTypes type) {
     super(type);
-
   }
 
   public OperationType getOperationType() {
@@ -58,7 +72,6 @@ public class NumericExpressionNode extends ExpressionNode<Integer> {
     }
 
     switch (operation) {
-
       case MULTIPLY:
         return leftValue * rightValue;
       case ADD:
@@ -95,7 +108,6 @@ public class NumericExpressionNode extends ExpressionNode<Integer> {
 
       case GREATER_THAN_OR_EQUAL:
         return leftValue >= rightValue ? 1 : 0;
-
     }
 
     throw new IllegalStateException("Not implemented" + operation);

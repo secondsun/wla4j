@@ -65,7 +65,8 @@ public class SourceParserTest {
 
     assertEquals(NodeTypes.IDENTIFIER_EXPRESSION, expressionNode.getChildren().get(0).getType());
     assertEquals(NodeTypes.NUMERIC_CONSTANT, expressionNode.getChildren().get(1).getType());
-    assertEquals(OperationType.MULTIPLY, ((NumericExpressionNode) expressionNode).getOperationType());
+    assertEquals(
+        OperationType.MULTIPLY, ((NumericExpressionNode) expressionNode).getOperationType());
   }
 
   @ParameterizedTest
@@ -182,9 +183,7 @@ public class SourceParserTest {
   }
 
   @Test
-  public void testExpressions() {
-
-  }
+  public void testExpressions() {}
 
   @Test
   public void testParseRamSectionToken() {
@@ -379,7 +378,7 @@ public class SourceParserTest {
 
     assertEquals(
         "Two", ((DirectiveNode) thenNode.getChildren().get(0)).getArguments().getString(1));
-     assertEquals("5", ((DirectiveNode) elseNode.getChildren().get(0)).getArguments().getString(1));
+    assertEquals("5", ((DirectiveNode) elseNode.getChildren().get(0)).getArguments().getString(1));
   }
 
   @Test
@@ -498,8 +497,8 @@ public class SourceParserTest {
 
   @Test
   /**
-   * DB includes strings, DW does not.
-   * The test sources have DB with string, but I want to enforce the failure case.
+   * DB includes strings, DW does not. The test sources have DB with string, but I want to enforce
+   * the failure case.
    */
   public void testDWFailsWithString() {
     String source = ".dw \"Fail\"";
@@ -513,7 +512,7 @@ public class SourceParserTest {
     var scanner = data.startRead(Opcodes65816.opt_table);
 
     SourceParser parser = new SourceParser(scanner);
-    assertThrows(ParseException.class, ()->parser.nextNode());
+    assertThrows(ParseException.class, () -> parser.nextNode());
   }
 
   @Test
@@ -835,24 +834,27 @@ public class SourceParserTest {
     assertEquals(2, dbArgs.size());
     assertEquals(
         "\\1",
-        ((IdentifierNode) ((NumericExpressionNode) dbArgs.getChildren().get(1)).getChildren().get(0))
+        ((IdentifierNode)
+                ((NumericExpressionNode) dbArgs.getChildren().get(1)).getChildren().get(0))
             .getLabelName());
   }
 
   @ParameterizedTest
-  @CsvSource({"2*81, 162",
-              "2+1, 3",
-              "21-1, 20",
-              "20/2, 10",
-              "(20 + 2)/2, 11",
-              "20 + (2/2), 21",
-              "8 | 2, 10",
-              "7 & 4, 4",
-              "-5 + 5, 0",
-              "2<<1, 4",
-              "512 >> 8 != 1024 >> 8, 1 ",
-              "512 >> 8 != 2, 0 ",
-              "2>>1, 1"})
+  @CsvSource({
+    "2*81, 162",
+    "2+1, 3",
+    "21-1, 20",
+    "20/2, 10",
+    "(20 + 2)/2, 11",
+    "20 + (2/2), 21",
+    "8 | 2, 10",
+    "7 & 4, 4",
+    "-5 + 5, 0",
+    "2<<1, 4",
+    "512 >> 8 != 1024 >> 8, 1 ",
+    "512 >> 8 != 2, 0 ",
+    "2>>1, 1"
+  })
   public void testExpressions(String expression, int value) {
     final String outfile = "script_commands.out";
     final String inputFile = "script_commands.s";
@@ -865,7 +867,7 @@ public class SourceParserTest {
     SourceParser parser = new SourceParser(scanner);
 
     var node = ExpressionParser.expressionNode(parser);
-    assertEquals( value, (int)node.evaluate());
+    assertEquals(value, (int) node.evaluate());
   }
 
   /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */
@@ -898,18 +900,19 @@ public class SourceParserTest {
 
   @Test
   public void testMacroCall() {
-    var program = "\n\n"
-        + ".MACRO writeobjectbyte\n"
-        + "\t.db $8e \\1 \\2\n"
-        + "\n"
-        + ".ENDM"
-        + "\n\n"
-        + ".MACRO writeobjectword\n"
-        + "writeobjectbyte \\1,   \\2&$ff\n"
-        + "\twriteobjectbyte \\1+1, \\2>>$8\n"
-        + ".ENDM\n"
-        + "writeobjectword 17 18\n"
-        + "writeobjectword 19, 512";
+    var program =
+        "\n\n"
+            + ".MACRO writeobjectbyte\n"
+            + "\t.db $8e \\1 \\2\n"
+            + "\n"
+            + ".ENDM"
+            + "\n\n"
+            + ".MACRO writeobjectword\n"
+            + "writeobjectbyte \\1,   \\2&$ff\n"
+            + "\twriteobjectbyte \\1+1, \\2>>$8\n"
+            + ".ENDM\n"
+            + "writeobjectword 17 18\n"
+            + "writeobjectword 19, 512";
 
     final String outfile = "script_commands.out";
     final String inputFile = "parseLargeFiles/script_commands.s";
@@ -924,11 +927,19 @@ public class SourceParserTest {
     var writeobjectwordMacro = (MacroNode) parser.nextNode();
     var writeobjectwordCall1 = (MacroCallNode) parser.nextNode();
     var writeobjectwordCall2 = (MacroCallNode) parser.nextNode();
-    assertEquals(17, (int)((NumericExpressionNode)writeobjectwordCall1.getArguments().get(0)).evaluate());
-    assertEquals(512, (int)((NumericExpressionNode)writeobjectwordCall2.getArguments().get(1)).evaluate());
+    assertEquals(
+        17, (int) ((NumericExpressionNode) writeobjectwordCall1.getArguments().get(0)).evaluate());
+    assertEquals(
+        512, (int) ((NumericExpressionNode) writeobjectwordCall2.getArguments().get(1)).evaluate());
     assertEquals(writeobjectwordMacro, writeobjectwordCall2.getMacroNode());
-    assertEquals(writeobjectbyteMacro, ((MacroCallNode)writeobjectwordMacro.getBody().getChildren().get(0)).getMacroNode());
-    assertEquals(NodeTypes.IDENTIFIER_EXPRESSION, ((MacroCallNode)writeobjectwordMacro.getBody().getChildren().get(0)).getArguments().get(0).getType());
+    assertEquals(
+        writeobjectbyteMacro,
+        ((MacroCallNode) writeobjectwordMacro.getBody().getChildren().get(0)).getMacroNode());
+    assertEquals(
+        NodeTypes.IDENTIFIER_EXPRESSION,
+        ((MacroCallNode) writeobjectwordMacro.getBody().getChildren().get(0))
+            .getArguments()
+            .get(0)
+            .getType());
   }
-
 }

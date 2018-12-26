@@ -100,7 +100,6 @@ public class SourceScanner {
             ',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')', '!',
             '=', '\\', '@');
 
-
     if (lineNumber == 0) {
       getNextLine();
     }
@@ -203,19 +202,24 @@ public class SourceScanner {
           break;
         }
         var peekCharacter = sourceString.charAt(linePosition);
-        if ((peekCharacter == 'b' || peekCharacter == 'w'|| peekCharacter == 'l' || peekCharacter == 'B' || peekCharacter == 'W'|| peekCharacter == 'L')) {//labels can have a size which is .b .l  or .w
-          if ((linePosition + 1 )>= sourceString.length()) {
+        if ((peekCharacter == 'b'
+            || peekCharacter == 'w'
+            || peekCharacter == 'l'
+            || peekCharacter == 'B'
+            || peekCharacter == 'W'
+            || peekCharacter == 'L')) { // labels can have a size which is .b .l  or .w
+          if ((linePosition + 1) >= sourceString.length()) {
             if (opCodes.contains(builder.toString() + "." + peekCharacter)) {
               builder.append(builder.toString() + "." + peekCharacter);
-              linePosition+=2;
+              linePosition += 2;
             }
             break;
           }
-          var peekCharacter2 = sourceString.charAt(linePosition+1);
+          var peekCharacter2 = sourceString.charAt(linePosition + 1);
           if (Character.isWhitespace(peekCharacter2) || operators.contains(peekCharacter2)) {
             if (opCodes.contains(builder.toString() + "." + peekCharacter)) {
               builder.append("." + peekCharacter);
-              linePosition+=2;
+              linePosition += 2;
             }
             break;
           }
@@ -228,8 +232,6 @@ public class SourceScanner {
     } while (!Character.isWhitespace(character)
         && character != '.'
         && !operators.contains(character));
-
-
 
     if (character == '.' || operators.contains(character)) {
       linePosition--;
@@ -403,7 +405,4 @@ public class SourceScanner {
   public Token peekNextToken() {
     return getNextToken(false);
   }
-
-
-
 }

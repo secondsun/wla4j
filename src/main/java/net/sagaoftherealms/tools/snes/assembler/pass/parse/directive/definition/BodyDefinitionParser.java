@@ -9,7 +9,6 @@ import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenType
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ConstantNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;

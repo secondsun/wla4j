@@ -1,7 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 
@@ -22,10 +20,7 @@ public class MacroCallNode extends Node {
     addChild(argument);
   }
 
-
-
   public List<Node> getArguments() {
     return getChildren();
   }
-
 }

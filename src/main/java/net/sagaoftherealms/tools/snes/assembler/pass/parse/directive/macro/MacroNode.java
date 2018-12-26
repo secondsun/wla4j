@@ -20,9 +20,7 @@ public class MacroNode extends DirectiveNode {
 
   @Override
   public String toString() {
-    return "MacroNode{" +
-        "name=" + getName() +
-        '}';
+    return "MacroNode{" + "name=" + getName() + '}';
   }
 
   @Override

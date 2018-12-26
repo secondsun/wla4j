@@ -8,7 +8,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 
 public class PrintvParser extends GenericDirectiveParser {
 
-
   public PrintvParser() {
     super(AllDirectives.PRINTV);
   }

@@ -36,18 +36,21 @@ import org.junit.jupiter.params.provider.CsvSource;
 public class DirectiveArgumentsValidatorTester {
 
   private final SourceDataLine testLine = new SourceDataLine("test.out", 0, "");
-  private final SourceScanner mockerScanner = new SourceScanner(null, OpCodeZ80.OPCODES) {
-    @Override
-    public Token getNextToken() {
-      return new Token(null,null,null);
-    }
-  };
-  private final SourceParser parser = new SourceParser(mockerScanner){
-    @Override
-    public Node nextNode() {
-      return new LabelDefinitionNode("Const", null);
-    }
-  };
+  private final SourceScanner mockerScanner =
+      new SourceScanner(null, OpCodeZ80.OPCODES) {
+        @Override
+        public Token getNextToken() {
+          return new Token(null, null, null);
+        }
+      };
+  private final SourceParser parser =
+      new SourceParser(mockerScanner) {
+        @Override
+        public Node nextNode() {
+          return new LabelDefinitionNode("Const", null);
+        }
+      };
+
   @ParameterizedTest
   @CsvSource({"x, 5", "f,5.0", "c,'''a'''", "c,'''0'''"})
   public void validateNumbers(String pattern, String token) {
@@ -59,19 +62,24 @@ public class DirectiveArgumentsValidatorTester {
   @CsvSource({"x, 5.1", "x,'''a'''", "f,'''0'''", "c, 5"})
   public void validateNumbersFailures(String pattern, String token) {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator(pattern);
-    assertFalse(validator.accept(new Token(testLine, token, TokenTypes.NUMBER), parser).isPresent());
+    assertFalse(
+        validator.accept(new Token(testLine, token, TokenTypes.NUMBER), parser).isPresent());
   }
 
   @Test
   public void validateStrings() {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("s");
-    assertTrue(validator.accept(new Token(testLine, "This is a String", TokenTypes.STRING), parser).isPresent());
+    assertTrue(
+        validator
+            .accept(new Token(testLine, "This is a String", TokenTypes.STRING), parser)
+            .isPresent());
   }
 
   @Test
   public void validateLabel() {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("l");
-    assertTrue(validator.accept(new Token(testLine, "aLabel", TokenTypes.LABEL), parser).isPresent());
+    assertTrue(
+        validator.accept(new Token(testLine, "aLabel", TokenTypes.LABEL), parser).isPresent());
   }
 
   @ParameterizedTest
@@ -122,7 +130,6 @@ public class DirectiveArgumentsValidatorTester {
     }
   }
 
-
   @ParameterizedTest
   @CsvSource({
     "4 + 4 FLOUR, 'NUMBER, PLUS, NUMBER, LABEL'",
@@ -152,23 +159,25 @@ public class DirectiveArgumentsValidatorTester {
   @Test
   public void testOneOf() {
     DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("{xc}");
-    assertTrue(validator.accept(new Token(testLine,"4", TokenTypes.NUMBER), parser).isPresent());
+    assertTrue(validator.accept(new Token(testLine, "4", TokenTypes.NUMBER), parser).isPresent());
     validator = new DirectiveArgumentsValidator("{xc}");
-    assertTrue(validator.accept(new Token(testLine,"c", TokenTypes.NUMBER), parser).isPresent());
+    assertTrue(validator.accept(new Token(testLine, "c", TokenTypes.NUMBER), parser).isPresent());
     validator = new DirectiveArgumentsValidator("{xc}");
-    assertFalse(validator.accept(new Token(testLine,"4.5", TokenTypes.NUMBER), parser).isPresent());
+    assertFalse(
+        validator.accept(new Token(testLine, "4.5", TokenTypes.NUMBER), parser).isPresent());
     validator = new DirectiveArgumentsValidator("{fc}");
-    assertTrue(validator.accept(new Token(testLine,"4.5", TokenTypes.NUMBER), parser).isPresent());
+    assertTrue(validator.accept(new Token(testLine, "4.5", TokenTypes.NUMBER), parser).isPresent());
     validator = new DirectiveArgumentsValidator("{es}");
-    assertTrue(validator.accept(new Token(testLine,"\"Twelve\"", TokenTypes.STRING), parser).isPresent());
+    assertTrue(
+        validator.accept(new Token(testLine, "\"Twelve\"", TokenTypes.STRING), parser).isPresent());
     validator = new DirectiveArgumentsValidator("{es}");
-    assertTrue(validator.accept(new Token(testLine,"4", TokenTypes.NUMBER), parser).isPresent());
-    assertTrue(validator.accept(new Token(testLine,"+", TokenTypes.PLUS), parser).isPresent());
-    assertTrue(validator.accept(new Token(testLine,"4", TokenTypes.NUMBER), parser).isPresent());
+    assertTrue(validator.accept(new Token(testLine, "4", TokenTypes.NUMBER), parser).isPresent());
+    assertTrue(validator.accept(new Token(testLine, "+", TokenTypes.PLUS), parser).isPresent());
+    assertTrue(validator.accept(new Token(testLine, "4", TokenTypes.NUMBER), parser).isPresent());
     validator = new DirectiveArgumentsValidator("{sl}");
-    assertTrue(validator.accept(new Token(testLine,"\"Twelve\"", TokenTypes.STRING), parser).isPresent());
+    assertTrue(
+        validator.accept(new Token(testLine, "\"Twelve\"", TokenTypes.STRING), parser).isPresent());
     validator = new DirectiveArgumentsValidator("{sl}");
-    assertTrue(validator.accept(new Token(testLine,"4", TokenTypes.LABEL), parser).isPresent());
+    assertTrue(validator.accept(new Token(testLine, "4", TokenTypes.LABEL), parser).isPresent());
   }
-
 }

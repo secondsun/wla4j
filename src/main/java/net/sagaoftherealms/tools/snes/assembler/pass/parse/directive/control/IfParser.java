@@ -1,6 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control;
 
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.COMMA;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
 
@@ -41,7 +40,6 @@ public class IfParser extends GenericDirectiveParser {
     }
 
     this.directive = type;
-
   }
 
   public DirectiveArgumentsNode arguments(SourceParser parser) {
@@ -49,7 +47,8 @@ public class IfParser extends GenericDirectiveParser {
 
     arguments.add(ExpressionParser.expressionNode(parser));
 
-    if (directive.getPattern().trim().split(" ").length > 2) {//Magic knowledge about AllDirectives.  See their patterns
+    if (directive.getPattern().trim().split(" ").length
+        > 2) { // Magic knowledge about AllDirectives.  See their patterns
       arguments.add(ExpressionParser.expressionNode(parser));
     }
 

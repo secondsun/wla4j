@@ -1,7 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
-import java.util.Arrays;
-import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode;
 
 public class ConstantNode extends NumericExpressionNode {

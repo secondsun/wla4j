@@ -116,10 +116,15 @@ public class SourceDataLine {
 
   @Override
   public String toString() {
-    return "SourceDataLine{" +
-        "fileName='" + fileName + '\'' +
-        ", sourceLineNumber=" + sourceLineNumber +
-        ", dataLine='" + dataLine + '\'' +
-        '}';
+    return "SourceDataLine{"
+        + "fileName='"
+        + fileName
+        + '\''
+        + ", sourceLineNumber="
+        + sourceLineNumber
+        + ", dataLine='"
+        + dataLine
+        + '\''
+        + '}';
   }
 }

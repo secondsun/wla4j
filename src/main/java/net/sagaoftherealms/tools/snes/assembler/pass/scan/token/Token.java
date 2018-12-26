@@ -24,7 +24,15 @@ public class Token {
 
   @Override
   public String toString() {
-    return "Token{type=" + type + ", string='" + string + '\'' + "@"+line.getFileName() + ":" + line.getSourceLineNumber() + '}';
-
+    return "Token{type="
+        + type
+        + ", string='"
+        + string
+        + '\''
+        + "@"
+        + line.getFileName()
+        + ":"
+        + line.getSourceLineNumber()
+        + '}';
   }
 }

@@ -26,7 +26,6 @@ public class DefineWordParser extends GenericDirectiveParser {
     }
   }
 
-
   /**
    * Bytes are a list of expressions each of which evaluates to something less than 2^16
    *
@@ -59,5 +58,4 @@ public class DefineWordParser extends GenericDirectiveParser {
 
     return arguments;
   }
-
 }

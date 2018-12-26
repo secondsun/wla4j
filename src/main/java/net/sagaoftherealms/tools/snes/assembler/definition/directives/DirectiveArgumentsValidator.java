@@ -4,10 +4,7 @@ import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenType
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.MINUS;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.NUMBER;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
 import java.util.Optional;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
@@ -29,8 +26,7 @@ public final class DirectiveArgumentsValidator {
     }
   }
 
-  public Optional<Node> accept(Token token,
-      SourceParser parser) {
+  public Optional<Node> accept(Token token, SourceParser parser) {
     if (matches(token)) {
       if (specialMatcher == null) {
         advancePattern();
@@ -125,7 +121,7 @@ public final class DirectiveArgumentsValidator {
         if (token.getString().equals(",")) {
           return true;
         } else {
-          advancePattern();//pattern is on comma, commas are optional, scoot on along.
+          advancePattern(); // pattern is on comma, commas are optional, scoot on along.
           return matches(token);
         }
       default:
@@ -294,7 +290,6 @@ public final class DirectiveArgumentsValidator {
     }
   }
 
-
   private class OneOfMatcher implements Matcher {
 
     private final String oneOfPattern;
@@ -307,7 +302,7 @@ public final class DirectiveArgumentsValidator {
       // expression.
       // Then we give priority to expressions in the matcher.  Should even things out.
 
-      if (oneOfPattern.contains("e") ) {
+      if (oneOfPattern.contains("e")) {
         oneOfPattern =
             oneOfPattern.replace("l", "").replace("c", "").replace("f", "").replace("x", "");
       }
@@ -382,7 +377,7 @@ public final class DirectiveArgumentsValidator {
 
     @Override
     public boolean isSatisfied() {
-      return hasMatched ;
+      return hasMatched;
     }
   }
 }

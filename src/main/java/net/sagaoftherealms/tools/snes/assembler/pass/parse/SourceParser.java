@@ -53,7 +53,7 @@ public class SourceParser {
         }
       case MINUS:
       case PLUS:
-        var definition =  new LabelDefinitionNode(token);
+        var definition = new LabelDefinitionNode(token);
         consume(token.getType());
         return definition;
       case LEFT_PAREN:
@@ -101,17 +101,14 @@ public class SourceParser {
     return opcode;
   }
 
-  /**
-   * Confirms that the current token is expected and advances to the next token.
-   */
+  /** Confirms that the current token is expected and advances to the next token. */
   public void consume(TokenTypes... types) {
     final var typesList = Arrays.asList(types);
     if (typesList.contains(token.getType())) {
       advanceToken();
     } else {
       throw new ParseException(
-          "Unexpected Token.  One of " + typesList + " was expected.",
-          getCurrentToken());
+          "Unexpected Token.  One of " + typesList + " was expected.", getCurrentToken());
     }
   }
 
@@ -151,9 +148,7 @@ public class SourceParser {
     return node;
   }
 
-  /**
-   * Move the token past any whitespace / comments
-   */
+  /** Move the token past any whitespace / comments */
   public void clearWhiteSpaceTokens() {
     var token = getCurrentToken();
 
