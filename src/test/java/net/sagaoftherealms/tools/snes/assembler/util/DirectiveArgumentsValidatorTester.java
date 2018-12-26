@@ -122,21 +122,6 @@ public class DirectiveArgumentsValidatorTester {
     }
   }
 
-  @ParameterizedTest
-  @CsvSource({
-    "4 + 4, 'NUMBER, PLUS, NUMBER'",
-    "8 * 4 + 2, 'NUMBER, MULTIPLY, NUMBER, PLUS, NUMBER'",
-  })
-  public void validateNumericExpression(String sourceLine, String tokenTypes) {
-    DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("e");
-    String[] typeArray = tokenTypes.split(",");
-    var scanner = toScanner(sourceLine);
-    for (String type : typeArray) {
-      var token = scanner.getNextToken();
-      assertEquals(TokenTypes.valueOf(type.trim()), token.getType());
-      assertTrue(validator.accept(token, parser).isPresent());
-    }
-  }
 
   @ParameterizedTest
   @CsvSource({
