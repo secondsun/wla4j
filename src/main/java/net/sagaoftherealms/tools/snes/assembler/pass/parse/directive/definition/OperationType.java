@@ -1,6 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
 
-import java.util.function.BinaryOperator;
+import java.util.function.IntBinaryOperator;
 
 public enum OperationType {
   MULTIPLY((left, right) -> left * right),
@@ -18,13 +18,13 @@ public enum OperationType {
   NOT_EQUAL((left, right) -> left != right ? 1 : 0),
   GREATER_THAN_OR_EQUAL((left, right) -> left >= right ? 1 : 0);
 
-  private final BinaryOperator<Integer> evaluator;
+  private final IntBinaryOperator evaluator;
 
-  OperationType(BinaryOperator<Integer> evaluator) {
+  OperationType(IntBinaryOperator evaluator) {
     this.evaluator = evaluator;
   }
 
   public Integer evaluate(Integer left, Integer right) {
-    return evaluator.apply(left, right);
+    return evaluator.applyAsInt(left, right);
   }
 }

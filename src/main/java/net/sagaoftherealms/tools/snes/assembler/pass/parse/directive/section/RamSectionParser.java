@@ -75,7 +75,8 @@ public class RamSectionParser extends BodyDefinitionParser {
     return arguments;
   }
 
-  private void consumeInt(RamsectionArguments argument, RamsectionArgumentsNode arguments, SourceParser parser) {
+  private void consumeInt(
+      RamsectionArguments argument, RamsectionArgumentsNode arguments, SourceParser parser) {
     parser.consume(LABEL);
     var token = parser.getCurrentToken();
     if (arguments.get(argument) == null) {

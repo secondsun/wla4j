@@ -3,6 +3,7 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section;
 import static net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives.ENDS;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.STRING;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
@@ -16,9 +17,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
-/**
- * This class parses Enums, Structs
- */
+/** This class parses Enums, Structs */
 public class SectionParser implements DirectiveParser {
 
   private final AllDirectives endDirective = ENDS;
@@ -89,26 +88,26 @@ public class SectionParser implements DirectiveParser {
         case "NAMESPACE":
           parser.consume(LABEL);
           token = parser.getCurrentToken();
-          setStringArgument(token, arguments, KEYS.NAMESPACE, parser);
+          setStringArgument(token, arguments, KEYS.NAMESPACE);
           parser.consume(TokenTypes.STRING);
           break;
         case "SIZE":
           parser.consume(LABEL);
           token = parser.getCurrentToken();
-          setIntArgument(token, arguments, KEYS.SIZE, parser);
+          setIntArgument(token, arguments, KEYS.SIZE);
           parser.consume(TokenTypes.NUMBER);
           break;
         case "ALIGN":
           parser.consume(LABEL);
           token = parser.getCurrentToken();
-          setIntArgument(token, arguments, KEYS.ALIGN, parser);
+          setIntArgument(token, arguments, KEYS.ALIGN);
           parser.consume(TokenTypes.NUMBER);
           break;
         case "APPENDTO":
           parser.consume(LABEL);
           token = parser.getCurrentToken();
-          setStringArgument(token, arguments, KEYS.APPEND_TO, parser);
-          parser.consume(TokenTypes.LABEL);
+          setStringArgument(token, arguments, KEYS.APPEND_TO);
+          parser.consume(TokenTypes.LABEL, STRING);
           break;
         case "FORCE":
         case "FREE":
@@ -117,11 +116,11 @@ public class SectionParser implements DirectiveParser {
         case "SEMISUBFREE":
         case "OVERWRITE":
           parser.consume(LABEL);
-          setStringArgument(token, arguments, KEYS.STATUS, parser);
+          setStringArgument(token, arguments, KEYS.STATUS);
           break;
         case "RETURNORG":
           parser.consume(LABEL);
-          setStringArgument(token, arguments, KEYS.RETURNORG, parser);
+          setStringArgument(token, arguments, KEYS.RETURNORG);
           break;
         default:
           throw new ParseException("Unknown Argument.", token);
@@ -137,24 +136,20 @@ public class SectionParser implements DirectiveParser {
     return arguments;
   }
 
-  private void setIntArgument(Token token, SectionArgumentsNode arguments, KEYS key,
-      SourceParser parser) {
+  private void setIntArgument(Token token, SectionArgumentsNode arguments, KEYS key) {
     if (arguments.get(key) == null) {
       arguments.put(key, TokenUtil.getInt(token) + ""); // TYPECHECK
 
     } else {
-      throw new ParseException(
-          "The namespace of an section may only be specified once", token);
+      throw new ParseException("The namespace of an section may only be specified once", token);
     }
   }
 
-  private void setStringArgument(Token token, SectionArgumentsNode arguments, KEYS key,
-      SourceParser parser) {
+  private void setStringArgument(Token token, SectionArgumentsNode arguments, KEYS key) {
     if (arguments.get(key) == null) {
       arguments.put(key, token.getString());
     } else {
-      throw new ParseException(
-          "Arguments of a section may only be specified once", token);
+      throw new ParseException("Arguments of a section may only be specified once", token);
     }
   }
 

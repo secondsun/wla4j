@@ -1,5 +1,7 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionParser.KEYS;
@@ -19,20 +21,28 @@ public class SectionNode extends DirectiveNode {
     return getArguments().get(KEYS.NAME);
   }
 
-  public int getMaxSize() {
-    return Integer.parseInt(getArguments().get(KEYS.SIZE));
+  public Integer getMaxSize() {
+    return safeInteger(KEYS.SIZE);
   }
 
   public String getNamespace() {
     return getArguments().get(KEYS.NAMESPACE);
   }
 
-  public int getAlignment() {
-    return Integer.parseInt(getArguments().get(KEYS.ALIGN));
+  public Integer getAlignment() {
+    return safeInteger(KEYS.ALIGN);
   }
 
-  public int getAppendTo() {
-    return Integer.parseInt(getArguments().get(KEYS.APPEND_TO));
+  private Integer safeInteger(KEYS key) {
+    String arg = getArguments().get(key);
+    if (isNullOrEmpty(arg)) {
+      return null;
+    }
+    return Integer.parseInt(arg);
+  }
+
+  public String getAppendTo() {
+    return (getArguments().get(KEYS.APPEND_TO));
   }
 
   public SectionStatus getStatus() {
@@ -40,7 +50,7 @@ public class SectionNode extends DirectiveNode {
   }
 
   public boolean isAdvanceOrg() {
-    return getArguments().get(KEYS.RETURNORG) == null;
+    return getArguments().get(KEYS.RETURNORG) != null;
   }
 
   public enum SectionStatus {
