@@ -70,14 +70,14 @@ public class SourceParserTest {
 
   @ParameterizedTest
   @CsvSource({
-      "'- rti \n jmp -'", // Label, opcode newline opcode
-      "'--- rti \n jmp ---'", // Label, opcode newline opcode
-      "'+ rti \n jmp +'", // Label, opcode newline opcode
-      "'++ rti \n jmp ++'", // Label, opcode newline opcode
-      "'+++ rti \n jmp +++'", // Label, opcode newline opcode
-      "'-- rti \n jmp --'", // Label, opcode newline opcode
-      "'__ rti \n jmp _f'", // Label, opcode newline opcode
-      "'__ rti \n jmp _b'" // Label, opcode newline opcode
+    "'- rti \n jmp -'", // Label, opcode newline opcode
+    "'--- rti \n jmp ---'", // Label, opcode newline opcode
+    "'+ rti \n jmp +'", // Label, opcode newline opcode
+    "'++ rti \n jmp ++'", // Label, opcode newline opcode
+    "'+++ rti \n jmp +++'", // Label, opcode newline opcode
+    "'-- rti \n jmp --'", // Label, opcode newline opcode
+    "'__ rti \n jmp _f'", // Label, opcode newline opcode
+    "'__ rti \n jmp _b'" // Label, opcode newline opcode
   })
   public void testAnonymousLabelNode(String sourceLine) {
     final String outfile = "test.out";
@@ -182,8 +182,7 @@ public class SourceParserTest {
   }
 
   @Test
-  public void testExpressions() {
-  }
+  public void testExpressions() {}
 
   @Test
   public void testParseRamSectionToken() {
@@ -339,21 +338,21 @@ public class SourceParserTest {
 
   @ParameterizedTest
   @CsvSource({
-      ".IF 5 > 10",
-      ".IFDEF LABEL",
-      ".IFDEFM \\5",
-      ".IFEQ 4 4", // Two constant expressions
-      ".IFEQ 4 * 4 BERRIES", // A math experssion and a label
-      ".IFEXISTS \"FileName String\"",
-      ".IFGR 4 * 4 BERRIES",
-      ".IFGR 4 4 ",
-      ".IFGREQ 4 * 4 BERRIES",
-      ".IFGREQ 4 BERRIES",
-      ".IFLE BERRIES 45",
-      ".IFLEEQ BERRIES @JAMMING",
-      ".IFNDEF LABEL",
-      ".IFNDEFM \\5",
-      ".IFNEQ BERRIES :JAMMING",
+    ".IF 5 > 10",
+    ".IFDEF LABEL",
+    ".IFDEFM \\5",
+    ".IFEQ 4 4", // Two constant expressions
+    ".IFEQ 4 * 4 BERRIES", // A math experssion and a label
+    ".IFEXISTS \"FileName String\"",
+    ".IFGR 4 * 4 BERRIES",
+    ".IFGR 4 4 ",
+    ".IFGREQ 4 * 4 BERRIES",
+    ".IFGREQ 4 BERRIES",
+    ".IFLE BERRIES 45",
+    ".IFLEEQ BERRIES @JAMMING",
+    ".IFNDEF LABEL",
+    ".IFNDEFM \\5",
+    ".IFNEQ BERRIES :JAMMING",
   })
   public void parseIfs(String ifStatement) {
     var source =
@@ -472,26 +471,26 @@ public class SourceParserTest {
     assertEquals(
         "monster",
         ((DefinitionNode)
-            ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
-                .getThenBody()
-                .getChildren()
-                .get(0))
+                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                    .getThenBody()
+                    .getChildren()
+                    .get(0))
             .getLabel());
     assertEquals(
         "dragon",
         ((DefinitionNode)
-            ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
-                .getElseBody()
-                .getChildren()
-                .get(0))
+                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                    .getElseBody()
+                    .getChildren()
+                    .get(0))
             .getLabel());
     assertEquals(
         AllDirectives.IFDEF,
         ((DirectiveNode)
-            ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
-                .getThenBody()
-                .getChildren()
-                .get(1))
+                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                    .getThenBody()
+                    .getChildren()
+                    .get(1))
             .getDirectiveType());
   }
 
@@ -556,25 +555,25 @@ public class SourceParserTest {
     assertEquals(
         "age",
         ((DefinitionNode)
-            ((DirectiveBodyNode)
-                ((IfBodyNode)
-                    ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
-                        .getBody())
-                    .getElseBody())
-                .getChildren()
-                .get(0))
+                ((DirectiveBodyNode)
+                        ((IfBodyNode)
+                                ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
+                                    .getBody())
+                            .getElseBody())
+                    .getChildren()
+                    .get(0))
             .getLabel());
     assertEquals(
         2,
         (int)
             ((DefinitionNode)
-                ((DirectiveBodyNode)
-                    ((IfBodyNode)
-                        ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
-                            .getBody())
-                        .getThenBody())
-                    .getChildren()
-                    .get(0))
+                    ((DirectiveBodyNode)
+                            ((IfBodyNode)
+                                    ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
+                                        .getBody())
+                                .getThenBody())
+                        .getChildren()
+                        .get(0))
                 .getSize()
                 .evaluate());
   }
@@ -660,9 +659,7 @@ public class SourceParserTest {
     assertEquals("mon", ((DefinitionNode) enumBody.getChildren().get(8)).getStructName().get());
   }
 
-  /**
-   * Only if directives are allowed inside of a DirectiveBody
-   */
+  /** Only if directives are allowed inside of a DirectiveBody */
   @Test
   public void parseEnumBodyWithDirectiveThrowsParseException() {
     final String enumSource =
@@ -710,24 +707,23 @@ public class SourceParserTest {
    * will need to write.
    */
   @ParameterizedTest
-
   @CsvSource({
-      ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SIZE 100 ALIGN 4 FORCE RETURNORG APPENDTO \"appended\", FORCE, 100, 4, RETURNORG, appended",
-      ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" FREE, FREE, , , , ",
-      ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SIZE 84 ALIGN 100 SUPERFREE RETURNORG APPENDTO \"appendix\", SUPERFREE, 84, 100, RETURNORG, appendix",
-      ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SEMIFREE,SEMIFREE, , , , ",
-      ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SEMISUBFREE,SEMISUBFREE, , , , ",
-      ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" OVERWRITE,OVERWRITE, , , , "})
-  public void testSectionBasic(String section, String status, Integer size, Integer align,
-      String returnOrg, String appendTo) {
+    ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SIZE 100 ALIGN 4 FORCE RETURNORG APPENDTO \"appended\", FORCE, 100, 4, RETURNORG, appended",
+    ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" FREE, FREE, , , , ",
+    ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SIZE 84 ALIGN 100 SUPERFREE RETURNORG APPENDTO \"appendix\", SUPERFREE, 84, 100, RETURNORG, appendix",
+    ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SEMIFREE,SEMIFREE, , , , ",
+    ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SEMISUBFREE,SEMISUBFREE, , , , ",
+    ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" OVERWRITE,OVERWRITE, , , , "
+  })
+  public void testSectionBasic(
+      String section,
+      String status,
+      Integer size,
+      Integer align,
+      String returnOrg,
+      String appendTo) {
     final String enumSource =
-        section + "\n"
-            + "\n"
-            + "EmptyHandler:\n"
-            + "       rti\n"
-            + "\n"
-            + ".ENDS\n"
-            + ".8BIT\n";
+        section + "\n" + "\n" + "EmptyHandler:\n" + "       rti\n" + "\n" + ".ENDS\n" + ".8BIT\n";
     final String outfile = "test.out";
     final String inputFile = "test.s";
     final int lineNumber = 0;
@@ -754,12 +750,9 @@ public class SourceParserTest {
     assertEquals(NodeTypes.OPCODE, rtiOpLabel.getType());
     DirectiveNode eightBit = (DirectiveNode) parser.nextNode();
     assertNotNull(eightBit);
-
   }
 
-  /**
-   * macro_1 is a basic macro with no variables or lookups or anything.
-   */
+  /** macro_1 is a basic macro with no variables or lookups or anything. */
   @Test
   public void testDefineMacro1BasicMacro() throws IOException {
     final String macroSource =
@@ -789,9 +782,7 @@ public class SourceParserTest {
     assertEquals(NodeTypes.OPCODE, body.getChildren().get(2).getType());
   }
 
-  /**
-   * macro_2 is a basic macro with two variables
-   */
+  /** macro_2 is a basic macro with two variables */
   @Test
   public void testDefineMacro2DeclaredVariables() throws IOException {
     final String macroSource =
@@ -820,9 +811,7 @@ public class SourceParserTest {
     assertEquals("value3", arguments.getString(3));
   }
 
-  /**
-   * macro_3 is a basic macro with labels inside that refer to macro arguments by number
-   */
+  /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */
   @Test
   public void testDefineMacro3DeclaredVariables() throws IOException {
     final String macroSource =
@@ -853,25 +842,25 @@ public class SourceParserTest {
     assertEquals(
         "\\1",
         ((IdentifierNode)
-            ((NumericExpressionNode) dbArgs.getChildren().get(1)).getChildren().get(0))
+                ((NumericExpressionNode) dbArgs.getChildren().get(1)).getChildren().get(0))
             .getLabelName());
   }
 
   @ParameterizedTest
   @CsvSource({
-      "2*81, 162",
-      "2+1, 3",
-      "21-1, 20",
-      "20/2, 10",
-      "(20 + 2)/2, 11",
-      "20 + (2/2), 21",
-      "8 | 2, 10",
-      "7 & 4, 4",
-      "-5 + 5, 0",
-      "2<<1, 4",
-      "512 >> 8 != 1024 >> 8, 1 ",
-      "512 >> 8 != 2, 0 ",
-      "2>>1, 1"
+    "2*81, 162",
+    "2+1, 3",
+    "21-1, 20",
+    "20/2, 10",
+    "(20 + 2)/2, 11",
+    "20 + (2/2), 21",
+    "8 | 2, 10",
+    "7 & 4, 4",
+    "-5 + 5, 0",
+    "2<<1, 4",
+    "512 >> 8 != 1024 >> 8, 1 ",
+    "512 >> 8 != 2, 0 ",
+    "2>>1, 1"
   })
   public void testExpressions(String expression, int value) {
     final String outfile = "script_commands.out";
@@ -888,9 +877,7 @@ public class SourceParserTest {
     assertEquals(value, (int) node.evaluate());
   }
 
-  /**
-   * macro_3 is a basic macro with labels inside that refer to macro arguments by number
-   */
+  /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */
   @Test
   public void testLargeFile() throws IOException {
     final String macroSource =

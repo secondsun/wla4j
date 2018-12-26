@@ -48,6 +48,7 @@ public class IfParser extends GenericDirectiveParser {
     this.directive = type;
   }
 
+  @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
     DirectiveArgumentsNode arguments = new DirectiveArgumentsNode();
 

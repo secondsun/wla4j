@@ -1,7 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
 
-import java.util.Arrays;
-import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ConstantNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 
@@ -11,9 +9,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 public class NumericExpressionNode extends ExpressionNode<Integer> {
 
   private OperationType operation;
-  private static final List<NodeTypes> ALLOWED_TYPES =
-      Arrays.asList(
-          NodeTypes.NUMERIC_EXPRESION, NodeTypes.NUMERIC_CONSTANT, NodeTypes.IDENTIFIER_EXPRESSION);
 
   public NumericExpressionNode() {
     super(NodeTypes.NUMERIC_EXPRESION);

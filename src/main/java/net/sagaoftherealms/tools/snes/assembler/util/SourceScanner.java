@@ -380,9 +380,9 @@ public class SourceScanner {
         return TokenTypes.ESCAPE;
       case '@':
         return TokenTypes.AT;
+      default:
+        throw new IllegalArgumentException("Unknown Operator Type");
     }
-
-    throw new IllegalArgumentException("Unknown Operator Type");
   }
 
   public boolean endOfInput() {

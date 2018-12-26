@@ -69,44 +69,44 @@ public class SectionParser implements DirectiveParser {
   public DirectiveArgumentsNode arguments(SourceParser parser) {
     var arguments = new SectionArgumentsNode();
 
-    var token = parser.getCurrentToken();
+    var localToken = parser.getCurrentToken();
     parser.consume(TokenTypes.STRING, TokenTypes.LABEL);
-    arguments.put(KEYS.NAME, "" + token.getString());
+    arguments.put(KEYS.NAME, "" + localToken.getString());
 
-    if (token.getString().equalsIgnoreCase("BANKHEADER")) {
-      arguments.put(KEYS.BANKHEADER, token.getString());
+    if (localToken.getString().equalsIgnoreCase("BANKHEADER")) {
+      arguments.put(KEYS.BANKHEADER, localToken.getString());
       isBankheader = true;
     }
 
-    token = parser.getCurrentToken();
+    localToken = parser.getCurrentToken();
 
-    while (token != null && token.getType() != EOL) {
+    while (localToken != null && localToken.getType() != EOL) {
 
-      var argument = token.getString();
+      var argument = localToken.getString();
 
       switch (argument) {
         case "NAMESPACE":
           parser.consume(LABEL);
-          token = parser.getCurrentToken();
-          setStringArgument(token, arguments, KEYS.NAMESPACE);
+          localToken = parser.getCurrentToken();
+          setStringArgument(localToken, arguments, KEYS.NAMESPACE);
           parser.consume(TokenTypes.STRING);
           break;
         case "SIZE":
           parser.consume(LABEL);
-          token = parser.getCurrentToken();
-          setIntArgument(token, arguments, KEYS.SIZE);
+          localToken = parser.getCurrentToken();
+          setIntArgument(localToken, arguments, KEYS.SIZE);
           parser.consume(TokenTypes.NUMBER);
           break;
         case "ALIGN":
           parser.consume(LABEL);
-          token = parser.getCurrentToken();
-          setIntArgument(token, arguments, KEYS.ALIGN);
+          localToken = parser.getCurrentToken();
+          setIntArgument(localToken, arguments, KEYS.ALIGN);
           parser.consume(TokenTypes.NUMBER);
           break;
         case "APPENDTO":
           parser.consume(LABEL);
-          token = parser.getCurrentToken();
-          setStringArgument(token, arguments, KEYS.APPEND_TO);
+          localToken = parser.getCurrentToken();
+          setStringArgument(localToken, arguments, KEYS.APPEND_TO);
           parser.consume(TokenTypes.LABEL, STRING);
           break;
         case "FORCE":
@@ -116,21 +116,21 @@ public class SectionParser implements DirectiveParser {
         case "SEMISUBFREE":
         case "OVERWRITE":
           parser.consume(LABEL);
-          setStringArgument(token, arguments, KEYS.STATUS);
+          setStringArgument(localToken, arguments, KEYS.STATUS);
           break;
         case "RETURNORG":
           parser.consume(LABEL);
-          setStringArgument(token, arguments, KEYS.RETURNORG);
+          setStringArgument(localToken, arguments, KEYS.RETURNORG);
           break;
         default:
-          throw new ParseException("Unknown Argument.", token);
+          throw new ParseException("Unknown Argument.", localToken);
       }
 
-      token = parser.getCurrentToken();
+      localToken = parser.getCurrentToken();
     }
 
-    if (token == null) {
-      throw new ParseException("Unexpected End of input", token);
+    if (localToken == null) {
+      throw new ParseException("Unexpected End of input", localToken);
     }
     parser.consumeAndClear(TokenTypes.EOL);
     return arguments;

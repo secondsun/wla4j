@@ -33,8 +33,6 @@ public class ExpressionParser {
 
   private static final List<TokenTypes> termTokens = Arrays.asList(TokenTypes.PLUS, MINUS);
   private static final List<TokenTypes> factorTokens = Arrays.asList(MULTIPLY, DIVIDE);
-  private static final List<TokenTypes> factorNodeTokens =
-      Arrays.asList(TokenTypes.NUMBER, TokenTypes.LABEL, LEFT_PAREN);
 
   private ExpressionParser() {}
 

@@ -50,6 +50,10 @@ public class SourceParser {
           MacroCallNode macroCall = macroCall();
           clearWhiteSpaceTokens();
           return macroCall;
+        } else {
+          var definition = new LabelDefinitionNode(token);
+          consume(token.getType());
+          return definition;
         }
       case MINUS:
       case PLUS:
@@ -151,11 +155,11 @@ public class SourceParser {
 
   /** Move the token past any whitespace / comments */
   public void clearWhiteSpaceTokens() {
-    var token = getCurrentToken();
+    var testToken = getCurrentToken();
 
-    while (token != null && EOL.equals(token.getType())) {
+    while (testToken != null && EOL.equals(testToken.getType())) {
       consume(TokenTypes.EOL);
-      token = getCurrentToken();
+      testToken = getCurrentToken();
     }
   }
 

@@ -213,7 +213,6 @@ public final class DirectiveArgumentsValidator {
 
     private final String arrayPattern;
     private boolean expectComma = false;
-    private boolean hasMatched = false;
     private boolean finished = false;
 
     public ArrayMatcher(String arrayPattern) {
@@ -238,42 +237,36 @@ public final class DirectiveArgumentsValidator {
         switch (arrayPattern.charAt(arrayPatternIndex)) {
           case 'x':
             if (matchInt(token)) {
-              hasMatched = true;
               expectComma = true;
               return true;
             }
             break;
           case 'f':
             if (matchFloat(token)) {
-              hasMatched = true;
               expectComma = true;
               return true;
             }
             break;
           case 'c':
             if (matchChar(token)) {
-              hasMatched = true;
               expectComma = true;
               return true;
             }
             break;
           case 's':
             if (matchString(token)) {
-              hasMatched = true;
               expectComma = true;
               return true;
             }
             break;
           case 'e':
             if (Arrays.asList(TokenTypes.LEFT_PAREN, LABEL, NUMBER).contains(token.getType())) {
-              hasMatched = true;
               expectComma = true;
               return true;
             }
             break;
           case 'l':
             if (matchLabel(token)) {
-              hasMatched = true;
               expectComma = true;
               return true;
             }

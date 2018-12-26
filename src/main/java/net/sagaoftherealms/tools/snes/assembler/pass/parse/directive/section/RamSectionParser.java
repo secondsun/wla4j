@@ -1,6 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section;
 
-import static net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives.ENDS;
 import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.ALIGN;
 import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.APPEND_TO;
 import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.BANK;
@@ -19,8 +18,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
 public class RamSectionParser extends BodyDefinitionParser {
-
-  private final AllDirectives endDirective = ENDS;
 
   public RamSectionParser() {
     super(AllDirectives.RAMSECTION);
