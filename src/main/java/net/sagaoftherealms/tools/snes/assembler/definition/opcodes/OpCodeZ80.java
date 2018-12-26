@@ -1,8 +1,14 @@
 package net.sagaoftherealms.tools.snes.assembler.definition.opcodes;
 
+import java.util.Arrays;
+
 public class OpCodeZ80 extends OpCode {
 
-  public static final OpCodeZ80[] OPCODES = {
+  public static OpCodeZ80[] opcodes() {
+    return Arrays.copyOf(OP_CODES, OP_CODES.length);
+  }
+
+  private static final OpCodeZ80[] OP_CODES = {
     new OpCodeZ80("ADC A,A", 0x8f, 0, 0, 0),
     new OpCodeZ80("ADC A,B", 0x88, 0, 0, 0),
     new OpCodeZ80("ADC A,C", 0x89, 0, 0, 0),

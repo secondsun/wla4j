@@ -9,6 +9,8 @@ import static net.sagaoftherealms.tools.snes.assembler.main.Flags.Result.SUCCEED
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 
@@ -21,6 +23,8 @@ public class Main65816 {
   private static Flags flags;
   private static String finalName;
   private static File gbaTmpFile;
+
+  private static final Logger LOGGER = Logger.getGlobal();
 
   public static void main(String... args) {
     try {
@@ -58,7 +62,7 @@ public class Main65816 {
       data.includeFile(flags.getAsmName());
 
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.log(Level.SEVERE, e.getMessage(), e);
     } finally {
       proceduresAtExit();
     }

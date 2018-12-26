@@ -14,8 +14,8 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
+import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode65816;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeZ80;
-import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelDefinitionNode;
@@ -58,7 +58,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
     var parser = new SourceParser(scanner);
 
     var expressionNode = ExpressionParser.expressionNode(parser);
@@ -88,7 +88,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
     var parser = new SourceParser(scanner);
 
     LabelDefinitionNode node = (LabelDefinitionNode) parser.nextNode();
@@ -131,7 +131,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
     var parser = new SourceParser(scanner);
 
     DirectiveNode node = (DirectiveNode) parser.nextNode();
@@ -149,7 +149,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
     var parser = new SourceParser(scanner);
 
     assertThrows(ParseException.class, () -> parser.nextNode());
@@ -171,7 +171,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(enumSource), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
 
@@ -257,7 +257,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(source), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
 
@@ -295,7 +295,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(enumSource), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
     EnumNode enumNode = (EnumNode) parser.nextNode();
@@ -321,7 +321,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(enumSource), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
     var enumNode = (EnumNode) parser.nextNode();
@@ -369,7 +369,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(source), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
     var ifNode = (DirectiveNode) parser.nextNode();
@@ -460,7 +460,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(source), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
     parser.nextNode();
@@ -509,7 +509,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(source), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
     assertThrows(ParseException.class, () -> parser.nextNode());
@@ -545,7 +545,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(source), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
     StructNode structNode = (StructNode) parser.nextNode();
@@ -590,7 +590,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(source), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
     StructNode structNode = (StructNode) parser.nextNode();
@@ -634,7 +634,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(source), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
     var structNode = (StructNode) parser.nextNode();
@@ -679,7 +679,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(enumSource), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
 
@@ -697,7 +697,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(enumSource), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
     Assertions.assertThrows(ParseException.class, () -> parser.nextNode());
@@ -724,7 +724,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(enumSource), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
 
@@ -761,7 +761,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(macroSource), inputFile, lineNumber);
 
-    var scanner = data.startRead(OpCodeZ80.OPCODES);
+    var scanner = data.startRead(OpCodeZ80.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
 
@@ -791,7 +791,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(macroSource), inputFile, lineNumber);
 
-    var scanner = data.startRead(OpCodeZ80.OPCODES);
+    var scanner = data.startRead(OpCodeZ80.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
 
@@ -820,7 +820,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(macroSource), inputFile, lineNumber);
 
-    var scanner = data.startRead(OpCodeZ80.OPCODES);
+    var scanner = data.startRead(OpCodeZ80.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
 
@@ -862,7 +862,7 @@ public class SourceParserTest {
 
     var data = new InputData(new Flags(outfile));
     data.includeFile($(expression), inputFile, lineNumber);
-    var scanner = data.startRead(OpCodeZ80.OPCODES);
+    var scanner = data.startRead(OpCodeZ80.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
 
@@ -886,7 +886,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(macroSource), inputFile, lineNumber);
 
-    var scanner = data.startRead(OpCodeZ80.OPCODES);
+    var scanner = data.startRead(OpCodeZ80.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
 
@@ -921,7 +921,7 @@ public class SourceParserTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(program), inputFile, lineNumber);
 
-    var scanner = data.startRead(OpCodeZ80.OPCODES);
+    var scanner = data.startRead(OpCodeZ80.opcodes());
     SourceParser parser = new SourceParser(scanner);
     var writeobjectbyteMacro = (MacroNode) parser.nextNode();
     var writeobjectwordMacro = (MacroNode) parser.nextNode();

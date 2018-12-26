@@ -37,7 +37,7 @@ public class DirectiveArgumentsValidatorTester {
 
   private final SourceDataLine testLine = new SourceDataLine("test.out", 0, "");
   private final SourceScanner mockerScanner =
-      new SourceScanner(null, OpCodeZ80.OPCODES) {
+      new SourceScanner(null, OpCodeZ80.opcodes()) {
         @Override
         public Token getNextToken() {
           return new Token(null, null, null);

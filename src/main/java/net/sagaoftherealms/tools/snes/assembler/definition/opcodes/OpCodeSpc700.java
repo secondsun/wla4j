@@ -1,8 +1,14 @@
 package net.sagaoftherealms.tools.snes.assembler.definition.opcodes;
 
+import java.util.Arrays;
+
 public class OpCodeSpc700 extends OpCode {
 
-  public static final OpCodeSpc700[] OPCODES = {
+  public static OpCodeSpc700[] opcodes() {
+    return Arrays.copyOf(OP_CODES, OP_CODES.length);
+  }
+
+  private static final OpCodeSpc700[] OP_CODES = {
     new OpCodeSpc700("ADC A,(X)", 0x86, 0),
     new OpCodeSpc700("ADC A,#x", 0x88, 1),
     new OpCodeSpc700("ADC A,!?+X", 0x95, 2),

@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.Stream;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
+import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode65816;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeSpc700;
-import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.main.Test65816IncludeData;
@@ -27,7 +27,7 @@ public class SourceScannerTest {
   private static final Random random = new Random();
 
   public static Stream<Arguments> opcodeGenerator65816() {
-    return Arrays.stream(Opcodes65816.opt_table)
+    return Arrays.stream(OpCode65816.opcodes())
         .map(
             opcode -> {
               var code = opcode.getOp().split(" ")[0];
@@ -40,7 +40,7 @@ public class SourceScannerTest {
   }
 
   public static Stream<Arguments> opcodeGeneratorSPC700() {
-    return Arrays.stream(OpCodeSpc700.OPCODES)
+    return Arrays.stream(OpCodeSpc700.opcodes())
         .map(
             opcode -> {
               var code = opcode.getOp().split(" ")[0].split("\\.")[0];
@@ -62,7 +62,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     var token = scanner.getNextToken();
 
@@ -97,7 +97,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     var token = scanner.getNextToken();
 
@@ -115,7 +115,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($("42 *"), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
     scanner.getNextToken(); // Skip 42
     var token = scanner.getNextToken();
 
@@ -132,7 +132,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($("\"This should crash"), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     Assertions.assertThrows(IllegalStateException.class, () -> scanner.getNextToken());
   }
@@ -158,7 +158,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     var token = scanner.getNextToken();
 
@@ -179,7 +179,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($("ah"), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     var token = scanner.getNextToken();
 
@@ -209,7 +209,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     var token = scanner.getNextToken();
 
@@ -232,7 +232,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     var valueToken = scanner.getNextToken();
     var typeToken = scanner.getNextToken();
@@ -252,7 +252,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(". Crash"), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     Assertions.assertThrows(IllegalStateException.class, () -> scanner.getNextToken());
   }
@@ -280,7 +280,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     var token = scanner.getNextToken();
 
@@ -298,7 +298,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
     scanner.getNextToken();
 
     var token = scanner.getNextToken();
@@ -315,7 +315,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     var token = scanner.getNextToken();
 
@@ -333,7 +333,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(OpCodeSpc700.OPCODES);
+    var scanner = data.startRead(OpCodeSpc700.opcodes());
 
     var token = scanner.getNextToken();
 
@@ -354,7 +354,7 @@ public class SourceScannerTest {
         Test65816IncludeData.class.getClassLoader().getResourceAsStream("snes_memory.i"),
         "snes_memeory.i",
         2);
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     var token = scanner.getNextToken();
     while (token != null) {
@@ -374,7 +374,7 @@ public class SourceScannerTest {
         "ferris-kefren.s",
         0);
 
-    var scanner = data.startRead(Opcodes65816.opt_table);
+    var scanner = data.startRead(OpCode65816.opcodes());
 
     var token = scanner.getNextToken();
     while (token != null) {
@@ -395,7 +395,7 @@ public class SourceScannerTest {
               var data = new InputData(new Flags("main.s"));
               data.includeFile($(sourceLine), "main.s", 0);
 
-              var scanner = data.startRead(OpCodeSpc700.OPCODES);
+              var scanner = data.startRead(OpCodeSpc700.opcodes());
               System.out.println(sourceLine);
               while (!scanner.endOfInput()) {
                 System.out.print(scanner.getNextToken());
@@ -423,7 +423,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(OpCodeSpc700.OPCODES);
+    var scanner = data.startRead(OpCodeSpc700.opcodes());
 
     var token = scanner.getNextToken();
 
@@ -444,7 +444,7 @@ public class SourceScannerTest {
     var data = new InputData(new Flags(outfile));
     data.includeFile($(sourceLine), inputFile, lineNumber);
 
-    var scanner = data.startRead(OpCodeSpc700.OPCODES);
+    var scanner = data.startRead(OpCodeSpc700.opcodes());
     assertEquals(TokenTypes.LABEL, scanner.getNextToken().getType());
     assertEquals(TokenTypes.MULTIPLY, scanner.getNextToken().getType());
     assertEquals(TokenTypes.NUMBER, scanner.getNextToken().getType());

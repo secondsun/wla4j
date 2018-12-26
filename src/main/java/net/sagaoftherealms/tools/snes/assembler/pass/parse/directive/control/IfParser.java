@@ -3,7 +3,9 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
 
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Set;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
@@ -16,7 +18,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.
 
 public class IfParser extends GenericDirectiveParser {
 
-  public static final EnumSet<AllDirectives> IF_DIRECTIVES =
+  private static final Set<AllDirectives> IF_DIRECTIVES =
       EnumSet.of(
           AllDirectives.IF,
           AllDirectives.IFNEQ,
@@ -31,6 +33,10 @@ public class IfParser extends GenericDirectiveParser {
           AllDirectives.IFNDEF,
           AllDirectives.IFNDEFM);
   private final AllDirectives directive;
+
+  public static Set<AllDirectives> getIfDirectives() {
+    return Collections.unmodifiableSet(IF_DIRECTIVES);
+  }
 
   public IfParser(AllDirectives type) {
     super(type);

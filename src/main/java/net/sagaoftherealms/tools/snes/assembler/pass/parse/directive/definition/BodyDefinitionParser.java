@@ -79,7 +79,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
     parser.consumeAndClear(TokenTypes.DIRECTIVE);
     var directive = AllDirectives.valueOf(token.getString().replace(".", "").toUpperCase());
     var ifNode = DirectiveUtils.createDirectiveNode(directive.getName(), token);
-    if (!IfParser.IF_DIRECTIVES.contains(directive)) {
+    if (!IfParser.getIfDirectives().contains(directive)) {
       throw new ParseException("Directive was not an IF style directive", token);
     }
     var ifParser = new IfInDefinitionBodyParser(directive);
