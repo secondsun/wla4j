@@ -278,6 +278,8 @@ public final class DirectiveArgumentsValidator {
               return true;
             }
             break;
+          default:
+            throw new IllegalStateException("Unexpected pattern character.");
         }
       }
       finished = true;
@@ -370,6 +372,8 @@ public final class DirectiveArgumentsValidator {
             return true;
           }
           break;
+        default:
+          return false;
       }
 
       return false;

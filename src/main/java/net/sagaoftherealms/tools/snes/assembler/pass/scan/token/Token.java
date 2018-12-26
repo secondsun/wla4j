@@ -1,8 +1,9 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.scan.token;
 
+import java.io.Serializable;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceDataLine;
 
-public class Token {
+public class Token implements Serializable {
 
   private final TokenTypes type;
   private final String string;

@@ -21,7 +21,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.ConstantNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode.OperationType;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
@@ -240,6 +239,8 @@ public class ExpressionParser {
           toReturn.setOperationType(OperationType.DIVIDE);
           parser.consume(DIVIDE);
           break;
+        default:
+          throw new ParseException("Unexpected factor.", token);
       }
       toReturn.addChild(factorNode(parser));
       return toReturn;

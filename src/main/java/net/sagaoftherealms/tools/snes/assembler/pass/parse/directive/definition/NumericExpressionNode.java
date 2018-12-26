@@ -10,22 +10,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
  */
 public class NumericExpressionNode extends ExpressionNode<Integer> {
 
-  public enum OperationType {
-    MULTIPLY,
-    ADD,
-    DIVIDE,
-    SUBTRACT,
-    LEFT_SHIFT,
-    RIGHT_SHIFT,
-    GREATER_THAN,
-    LESS_THAN,
-    LESS_THAN_OR_EQUAL,
-    AND,
-    OR,
-    EQUALS,
-    NOT_EQUAL,
-    GREATER_THAN_OR_EQUAL
-  };
 
   private OperationType operation;
   private static final List<NodeTypes> ALLOWED_TYPES =
@@ -71,45 +55,7 @@ public class NumericExpressionNode extends ExpressionNode<Integer> {
       rightValue = ((ConstantNode) rightNode).getValueAsInt();
     }
 
-    switch (operation) {
-      case MULTIPLY:
-        return leftValue * rightValue;
-      case ADD:
-        return leftValue + rightValue;
+    return operation.evaluate(leftValue, rightValue);
 
-      case DIVIDE:
-        return leftValue / rightValue;
-
-      case SUBTRACT:
-        return leftValue - rightValue;
-      case LEFT_SHIFT:
-        return leftValue << rightValue;
-      case RIGHT_SHIFT:
-        return leftValue >> rightValue;
-
-      case GREATER_THAN:
-        return leftValue > rightValue ? 1 : 0;
-
-      case LESS_THAN:
-        return leftValue >= rightValue ? 1 : 0;
-
-      case LESS_THAN_OR_EQUAL:
-        return leftValue <= rightValue ? 1 : 0;
-
-      case AND:
-        return leftValue & rightValue;
-
-      case OR:
-        return leftValue | rightValue;
-      case EQUALS:
-        return leftValue == rightValue ? 1 : 0;
-      case NOT_EQUAL:
-        return leftValue != rightValue ? 1 : 0;
-
-      case GREATER_THAN_OR_EQUAL:
-        return leftValue >= rightValue ? 1 : 0;
-    }
-
-    throw new IllegalStateException("Not implemented" + operation);
   }
 }

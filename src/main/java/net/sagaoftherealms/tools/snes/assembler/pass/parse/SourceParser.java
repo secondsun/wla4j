@@ -68,8 +68,10 @@ public class SourceParser {
       case EOL:
         consume(TokenTypes.EOL);
         return nextNode();
+      default:
+        return null;
     }
-    return null;
+
   }
 
   private MacroCallNode macroCall() {

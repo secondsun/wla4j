@@ -16,7 +16,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveUt
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.GenericDirectiveParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode.OperationType;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;

@@ -33,7 +33,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.IdentifierNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode.OperationType;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.OperationType;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode;

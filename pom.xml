@@ -136,7 +136,12 @@
       <properties>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.organization>secondsun-github</sonar.organization>
-        
+        <sonar.exclusions>**net/sagaoftherealms/tools/snes/assembler/definition/opcodes/*,
+          **tools/snes/assembler/Main65816.java,
+          **tools/snes/assembler/main/Flags.java,
+          **tools/snes/assembler/main/InputData.java,
+        </sonar.exclusions>
+
       </properties>
       <build>
         <plugins>
@@ -147,6 +152,9 @@
           <plugin>
             <groupId>org.sonarsource.scanner.maven</groupId>
             <artifactId>sonar-maven-plugin</artifactId>
+            <configuration>
+
+            </configuration>
           </plugin>
         </plugins>
       </build>

@@ -93,6 +93,8 @@ public final class DirectiveUtils {
     switch (directiveName.toUpperCase()) {
       case ".8BIT":
         directiveName = ".EIGHT_BIT";
+      default:
+        break;
     }
     AllDirectives directive = AllDirectives.valueOf(directiveName.replace(".", "").toUpperCase());
     DirectiveNode node;
