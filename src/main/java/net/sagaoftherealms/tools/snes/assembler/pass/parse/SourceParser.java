@@ -56,41 +56,15 @@ public class SourceParser {
         var definition =  new LabelDefinitionNode(token);
         consume(token.getType());
         return definition;
-      case LT:
-        break;
-      case GT:
-        break;
-      case LEFT_BRACKET:
-        break;
-      case RIGHT_BRACKET:
-        break;
       case LEFT_PAREN:
         var node = ExpressionParser.expressionNode(this);
         return node;
-      case RIGHT_PAREN:
-        break;
       case COMMA:
         consume(TokenTypes.COMMA);
         return nextNode();
-      case OR:
-        break;
-      case AND:
-        break;
-      case POWER:
-        break;
-      case MODULO:
-        break;
-      case MULTIPLY:
-        break;
-      case DIVIDE:
-        break;
-      case XOR:
-        break;
       case OPCODE:
         OpcodeNode opcodeNode = opcode();
         return opcodeNode;
-      case SIZE:
-        break;
       case EOL:
         consume(TokenTypes.EOL);
         return nextNode();
@@ -175,14 +149,6 @@ public class SourceParser {
     }
 
     return node;
-  }
-
-  private Node body(NodeTypes nodeType) {
-    return null;
-  }
-
-  private Node arguments(NodeTypes nodeType) {
-    return null;
   }
 
   /**

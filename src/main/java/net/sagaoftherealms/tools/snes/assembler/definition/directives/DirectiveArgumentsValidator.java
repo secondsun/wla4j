@@ -116,11 +116,10 @@ public final class DirectiveArgumentsValidator {
         begingArray();
         return matches(token);
       case '?':
-        System.out.println(token);
-        throw new IllegalStateException("Optional Not Supported Yet");
+
       case 'e': // e = a integer expression
-        beginNumericExpression();
-        return matches(token);
+        System.out.println(token);
+        throw new IllegalStateException("Expression No Longer used here.");
 
       case ',':
         if (token.getString().equals(",")) {
@@ -130,7 +129,7 @@ public final class DirectiveArgumentsValidator {
           return matches(token);
         }
       default:
-        return token.getString().equals(chara + "");
+        throw new IllegalStateException("This should no longer get called.  Write a parser.");
     }
   }
 
@@ -146,10 +145,6 @@ public final class DirectiveArgumentsValidator {
       patternIndex++;
     }
     return oneOfPatternBuilder.toString();
-  }
-
-  private void beginNumericExpression() {
-    this.specialMatcher = new NumericExpressionMatcher();
   }
 
   private boolean matchString(Token token) {
@@ -192,14 +187,6 @@ public final class DirectiveArgumentsValidator {
       patternIndex++;
     }
     return arrayPatternBuilder.toString();
-  }
-
-  private boolean oneOfArray(Token token) {
-    return false;
-  }
-
-  private boolean oneOf(Token token) {
-    return false;
   }
 
   public boolean checkHasMore() {
@@ -307,21 +294,6 @@ public final class DirectiveArgumentsValidator {
     }
   }
 
-  private class NumericExpressionMatcher implements Matcher {
-
-    final List<TokenTypes> factorTypes =Arrays.asList(MINUS, TokenTypes.LEFT_PAREN,NUMBER, LABEL);
-    private boolean matched = false;
-
-    @Override
-    public boolean match(Token token) {
-      return (matched = factorTypes.contains(token.getType()));
-    }
-
-    @Override
-    public boolean isSatisfied() {
-      return matched;
-    }
-  }
 
   private class OneOfMatcher implements Matcher {
 
