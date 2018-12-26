@@ -71,7 +71,6 @@ public class SourceParser {
       default:
         return null;
     }
-
   }
 
   private MacroCallNode macroCall() {

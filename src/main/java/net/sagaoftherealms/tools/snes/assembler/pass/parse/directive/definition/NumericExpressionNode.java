@@ -10,7 +10,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
  */
 public class NumericExpressionNode extends ExpressionNode<Integer> {
 
-
   private OperationType operation;
   private static final List<NodeTypes> ALLOWED_TYPES =
       Arrays.asList(
@@ -56,6 +55,5 @@ public class NumericExpressionNode extends ExpressionNode<Integer> {
     }
 
     return operation.evaluate(leftValue, rightValue);
-
   }
 }

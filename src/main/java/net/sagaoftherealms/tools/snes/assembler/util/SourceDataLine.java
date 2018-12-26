@@ -1,9 +1,10 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /** This is a line in the InputData with metadata back to the original file. */
-public class SourceDataLine {
+public class SourceDataLine implements Serializable {
 
   private String fileName;
   private int sourceLineNumber;
