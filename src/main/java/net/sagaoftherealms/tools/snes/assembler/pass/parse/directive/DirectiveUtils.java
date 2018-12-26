@@ -26,6 +26,8 @@ public final class DirectiveUtils {
 
   public static DirectiveParser getParser(AllDirectives type) {
     switch (type) {
+      case PRINTV:
+        return new PrintvParser();
       case ENUM:
         return new EnumParser();
       case STRUCT:

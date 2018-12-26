@@ -19,6 +19,7 @@ import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.Opcodes65816;
 import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelDefinitionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.MacroCallNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.OpcodeNode;
@@ -894,4 +895,40 @@ public class SourceParserTest {
       node = parser.nextNode();
     }
   }
+
+  @Test
+  public void testMacroCall() {
+    var program = "\n\n"
+        + ".MACRO writeobjectbyte\n"
+        + "\t.db $8e \\1 \\2\n"
+        + "\n"
+        + ".ENDM"
+        + "\n\n"
+        + ".MACRO writeobjectword\n"
+        + "writeobjectbyte \\1,   \\2&$ff\n"
+        + "\twriteobjectbyte \\1+1, \\2>>$8\n"
+        + ".ENDM\n"
+        + "writeobjectword 17 18\n"
+        + "writeobjectword 19, 512";
+
+    final String outfile = "script_commands.out";
+    final String inputFile = "parseLargeFiles/script_commands.s";
+    final int lineNumber = 0;
+
+    var data = new InputData(new Flags(outfile));
+    data.includeFile($(program), inputFile, lineNumber);
+
+    var scanner = data.startRead(OpCodeZ80.OPCODES);
+    SourceParser parser = new SourceParser(scanner);
+    var writeobjectbyteMacro = (MacroNode) parser.nextNode();
+    var writeobjectwordMacro = (MacroNode) parser.nextNode();
+    var writeobjectwordCall1 = (MacroCallNode) parser.nextNode();
+    var writeobjectwordCall2 = (MacroCallNode) parser.nextNode();
+    assertEquals(17, (int)((NumericExpressionNode)writeobjectwordCall1.getArguments().get(0)).evaluate());
+    assertEquals(512, (int)((NumericExpressionNode)writeobjectwordCall2.getArguments().get(1)).evaluate());
+    assertEquals(writeobjectwordMacro, writeobjectwordCall2.getMacroNode());
+    assertEquals(writeobjectbyteMacro, ((MacroCallNode)writeobjectwordMacro.getBody().getChildren().get(0)).getMacroNode());
+    assertEquals(NodeTypes.IDENTIFIER_EXPRESSION, ((MacroCallNode)writeobjectwordMacro.getBody().getChildren().get(0)).getArguments().get(0).getType());
+  }
+
 }

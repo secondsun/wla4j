@@ -116,6 +116,7 @@ public final class DirectiveArgumentsValidator {
         begingArray();
         return matches(token);
       case '?':
+        System.out.println(token);
         throw new IllegalStateException("Optional Not Supported Yet");
       case 'e': // e = a integer expression
         beginNumericExpression();
@@ -409,7 +410,7 @@ public final class DirectiveArgumentsValidator {
 
     @Override
     public boolean isSatisfied() {
-      return hasMatched && expressionComplete;
+      return hasMatched ;
     }
   }
 }

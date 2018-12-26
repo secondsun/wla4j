@@ -1,14 +1,17 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.COMMA;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveUtils;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.IdentifierNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
@@ -17,6 +20,7 @@ public class SourceParser {
 
   private final SourceScanner scanner;
   private Token token;
+  private Map<String, MacroNode> macroMap = new HashMap<>();
 
   public SourceParser(SourceScanner scanner) {
     this.scanner = scanner;
@@ -42,6 +46,11 @@ public class SourceParser {
       case NUMBER:
         return ExpressionParser.expressionNode(this);
       case LABEL:
+        if (macroMap.containsKey(token.getString())) {
+          MacroCallNode macroCall = macroCall();
+          clearWhiteSpaceTokens();
+          return macroCall;
+        }
       case MINUS:
       case PLUS:
         var definition =  new LabelDefinitionNode(token);
@@ -87,6 +96,21 @@ public class SourceParser {
         return nextNode();
     }
     return null;
+  }
+
+  private MacroCallNode macroCall() {
+    var node = new MacroCallNode(macroMap.get(token.getString()));
+    consume(LABEL);
+    while (!token.getType().equals(EOL) && !token.getType().equals(END_OF_INPUT)) {
+      if (!token.getType().equals(TokenTypes.COMMA)) {
+        node.addArgument(ExpressionParser.expressionNode(this));
+      } else {
+        consume(COMMA);
+      }
+    }
+    consume(EOL, END_OF_INPUT);
+
+    return node;
   }
 
   private OpcodeNode opcode() {
@@ -144,6 +168,12 @@ public class SourceParser {
     var nodeParser = DirectiveUtils.getParser(node.getDirectiveType());
     node.setArguments(nodeParser.arguments(this));
     node.setBody(nodeParser.body(this));
+
+    if (node instanceof MacroNode) {
+      var macroNode = (MacroNode) node;
+      macroMap.put(macroNode.getName(), macroNode);
+    }
+
     return node;
   }
 

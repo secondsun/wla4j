@@ -117,7 +117,7 @@ public enum AllDirectives {
   RAMSECTION(new AllDirective(".RAMSECTION {ls} ?(BANK x) ?(SLOT x) ?(ALIGN x) ?(APPENDTO l)")),
   ENDS(new AllDirective(".ENDS")),
   EXPORT(new AllDirective(".EXPORT []{l}")),
-  PRINTT(new AllDirective(".PRINTT s")),
+  PRINTT(new AllDirective(".PRINTT {sl}")),
   PRINTV(new AllDirective(".PRINTV ?{DEC|HEX} e")),
   OUTNAME(new AllDirective(".OUTNAME s")),
   SNESHEADER(new AllDirective(".SNESHEADER")),
