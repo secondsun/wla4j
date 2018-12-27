@@ -405,4 +405,11 @@ public class SourceScanner {
   public Token peekNextToken() {
     return getNextToken(false);
   }
+
+  public void reset() {
+    lineNumber = 0;
+    linePosition = 0;
+    newLineBeginning = true;
+  }
+
 }

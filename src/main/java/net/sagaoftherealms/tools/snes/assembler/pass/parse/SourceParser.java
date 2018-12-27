@@ -8,6 +8,8 @@ import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenType
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import javax.swing.text.html.Option;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveUtils;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
@@ -20,11 +22,24 @@ public class SourceParser {
 
   private final SourceScanner scanner;
   private Token token;
-  private Map<String, MacroNode> macroMap = new HashMap<>();
+  private Map<String, Optional<MacroNode>> macroMap = new HashMap<>();
 
   public SourceParser(SourceScanner scanner) {
     this.scanner = scanner;
     token = scanner.getNextToken();
+    scanMacos();
+    scanner.reset();
+    token = scanner.getNextToken();
+  }
+
+  private void scanMacos() {
+    while (!token.getType().equals(END_OF_INPUT)) {
+      if (token.getString().equalsIgnoreCase(".macro")) {
+        token = scanner.getNextToken();
+        macroMap.put(token.getString(), Optional.empty());
+      }
+      token = scanner.getNextToken();
+    }
   }
 
   /**
@@ -77,13 +92,13 @@ public class SourceParser {
         default:
           return null;
       }
-    } catch (IllegalArgumentException | IllegalStateException e) {
+    } catch (Exception e) {
       throw new ParseException(e.getMessage(), e, token);
     }
   }
 
   private MacroCallNode macroCall() {
-    var node = new MacroCallNode(macroMap.get(token.getString()));
+    var node = new MacroCallNode(token.getString());
     consume(LABEL);
     while (!token.getType().equals(EOL) && !token.getType().equals(END_OF_INPUT)) {
       if (!token.getType().equals(TokenTypes.COMMA)) {
@@ -115,7 +130,9 @@ public class SourceParser {
     return opcode;
   }
 
-  /** Confirms that the current token is expected and advances to the next token. */
+  /**
+   * Confirms that the current token is expected and advances to the next token.
+   */
   public void consume(TokenTypes... types) {
     final var typesList = Arrays.asList(types);
     if (typesList.contains(token.getType())) {
@@ -156,13 +173,15 @@ public class SourceParser {
 
     if (node instanceof MacroNode) {
       var macroNode = (MacroNode) node;
-      macroMap.put(macroNode.getName(), macroNode);
-    }
 
+      macroMap.put(macroNode.getName(), Optional.of(macroNode));
+    }
     return node;
   }
 
-  /** Move the token past any whitespace / comments */
+  /**
+   * Move the token past any whitespace / comments
+   */
   public void clearWhiteSpaceTokens() {
     var testToken = getCurrentToken();
 

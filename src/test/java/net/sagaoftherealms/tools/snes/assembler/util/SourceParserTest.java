@@ -796,15 +796,15 @@ public class SourceParserTest {
   public void testMacroCall() {
     var program =
         "\n\n"
+            + ".MACRO writeobjectword\n"
+            + "writeobjectbyte \\1,   \\2&$ff\n"
+            + "\twriteobjectbyte \\1+1, \\2>>$8\n"
+            + ".ENDM\n"
             + ".MACRO writeobjectbyte\n"
             + "\t.db $8e \\1 \\2\n"
             + "\n"
             + ".ENDM"
             + "\n\n"
-            + ".MACRO writeobjectword\n"
-            + "writeobjectbyte \\1,   \\2&$ff\n"
-            + "\twriteobjectbyte \\1+1, \\2>>$8\n"
-            + ".ENDM\n"
             + "writeobjectword 17 18\n"
             + "writeobjectword 19, 512";
 
@@ -817,8 +817,8 @@ public class SourceParserTest {
 
     var scanner = data.startRead(OpCodeZ80.opcodes());
     SourceParser parser = new SourceParser(scanner);
-    var writeobjectbyteMacro = (MacroNode) parser.nextNode();
-    var writeobjectwordMacro = (MacroNode) parser.nextNode();
+    var writeobjectwordMacro= (MacroNode) parser.nextNode();
+    var writeobjectbyteMacro  = (MacroNode) parser.nextNode();
     var writeobjectwordCall1 = (MacroCallNode) parser.nextNode();
     var writeobjectwordCall2 = (MacroCallNode) parser.nextNode();
     assertEquals(

@@ -5,14 +5,14 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.Macro
 
 public class MacroCallNode extends Node {
 
-  private final MacroNode macroNode;
+  private final String macroNode;
 
-  public MacroCallNode(MacroNode macro) {
+  public MacroCallNode(String macro) {
     super(NodeTypes.MACRO_CALL);
     this.macroNode = macro;
   }
 
-  public MacroNode getMacroNode() {
+  public String getMacroNode() {
     return macroNode;
   }
 
