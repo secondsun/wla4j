@@ -1,4 +1,4 @@
-package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
+package net.sagaoftherealms.tools.snes.assembler.pass.parse.expression;
 
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;

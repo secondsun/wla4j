@@ -4,6 +4,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.BANK;
 import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.NAME;
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.asParser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,14 +25,15 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.OpcodeNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.bank.BankNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.IdentifierNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.IdentifierNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.OperationType;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
@@ -877,17 +879,27 @@ public class SourceParserTest {
     assertEquals(value, (int) node.evaluate());
   }
 
-  /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */
   @Test
-  public void testLargeFile() throws IOException {
+  public void parseBanks() {
+    var parser = asParser(".BANK $FF SLOT 4");
+    BankNode node = (BankNode) parser.nextNode();
+    assertEquals(0xFF, ((DirectiveNode)node).getArguments().getInt(0));
+    assertEquals(4, ((DirectiveNode)node).getArguments().getInt(1));
+
+  }
+
+  /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */
+  @ParameterizedTest
+  @CsvSource({"script_commands.s","main.s"})
+  public void testLargeFile(String fileName) throws IOException {
     final String macroSource =
         IOUtils.toString(
             SourceParserTest.class
                 .getClassLoader()
-                .getResourceAsStream("parseLargeFiles/script_commands.s"),
+                .getResourceAsStream("parseLargeFiles/" + fileName),
             "UTF-8");
-    final String outfile = "script_commands.out";
-    final String inputFile = "parseLargeFiles/script_commands.s";
+    final String outfile = fileName + ".out";
+    final String inputFile = "parseLargeFiles/" + fileName;
     final int lineNumber = 0;
 
     var data = new InputData(new Flags(outfile));

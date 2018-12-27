@@ -1,4 +1,4 @@
-package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
+package net.sagaoftherealms.tools.snes.assembler.pass.parse.expression;
 
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.AND;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.DIVIDE;
@@ -17,10 +17,14 @@ import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenType
 
 import java.util.Arrays;
 import java.util.List;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.ConstantNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.OperationType;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ConstantNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.IdentifierNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
@@ -210,6 +214,18 @@ public class ExpressionParser {
         token = parser.getCurrentToken();
         parser.consume(NUMBER);
         leftNode = new ConstantNode(-1 * TokenUtil.getInt(token));
+        break;
+      case LT:
+        parser.consume(LT);
+        token = parser.getCurrentToken();
+        parser.consume(NUMBER);
+        leftNode = new LowByteNode(bitwiseOrNode(parser));
+        break;
+      case GT:
+        parser.consume(GT);
+        token = parser.getCurrentToken();
+        parser.consume(NUMBER);
+        leftNode = new HighByteNode(bitwiseOrNode(parser));
         break;
       case NUMBER:
         parser.consume(NUMBER);

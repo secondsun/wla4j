@@ -1,6 +1,6 @@
-package net.sagaoftherealms.tools.snes.assembler.pass.parse;
+package net.sagaoftherealms.tools.snes.assembler.pass.parse.expression;
 
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.NumericExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 
 public class ConstantNode extends NumericExpressionNode {
   private String value;

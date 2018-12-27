@@ -1,6 +1,6 @@
-package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
+package net.sagaoftherealms.tools.snes.assembler.pass.parse.expression;
 
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.ConstantNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.OperationType;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 
 /**

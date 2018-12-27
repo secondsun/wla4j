@@ -1,7 +1,12 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
+
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.bank.BankNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.bank.BankParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfDefForMacrosParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefineByteParser;
@@ -10,6 +15,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefineWordSeriesParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.RepeatParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructParser;
@@ -22,10 +28,20 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 public final class DirectiveUtils {
 
+  private static DirectiveParser ORG_PARSER = (parser)-> {
+    DirectiveArgumentsNode node = new DirectiveArgumentsNode();
+    var expression = ExpressionParser.expressionNode(parser);
+    parser.consumeAndClear(EOL, END_OF_INPUT);
+    node.add(expression);
+    return node;
+  };
+
   private DirectiveUtils() {}
 
   public static DirectiveParser getParser(AllDirectives type) {
     switch (type) {
+      case BANK:
+        return new BankParser();
       case PRINTV:
         return new PrintvParser();
       case ENUM:
@@ -63,6 +79,7 @@ public final class DirectiveUtils {
         return new MacroParser();
       case DB:
       case BYT:
+      case ASC:
       case BYTE:
         return new DefineByteParser(type);
       case DW:
@@ -76,6 +93,9 @@ public final class DirectiveUtils {
       case REPEAT:
       case REPT:
         return new RepeatParser(type);
+      case ORG:
+      case ORGA:
+        return ORG_PARSER;
       default:
         return new GenericDirectiveParser(type);
     }
@@ -100,6 +120,9 @@ public final class DirectiveUtils {
     AllDirectives directive = AllDirectives.valueOf(directiveName.replace(".", "").toUpperCase());
     DirectiveNode node;
     switch (directive) {
+      case BANK:
+        node = new BankNode();
+        break;
       case ENUM:
         node = new EnumNode();
         break;
@@ -215,8 +238,6 @@ public final class DirectiveUtils {
       case BLOCK:
 
       case ENDB:
-
-      case BANK:
 
       case SLOT:
 

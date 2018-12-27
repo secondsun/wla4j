@@ -6,7 +6,7 @@ import net.sagaoftherealms.tools.snes.assembler.definition.directives.DirectiveA
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 
 public class GenericDirectiveParser implements DirectiveParser {
@@ -15,11 +15,6 @@ public class GenericDirectiveParser implements DirectiveParser {
 
   public GenericDirectiveParser(AllDirectives type) {
     this.type = type;
-  }
-
-  @Override
-  public DirectiveBodyNode body(SourceParser parser) {
-    return new DirectiveBodyNode();
   }
 
   @Override

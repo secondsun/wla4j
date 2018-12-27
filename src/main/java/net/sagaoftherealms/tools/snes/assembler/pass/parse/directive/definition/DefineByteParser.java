@@ -1,5 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
 
+import static net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives.ASC;
 import static net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives.BYT;
 import static net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives.BYTE;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.COMMA;
@@ -13,10 +14,11 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.GenericDirectiveParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 
 public class DefineByteParser extends GenericDirectiveParser {
 
-  private static final List<AllDirectives> types = Arrays.asList(AllDirectives.DB, BYT, BYTE);
+  private static final List<AllDirectives> types = Arrays.asList(AllDirectives.DB, BYT, BYTE, ASC);
 
   public DefineByteParser(AllDirectives type) {
     super(type);

@@ -14,7 +14,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveAr
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.GenericDirectiveParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 
 public class IfParser extends GenericDirectiveParser {
 

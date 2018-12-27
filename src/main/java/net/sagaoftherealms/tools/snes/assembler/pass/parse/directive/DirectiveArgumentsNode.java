@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.ExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionNode;
 
 public class DirectiveArgumentsNode extends Node {
 
@@ -45,5 +45,9 @@ public class DirectiveArgumentsNode extends Node {
     } else {
       return (String) argument.evaluate();
     }
+  }
+
+  public int getInt(int index) {
+    return (int) arguments.get(index).evaluate();
   }
 }
