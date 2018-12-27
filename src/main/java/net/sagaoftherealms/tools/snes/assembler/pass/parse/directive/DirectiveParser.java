@@ -6,7 +6,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 @FunctionalInterface
 public interface DirectiveParser {
 
-
   default DirectiveBodyNode body(SourceParser parser) {
     return new DirectiveBodyNode();
   }

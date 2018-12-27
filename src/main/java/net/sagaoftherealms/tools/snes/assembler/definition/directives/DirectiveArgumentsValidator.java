@@ -125,7 +125,8 @@ public final class DirectiveArgumentsValidator {
           return matches(token);
         }
       default:
-        throw new IllegalStateException("This should no longer get called.  Write a parser. From " + token);
+        throw new IllegalStateException(
+            "This should no longer get called.  Write a parser. From " + token);
     }
   }
 

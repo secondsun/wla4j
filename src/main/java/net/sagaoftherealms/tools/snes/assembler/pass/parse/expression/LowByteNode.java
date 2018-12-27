@@ -4,13 +4,12 @@ public class LowByteNode extends NumericExpressionNode {
 
   private final ExpressionNode value;
 
-  public LowByteNode(
-      ExpressionNode value) {
+  public LowByteNode(ExpressionNode value) {
     this.value = value;
   }
 
   @Override
   public Integer evaluate() {
-    return ((int)value.evaluate()) & 0x0FF;
+    return ((int) value.evaluate()) & 0x0FF;
   }
 }

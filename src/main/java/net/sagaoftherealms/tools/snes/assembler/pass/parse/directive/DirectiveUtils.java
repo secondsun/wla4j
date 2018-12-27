@@ -15,7 +15,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefineWordSeriesParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.RepeatParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructParser;
@@ -24,17 +23,19 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.Macro
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamSectionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 public final class DirectiveUtils {
 
-  private static DirectiveParser ORG_PARSER = (parser)-> {
-    DirectiveArgumentsNode node = new DirectiveArgumentsNode();
-    var expression = ExpressionParser.expressionNode(parser);
-    parser.consumeAndClear(EOL, END_OF_INPUT);
-    node.add(expression);
-    return node;
-  };
+  private static DirectiveParser ORG_PARSER =
+      (parser) -> {
+        DirectiveArgumentsNode node = new DirectiveArgumentsNode();
+        var expression = ExpressionParser.expressionNode(parser);
+        parser.consumeAndClear(EOL, END_OF_INPUT);
+        node.add(expression);
+        return node;
+      };
 
   private DirectiveUtils() {}
 

@@ -50,6 +50,6 @@ public class DirectiveNode extends Node {
 
   @Override
   public String toString() {
-    return directive + "(" + getArguments().toString() +  ");";
+    return directive + "(" + getArguments().toString() + ");";
   }
 }

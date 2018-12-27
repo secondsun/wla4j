@@ -54,9 +54,12 @@ public class DirectiveArgumentsNode extends Node {
 
   @Override
   public String toString() {
-    if (arguments == null) {
+    if (arguments.isEmpty()) {
       return "";
     }
-    return arguments.stream().map((obj)->obj == null?"":obj.toString()).collect(Collectors.joining(", "));
+    return arguments
+        .stream()
+        .map((obj) -> obj == null ? "" : obj.toString())
+        .collect(Collectors.joining(", "));
   }
 }

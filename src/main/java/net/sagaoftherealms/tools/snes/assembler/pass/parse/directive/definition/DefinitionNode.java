@@ -1,9 +1,9 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
 
 import java.util.Optional;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ConstantNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ConstantNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
 
 /**

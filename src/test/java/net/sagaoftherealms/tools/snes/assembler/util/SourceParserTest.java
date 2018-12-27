@@ -32,15 +32,15 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNo
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.IdentifierNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.OperationType;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode.SectionStatus;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.IdentifierNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -137,7 +137,6 @@ public class SourceParserTest {
           parser.nextNode();
         });
   }
-
 
   @Test
   public void testParseRamSectionToken() {
@@ -759,14 +758,13 @@ public class SourceParserTest {
   public void parseBanks() {
     var parser = asParser(".BANK $FF SLOT 4");
     BankNode node = (BankNode) parser.nextNode();
-    assertEquals(0xFF, ((DirectiveNode)node).getArguments().getInt(0));
-    assertEquals(4, ((DirectiveNode)node).getArguments().getInt(1));
-
+    assertEquals(0xFF, ((DirectiveNode) node).getArguments().getInt(0));
+    assertEquals(4, ((DirectiveNode) node).getArguments().getInt(1));
   }
 
   /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */
   @ParameterizedTest
-  @CsvSource({"script_commands.s","main.s"})
+  @CsvSource({"script_commands.s", "main.s"})
   public void testLargeFile(String fileName) throws IOException {
     final String macroSource =
         IOUtils.toString(
@@ -844,7 +842,6 @@ public class SourceParserTest {
     var directive = (DirectiveNode) parser.nextNode();
 
     assertEquals("test", directive.getArguments().getString(0));
-
   }
 
   @Test
@@ -853,8 +850,7 @@ public class SourceParserTest {
     var parser = asParser(source, OpCodeZ80.opcodes());
     OpcodeNode opcode = (OpcodeNode) parser.nextNode();
     assertEquals(2, opcode.getChildren().size());
-    assertEquals("l", ((OpcodeArgumentNode)opcode.getChildren().get(0)).getToken().getString());
-    assertEquals("a", ((OpcodeArgumentNode)opcode.getChildren().get(1)).getToken().getString());
+    assertEquals("l", ((OpcodeArgumentNode) opcode.getChildren().get(0)).getToken().getString());
+    assertEquals("a", ((OpcodeArgumentNode) opcode.getChildren().get(1)).getToken().getString());
   }
-
 }

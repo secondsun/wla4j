@@ -1,7 +1,7 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.expression;
 
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.OperationType;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.OperationType;
 
 /**
  * This class represents an expression that defines the size for a definition in a struct, enum, etc
@@ -30,7 +30,7 @@ public class NumericExpressionNode extends ExpressionNode<Integer> {
   public Integer evaluate() {
     if (operation == null) {
       if (getType().equals(NodeTypes.IDENTIFIER_EXPRESSION)) {
-        return 0;//todo lookup label value
+        return 0; // todo lookup label value
       }
       return Integer.parseInt(((ConstantNode) getChildren().get(0)).getValue());
     }
