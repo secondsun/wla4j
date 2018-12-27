@@ -87,7 +87,8 @@ public class SourceScanner {
     } else if (tokenString.matches("\\\\\\d+?")) {
       type = TokenTypes.LABEL;
     } else {
-      throw new IllegalArgumentException("Could not getString TokenType for " + tokenString + "@" + getCurrentLine().toString());
+      throw new IllegalArgumentException(
+          "Could not getString TokenType for " + tokenString + "@" + getCurrentLine().toString());
     }
 
     return new Token(getCurrentLine(), tokenString, type);
@@ -411,5 +412,4 @@ public class SourceScanner {
     linePosition = 0;
     newLineBeginning = true;
   }
-
 }

@@ -320,7 +320,6 @@ public final class DirectiveUtils {
 
       case EQU:
 
-
       case UNDEFINE:
 
       case REPEAT:

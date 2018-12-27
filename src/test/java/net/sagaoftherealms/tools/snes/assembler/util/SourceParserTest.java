@@ -765,14 +765,15 @@ public class SourceParserTest {
 
   /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */
   @ParameterizedTest
-  @CsvSource({"parseLargeFiles/script_commands.s", "parseLargeFiles/main.s","ages-disasm/include/musicMacros.s" })
+  @CsvSource({
+    "parseLargeFiles/script_commands.s",
+    "parseLargeFiles/main.s",
+    "ages-disasm/include/musicMacros.s"
+  })
   public void testLargeFile(String fileName) throws IOException {
     final String macroSource =
         IOUtils.toString(
-            SourceParserTest.class
-                .getClassLoader()
-                .getResourceAsStream(fileName),
-            "UTF-8");
+            SourceParserTest.class.getClassLoader().getResourceAsStream(fileName), "UTF-8");
     final String outfile = fileName + ".out";
     final String inputFile = fileName;
     final int lineNumber = 0;
@@ -817,8 +818,8 @@ public class SourceParserTest {
 
     var scanner = data.startRead(OpCodeZ80.opcodes());
     SourceParser parser = new SourceParser(scanner);
-    var writeobjectwordMacro= (MacroNode) parser.nextNode();
-    var writeobjectbyteMacro  = (MacroNode) parser.nextNode();
+    var writeobjectwordMacro = (MacroNode) parser.nextNode();
+    var writeobjectbyteMacro = (MacroNode) parser.nextNode();
     var writeobjectwordCall1 = (MacroCallNode) parser.nextNode();
     var writeobjectwordCall2 = (MacroCallNode) parser.nextNode();
     assertEquals(
@@ -865,7 +866,6 @@ public class SourceParserTest {
     assertEquals(6, node.getArguments().getInt(1));
   }
 
-
   @Test
   public void multiFileTest() throws IOException {
     var sourceDirectory = "ages-disasm";
@@ -874,7 +874,8 @@ public class SourceParserTest {
     MultiFileParser multiParser = new MultiFileParser(OpCodeZ80.opcodes());
     multiParser.parse(sourceDirectory, sourceRoot);
     assertNotNull(multiParser.getNodes(includedFile));
-    assertEquals("obj_Conditional", ((MacroNode)((List<Node>)multiParser.getNodes(includedFile)).get(1)).getName());
+    assertEquals(
+        "obj_Conditional",
+        ((MacroNode) ((List<Node>) multiParser.getNodes(includedFile)).get(1)).getName());
   }
-
 }

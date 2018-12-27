@@ -1,7 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
 import java.util.List;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 
 public class MacroCallNode extends Node {
 

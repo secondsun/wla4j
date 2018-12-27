@@ -75,21 +75,21 @@ public class SourceScannerTest {
 
   @ParameterizedTest
   @CsvSource({
-      "',', COMMA",
-      "|, OR",
-      "&, AND",
-      "^, POWER",
-      "+, PLUS",
-      "-, MINUS",
-      "'#', MODULO",
-      "~, XOR",
-      "'/ ', DIVIDE",
-      "<, LT",
-      ">, GT",
-      "[, LEFT_BRACKET",
-      "], RIGHT_BRACKET",
-      "(, LEFT_PAREN",
-      "), RIGHT_PAREN"
+    "',', COMMA",
+    "|, OR",
+    "&, AND",
+    "^, POWER",
+    "+, PLUS",
+    "-, MINUS",
+    "'#', MODULO",
+    "~, XOR",
+    "'/ ', DIVIDE",
+    "<, LT",
+    ">, GT",
+    "[, LEFT_BRACKET",
+    "], RIGHT_BRACKET",
+    "(, LEFT_PAREN",
+    "), RIGHT_PAREN"
   })
   public void testOperators(String sourceLine, String tokenType) {
     final String outfile = "test.out";
@@ -141,16 +141,16 @@ public class SourceScannerTest {
 
   @ParameterizedTest
   @CsvSource({
-      "0, 0", // dec
-      "1, 1", // dec
-      "0.0, 0.0", // dec
-      "0.1, 0.1", // dec
-      "0ah, 10", // Hex
-      "$100, 256", // Hex
-      "$100.w, 256", // Hex with size
-      "'''x''', 120", // Char
-      "'''0''', 48", // Char
-      "%0101, 5" // binary
+    "0, 0", // dec
+    "1, 1", // dec
+    "0.0, 0.0", // dec
+    "0.1, 0.1", // dec
+    "0ah, 10", // Hex
+    "$100, 256", // Hex
+    "$100.w, 256", // Hex with size
+    "'''x''', 120", // Char
+    "'''0''', 48", // Char
+    "%0101, 5" // binary
   })
   public void numberTokens(String sourceLine, double value) {
     final String outfile = "test.out";
@@ -198,10 +198,10 @@ public class SourceScannerTest {
    */
   @ParameterizedTest
   @CsvSource({
-      ".IF, IF",
-      ".ELSE, ELSE,",
-      ".8BIT, 8BIT,",
-      ".ELSEIF, ELSEIF",
+    ".IF, IF",
+    ".ELSE, ELSE,",
+    ".8BIT, 8BIT,",
+    ".ELSEIF, ELSEIF",
   })
   public void testSimpleParseDirectiveToken(String sourceLine, String expectedDirective) {
     final String outfile = "test.out";
@@ -221,9 +221,9 @@ public class SourceScannerTest {
 
   @ParameterizedTest
   @CsvSource({
-      "10.b, NUMBER, '10', .b",
-      "'$20.w', NUMBER, '$20', .w",
-      "test.l, LABEL, test, .l, ",
+    "10.b, NUMBER, '10', .b",
+    "'$20.w', NUMBER, '$20', .w",
+    "test.l, LABEL, test, .l, ",
   })
   public void testValueSizeTypeToken(
       String sourceLine, String valueTokenType, String valueTokenString, String expectedValueSize) {
@@ -261,19 +261,19 @@ public class SourceScannerTest {
 
   @ParameterizedTest
   @CsvSource({
-      "label, label", // basic label, no :
-      "label2:, label2", // basic label with colon
-      ":label2, label2", // basic label with colon at beginning
-      ":\\2Test, \\2Test", // a macro label with a bank and a template
-      "_label, label",
-      // underscore label IE local label (see
-      // https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)
-      "@label.b, label", // Child label
-      "label.namespace, label.namespace", // Namespaced Label
-      "@@@@label, label", // Deeply nested child label
-      "---:, '---'", // unnamed label
-      "+++, '+++'", // unnamed label
-      "NUM_SEED_TREES*8, 'NUM_SEED_TREES'" // label during a
+    "label, label", // basic label, no :
+    "label2:, label2", // basic label with colon
+    ":label2, label2", // basic label with colon at beginning
+    ":\\2Test, \\2Test", // a macro label with a bank and a template
+    "_label, label",
+    // underscore label IE local label (see
+    // https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)
+    "@label.b, label", // Child label
+    "label.namespace, label.namespace", // Namespaced Label
+    "@@@@label, label", // Deeply nested child label
+    "---:, '---'", // unnamed label
+    "+++, '+++'", // unnamed label
+    "NUM_SEED_TREES*8, 'NUM_SEED_TREES'" // label during a
   })
   public void testBasicLabel(String sourceLine, String labelName) {
     final String outfile = "test.out";
@@ -417,13 +417,13 @@ public class SourceScannerTest {
 
   @ParameterizedTest
   @CsvSource({
-      "!, NOT, ''",
-      "<=, LT, EQUAL",
-      ">=, GT, EQUAL",
-      "==, EQUAL, EQUAL",
-      "\\2,LABEL, END_OF_INPUT",
-      "\\!, ESCAPE, NOT",
-      "\\@, ESCAPE, AT",
+    "!, NOT, ''",
+    "<=, LT, EQUAL",
+    ">=, GT, EQUAL",
+    "==, EQUAL, EQUAL",
+    "\\2,LABEL, END_OF_INPUT",
+    "\\!, ESCAPE, NOT",
+    "\\@, ESCAPE, AT",
   })
   public void scanIfAndMacroOperators(String sourceLine, String operator1, String operator2) {
     final String outfile = "test.out";
@@ -506,108 +506,112 @@ public class SourceScannerTest {
         case 'e':
           builder.append("(5 + 6)");
           break;
-        case '{': {
-          patternIndex++;
-          var newPatternBuilder = new StringBuilder();
-          var test = pattern.charAt(patternIndex);
-          while (test != '}') {
-            newPatternBuilder.append(test);
-            test = pattern.charAt(++patternIndex);
-          }
-
-          var newPattern = newPatternBuilder.toString();
-          builder.append(
-              generateDirectiveLine(
-                  "" + newPattern.charAt(random.nextInt(newPattern.length())), false));
-        }
-        break;
-        case '[': {
-          patternIndex++; // ]
-          if (pattern.charAt(++patternIndex) == '(') {
-
+        case '{':
+          {
+            patternIndex++;
             var newPatternBuilder = new StringBuilder();
-            newPatternBuilder.append('(');
-            var test = pattern.charAt(++patternIndex);
-            while (test != ')') {
-              newPatternBuilder.append(test);
-              test = pattern.charAt(++patternIndex);
-            }
-            newPatternBuilder.append(')');
-
-            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-            builder.append(',');
-            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-            builder.append(',');
-            builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-          } else {
-
-            var newPatternBuilder = new StringBuilder();
-            newPatternBuilder.append('{');
-            var test = pattern.charAt(++patternIndex);
+            var test = pattern.charAt(patternIndex);
             while (test != '}') {
               newPatternBuilder.append(test);
               test = pattern.charAt(++patternIndex);
             }
-            newPatternBuilder.append('}');
+
             var newPattern = newPatternBuilder.toString();
-
             builder.append(
                 generateDirectiveLine(
-                    "" + newPattern.charAt(random.nextInt(newPattern.length() - 2) + 1), false));
-            builder.append(',');
-            builder.append(
-                generateDirectiveLine(
-                    "" + newPattern.charAt(random.nextInt(newPattern.length() - 2) + 1), false));
-            builder.append(',');
-            builder.append(
-                generateDirectiveLine(
-                    "" + newPattern.charAt(random.nextInt(newPattern.length() - 2) + 1), false));
+                    "" + newPattern.charAt(random.nextInt(newPattern.length())), false));
           }
-        }
-        break;
-        case '?': {
-          //                    if (!random.nextBoolean()) {
-          //                        break;
-          //                    }
-          patternIndex++; // ?
+          break;
+        case '[':
+          {
+            patternIndex++; // ]
+            if (pattern.charAt(++patternIndex) == '(') {
 
-          if (pattern.charAt(patternIndex++) == '(') { // (
+              var newPatternBuilder = new StringBuilder();
+              newPatternBuilder.append('(');
+              var test = pattern.charAt(++patternIndex);
+              while (test != ')') {
+                newPatternBuilder.append(test);
+                test = pattern.charAt(++patternIndex);
+              }
+              newPatternBuilder.append(')');
+
+              builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
+              builder.append(',');
+              builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
+              builder.append(',');
+              builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
+            } else {
+
+              var newPatternBuilder = new StringBuilder();
+              newPatternBuilder.append('{');
+              var test = pattern.charAt(++patternIndex);
+              while (test != '}') {
+                newPatternBuilder.append(test);
+                test = pattern.charAt(++patternIndex);
+              }
+              newPatternBuilder.append('}');
+              var newPattern = newPatternBuilder.toString();
+
+              builder.append(
+                  generateDirectiveLine(
+                      "" + newPattern.charAt(random.nextInt(newPattern.length() - 2) + 1), false));
+              builder.append(',');
+              builder.append(
+                  generateDirectiveLine(
+                      "" + newPattern.charAt(random.nextInt(newPattern.length() - 2) + 1), false));
+              builder.append(',');
+              builder.append(
+                  generateDirectiveLine(
+                      "" + newPattern.charAt(random.nextInt(newPattern.length() - 2) + 1), false));
+            }
+          }
+          break;
+        case '?':
+          {
+            //                    if (!random.nextBoolean()) {
+            //                        break;
+            //                    }
+            patternIndex++; // ?
+
+            if (pattern.charAt(patternIndex++) == '(') { // (
+              var newPatternBuilder = new StringBuilder();
+              newPatternBuilder.append('(');
+              var test = pattern.charAt(patternIndex);
+              while (test != ')') {
+                newPatternBuilder.append(test);
+                test = pattern.charAt(++patternIndex);
+              }
+              newPatternBuilder.append(')');
+              builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
+            } else {
+              // assume }
+              var newPatternBuilder = new StringBuilder();
+
+              var test = pattern.charAt(patternIndex);
+              while (test != '}') {
+                newPatternBuilder.append(test);
+                test = pattern.charAt(++patternIndex);
+              }
+
+              String[] choices = newPatternBuilder.toString().split("\\|");
+              builder.append(choices[random.nextInt(choices.length)]);
+            }
+          }
+          break;
+        case '(':
+          {
+            patternIndex++; // (
+
             var newPatternBuilder = new StringBuilder();
-            newPatternBuilder.append('(');
             var test = pattern.charAt(patternIndex);
             while (test != ')') {
               newPatternBuilder.append(test);
               test = pattern.charAt(++patternIndex);
             }
-            newPatternBuilder.append(')');
             builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-          } else {
-            // assume }
-            var newPatternBuilder = new StringBuilder();
-
-            var test = pattern.charAt(patternIndex);
-            while (test != '}') {
-              newPatternBuilder.append(test);
-              test = pattern.charAt(++patternIndex);
-            }
-
-            String[] choices = newPatternBuilder.toString().split("\\|");
-            builder.append(choices[random.nextInt(choices.length)]);
           }
-        }
-        break;
-        case '(': {
-          patternIndex++; // (
-
-          var newPatternBuilder = new StringBuilder();
-          var test = pattern.charAt(patternIndex);
-          while (test != ')') {
-            newPatternBuilder.append(test);
-            test = pattern.charAt(++patternIndex);
-          }
-          builder.append(generateDirectiveLine(newPatternBuilder.toString(), false));
-        }
-        break;
+          break;
 
         default:
           builder.append(patternCharacter);

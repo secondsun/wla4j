@@ -1,6 +1,8 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystem;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,27 +19,26 @@ public class MultiFileParser {
 
   private final OpCode[] opcodes;
 
-  private final Map<String, List<Node>> parsedFiles= new HashMap<>();
+  private final Map<String, List<Node>> parsedFiles = new HashMap<>();
   private final Set<String> filesToParse = new HashSet<>();
-  public MultiFileParser(
-      OpCode[] opcodes) {
+
+  public MultiFileParser(OpCode[] opcodes) {
     this.opcodes = opcodes;
   }
 
-  public void parse(final String sourceDirectory, final String rootSourceFile) throws IOException {
+  public void parse(final String sourceDirectory, final String rootSourceFile) {
     parseFile(sourceDirectory, rootSourceFile);
-    while(!filesToParse.isEmpty()) {
+    while (!filesToParse.isEmpty()) {
       List<String> filesList = new ArrayList<>(filesToParse);
       filesToParse.clear();
       for (String fileToParse : filesList) {
         parseFile(sourceDirectory, fileToParse);
       }
     }
-
   }
 
   private void parseFile(String sourceDirectory, final String rootSourceFile) {
-    var fileName = sourceDirectory + "/" + rootSourceFile;
+    var fileName = sourceDirectory + File.separator + rootSourceFile;
 
     var stream = getClass().getClassLoader().getResourceAsStream(fileName);
     final String outfile = "test.out";
@@ -47,21 +48,19 @@ public class MultiFileParser {
     data.includeFile(stream, rootSourceFile, 0);
 
     var scanner = data.startRead(opcodes);
-    var parser =new SourceParser(scanner);
+    var parser = new SourceParser(scanner);
 
     List<Node> newList = new ArrayList<>();
     Node node = parser.nextNode();
     while (node != null) {
       if (node.getType().equals(NodeTypes.DIRECTIVE)
-          && ((DirectiveNode)node).getDirectiveType().equals(AllDirectives.INCLUDE)) {
-        scheduleParse((DirectiveNode)node);
+          && ((DirectiveNode) node).getDirectiveType().equals(AllDirectives.INCLUDE)) {
+        scheduleParse((DirectiveNode) node);
       }
       newList.add(node);
       node = parser.nextNode();
-
     }
     parsedFiles.put(fileName, newList);
-
   }
 
   private void scheduleParse(DirectiveNode includeDirectiveNode) {
@@ -72,6 +71,6 @@ public class MultiFileParser {
   }
 
   public List<Node> getNodes(String includedFile) {
-     return parsedFiles.get(includedFile);
+    return parsedFiles.get(includedFile);
   }
 }

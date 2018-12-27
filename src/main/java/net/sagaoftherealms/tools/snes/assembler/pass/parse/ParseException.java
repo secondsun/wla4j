@@ -14,7 +14,6 @@ public class ParseException extends RuntimeException {
   public ParseException(String message, Exception e, Token token) {
     super(message + "\n\t" + token, e);
     this.problemToken = token;
-
   }
 
   public Token getProblemToken() {

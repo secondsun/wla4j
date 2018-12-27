@@ -2,8 +2,6 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.expression;
 
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.AND;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.DIVIDE;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EQUAL;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.GT;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
