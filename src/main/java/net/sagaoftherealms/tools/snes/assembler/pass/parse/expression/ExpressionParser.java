@@ -2,6 +2,8 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.expression;
 
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.AND;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.DIVIDE;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EQUAL;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.GT;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
@@ -202,7 +204,7 @@ public class ExpressionParser {
 
   private static NumericExpressionNode factorNode(SourceParser parser) {
     var token = parser.getCurrentToken();
-    NumericExpressionNode leftNode;
+    NumericExpressionNode leftNode = null;
     switch (token.getType()) {
       case LEFT_PAREN:
         parser.consume(LEFT_PAREN);
@@ -212,19 +214,20 @@ public class ExpressionParser {
       case MINUS:
         parser.consume(MINUS);
         token = parser.getCurrentToken();
-        parser.consume(NUMBER);
-        leftNode = new ConstantNode(-1 * TokenUtil.getInt(token));
+        if (token.getType().equals(LABEL)) {
+          parser.consume(LABEL);
+          leftNode = new NegateIdentifierNode(token);
+        } else {//assume number
+          parser.consume(NUMBER);
+          leftNode = new ConstantNode(-1 * TokenUtil.getInt(token));
+        }
         break;
       case LT:
         parser.consume(LT);
-        token = parser.getCurrentToken();
-        parser.consume(NUMBER);
         leftNode = new LowByteNode(bitwiseOrNode(parser));
         break;
       case GT:
         parser.consume(GT);
-        token = parser.getCurrentToken();
-        parser.consume(NUMBER);
         leftNode = new HighByteNode(bitwiseOrNode(parser));
         break;
       case NUMBER:
@@ -236,7 +239,10 @@ public class ExpressionParser {
         leftNode = new IdentifierNode(token);
         break;
       default:
-        throw new ParseException("Unexpected factor.", token);
+        if (leftNode == null) {
+          throw new ParseException("Unexpected end of expression", token);
+        }
+        parser.consume(EOL, END_OF_INPUT);
     }
 
     token = parser.getCurrentToken();

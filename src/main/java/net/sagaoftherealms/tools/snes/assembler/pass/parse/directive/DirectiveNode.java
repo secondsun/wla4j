@@ -14,6 +14,9 @@ public class DirectiveNode extends Node {
   }
 
   public DirectiveArgumentsNode getArguments() {
+    if (getChildren() == null || getChildren().isEmpty()) {
+      return new DirectiveArgumentsNode();
+    }
     return (DirectiveArgumentsNode)
         getChildren().get(0); // TODO throw exception if missing children?
   }
@@ -43,5 +46,10 @@ public class DirectiveNode extends Node {
 
   public AllDirectives getDirectiveType() {
     return directive;
+  }
+
+  @Override
+  public String toString() {
+    return directive + "(" + getArguments().toString() +  ");";
   }
 }

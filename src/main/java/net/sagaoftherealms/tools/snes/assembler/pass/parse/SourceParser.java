@@ -36,8 +36,9 @@ public class SourceParser {
   public Node nextNode() {
     switch (token.getType()) {
       case STRING:
+        var stringExpression = new StringExpressionNode(token.getString());
         consume(TokenTypes.STRING);
-        return new StringExpressionNode(token.getString());
+        return stringExpression;
       case DIRECTIVE:
         var directiveName = token.getString();
         var directiveNode = directive(directiveName);
@@ -98,6 +99,10 @@ public class SourceParser {
     token = getCurrentToken();
 
     while (!token.getType().equals(EOL) && !token.getType().equals(END_OF_INPUT)) {
+      if (token.getType().equals(COMMA)) {
+        consume(COMMA);
+        continue;
+      }
       opcode.addChild(new OpcodeArgumentNode(getCurrentToken()));
       consume(getCurrentToken().getType());
     }

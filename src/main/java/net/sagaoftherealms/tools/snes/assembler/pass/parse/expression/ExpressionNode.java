@@ -26,4 +26,9 @@ public abstract class ExpressionNode<TYPE> extends Node {
   public boolean canEvaluate() {
     return false;
   }
+
+  @Override
+  public String toString() {
+    return evaluate().toString();
+  }
 }

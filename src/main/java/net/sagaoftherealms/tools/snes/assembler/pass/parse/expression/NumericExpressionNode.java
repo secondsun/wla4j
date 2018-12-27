@@ -29,6 +29,9 @@ public class NumericExpressionNode extends ExpressionNode<Integer> {
   @Override
   public Integer evaluate() {
     if (operation == null) {
+      if (getType().equals(NodeTypes.IDENTIFIER_EXPRESSION)) {
+        return 0;//todo lookup label value
+      }
       return Integer.parseInt(((ConstantNode) getChildren().get(0)).getValue());
     }
 

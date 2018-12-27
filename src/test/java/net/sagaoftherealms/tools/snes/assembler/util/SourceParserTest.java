@@ -22,6 +22,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelDefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.MacroCallNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.OpcodeArgumentNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.OpcodeNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
@@ -52,15 +53,7 @@ public class SourceParserTest {
   @Test
   public void testExpressionParser() {
     var sourceLine = "NUM_SEED_TREES*8";
-    final String outfile = "test.out";
-    final String inputFile = "test.s";
-    final int lineNumber = 0;
-
-    var data = new InputData(new Flags(outfile));
-    data.includeFile($(sourceLine), inputFile, lineNumber);
-
-    var scanner = data.startRead(OpCode65816.opcodes());
-    var parser = new SourceParser(scanner);
+    var parser = asParser(sourceLine);
 
     var expressionNode = ExpressionParser.expressionNode(parser);
 
@@ -82,15 +75,7 @@ public class SourceParserTest {
     "'__ rti \n jmp _b'" // Label, opcode newline opcode
   })
   public void testAnonymousLabelNode(String sourceLine) {
-    final String outfile = "test.out";
-    final String inputFile = "test.s";
-    final int lineNumber = 0;
-
-    var data = new InputData(new Flags(outfile));
-    data.includeFile($(sourceLine), inputFile, lineNumber);
-
-    var scanner = data.startRead(OpCode65816.opcodes());
-    var parser = new SourceParser(scanner);
+    var parser = asParser(sourceLine);
 
     LabelDefinitionNode node = (LabelDefinitionNode) parser.nextNode();
     OpcodeNode rti = (OpcodeNode) parser.nextNode();
@@ -104,11 +89,6 @@ public class SourceParserTest {
     assertEquals(1, jmp.getChildren().size()); // JMP has one argument
     assertEquals(sourceLine.split("\\s")[0], node.getLabelName());
     assertEquals(NodeTypes.OPCODE_ARGUMENT, jmp.getChildren().get(0).getType());
-  }
-
-  @Test
-  public void testShiftVsGetByteNode() {
-    fail("This test will test >,<, >>,<< are handled as getString byte and bit shift nodes");
   }
 
   /**
@@ -125,15 +105,7 @@ public class SourceParserTest {
       String sourceLine,
       String expectedDirective,
       @ConvertWith(DoubleArrayConverter.class) List<Double> arguments) {
-    final String outfile = "test.out";
-    final String inputFile = "test.s";
-    final int lineNumber = 0;
-
-    var data = new InputData(new Flags(outfile));
-    data.includeFile($(sourceLine), inputFile, lineNumber);
-
-    var scanner = data.startRead(OpCode65816.opcodes());
-    var parser = new SourceParser(scanner);
+    var parser = asParser(sourceLine);
 
     DirectiveNode node = (DirectiveNode) parser.nextNode();
 
@@ -143,15 +115,7 @@ public class SourceParserTest {
   @ParameterizedTest
   @CsvSource({".DBCOS 0.2"})
   public void testParsingDirectivesFailWithTooFewArgumentsToken(String sourceLine) {
-    final String outfile = "test.out";
-    final String inputFile = "test.s";
-    final int lineNumber = 0;
-
-    var data = new InputData(new Flags(outfile));
-    data.includeFile($(sourceLine), inputFile, lineNumber);
-
-    var scanner = data.startRead(OpCode65816.opcodes());
-    var parser = new SourceParser(scanner);
+    var parser = asParser(sourceLine);
 
     assertThrows(ParseException.class, () -> parser.nextNode());
   }
@@ -165,16 +129,7 @@ public class SourceParserTest {
             + "       rti\n"
             + "\n"
             + ".ENDS";
-    final String outfile = "test.out";
-    final String inputFile = "test.s";
-    final int lineNumber = 0;
-
-    var data = new InputData(new Flags(outfile));
-    data.includeFile($(enumSource), inputFile, lineNumber);
-
-    var scanner = data.startRead(OpCode65816.opcodes());
-
-    SourceParser parser = new SourceParser(scanner);
+    var parser = asParser(enumSource);
 
     assertThrows(
         ParseException.class,
@@ -183,8 +138,6 @@ public class SourceParserTest {
         });
   }
 
-  @Test
-  public void testExpressions() {}
 
   @Test
   public void testParseRamSectionToken() {
@@ -251,16 +204,7 @@ public class SourceParserTest {
             + "\n"
             + ".ENDS";
 
-    final String outfile = "test.out";
-    final String inputFile = "test.s";
-    final int lineNumber = 0;
-
-    var data = new InputData(new Flags(outfile));
-    data.includeFile($(source), inputFile, lineNumber);
-
-    var scanner = data.startRead(OpCode65816.opcodes());
-
-    SourceParser parser = new SourceParser(scanner);
+    var parser = asParser(source);
 
     var node = parser.nextNode();
 
@@ -289,16 +233,7 @@ public class SourceParserTest {
   @Test
   public void parseBasicEnum() {
     final String enumSource = ".ENUM $C000\n" + ".ENDE";
-    final String outfile = "test.out";
-    final String inputFile = "test.s";
-    final int lineNumber = 0;
-
-    var data = new InputData(new Flags(outfile));
-    data.includeFile($(enumSource), inputFile, lineNumber);
-
-    var scanner = data.startRead(OpCode65816.opcodes());
-
-    SourceParser parser = new SourceParser(scanner);
+    var parser = asParser(enumSource);
     EnumNode enumNode = (EnumNode) parser.nextNode();
 
     assertEquals(NodeTypes.ENUM, enumNode.getType());
@@ -315,16 +250,7 @@ public class SourceParserTest {
             + "SEASON_FALL DS 16\n"
             + "SEASON_WINTER dsW 16\n"
             + ".ENDE";
-    final String outfile = "test.out";
-    final String inputFile = "test.s";
-    final int lineNumber = 0;
-
-    var data = new InputData(new Flags(outfile));
-    data.includeFile($(enumSource), inputFile, lineNumber);
-
-    var scanner = data.startRead(OpCode65816.opcodes());
-
-    SourceParser parser = new SourceParser(scanner);
+    var parser = asParser(enumSource);
     var enumNode = (EnumNode) parser.nextNode();
 
     var body = enumNode.getBody();
@@ -363,16 +289,7 @@ public class SourceParserTest {
             + " .else \n "
             + ".db 42.0,  5, \"Six\"\n"
             + ".endif";
-    final String outfile = "test.out";
-    final String inputFile = "test.s";
-    final int lineNumber = 0;
-
-    var data = new InputData(new Flags(outfile));
-    data.includeFile($(source), inputFile, lineNumber);
-
-    var scanner = data.startRead(OpCode65816.opcodes());
-
-    SourceParser parser = new SourceParser(scanner);
+    var parser = asParser(source);
     var ifNode = (DirectiveNode) parser.nextNode();
     var thenNode = (DirectiveBodyNode) ifNode.getBody().getChildren().get(0);
     var elseNode = (DirectiveBodyNode) ifNode.getBody().getChildren().get(1);
@@ -454,16 +371,7 @@ public class SourceParserTest {
             + // 21 dragon.age
             ".ENDE";
 
-    final String outfile = "test.out";
-    final String inputFile = "test.s";
-    final int lineNumber = 0;
-
-    var data = new InputData(new Flags(outfile));
-    data.includeFile($(source), inputFile, lineNumber);
-
-    var scanner = data.startRead(OpCode65816.opcodes());
-
-    SourceParser parser = new SourceParser(scanner);
+    var parser = asParser(source);
     parser.nextNode();
     var enumNode = (EnumNode) parser.nextNode();
 
@@ -503,16 +411,7 @@ public class SourceParserTest {
    */
   public void testDWFailsWithString() {
     String source = ".dw \"Fail\"";
-    final String outfile = "test.out";
-    final String inputFile = "test.s";
-    final int lineNumber = 0;
-
-    var data = new InputData(new Flags(outfile));
-    data.includeFile($(source), inputFile, lineNumber);
-
-    var scanner = data.startRead(OpCode65816.opcodes());
-
-    SourceParser parser = new SourceParser(scanner);
+    var parser = asParser(source);
     assertThrows(ParseException.class, () -> parser.nextNode());
   }
 
@@ -539,16 +438,8 @@ public class SourceParserTest {
             + "     dragon    INSTANCEOF mon   ; one mon\n"
             + ".ENDE";
 
-    final String outfile = "test.out";
-    final String inputFile = "test.s";
-    final int lineNumber = 0;
+    var parser = asParser(source);
 
-    var data = new InputData(new Flags(outfile));
-    data.includeFile($(source), inputFile, lineNumber);
-
-    var scanner = data.startRead(OpCode65816.opcodes());
-
-    SourceParser parser = new SourceParser(scanner);
     StructNode structNode = (StructNode) parser.nextNode();
 
     assertEquals(
@@ -584,16 +475,8 @@ public class SourceParserTest {
   public void parseStruct() {
     var source = ".STRUCT mon\n" + "name ds 2\n" + "age  db\n" + ".ENDST";
 
-    final String outfile = "test.out";
-    final String inputFile = "test.s";
-    final int lineNumber = 0;
+    var parser = asParser(source);
 
-    var data = new InputData(new Flags(outfile));
-    data.includeFile($(source), inputFile, lineNumber);
-
-    var scanner = data.startRead(OpCode65816.opcodes());
-
-    SourceParser parser = new SourceParser(scanner);
     StructNode structNode = (StructNode) parser.nextNode();
 
     var body = structNode.getBody();
@@ -628,16 +511,7 @@ public class SourceParserTest {
             "dragon    INSTANCEOF mon   ; one mon\n"
             + // 21 dragon.age
             ".ENDE";
-    final String outfile = "test.out";
-    final String inputFile = "test.s";
-    final int lineNumber = 0;
-
-    var data = new InputData(new Flags(outfile));
-    data.includeFile($(source), inputFile, lineNumber);
-
-    var scanner = data.startRead(OpCode65816.opcodes());
-
-    SourceParser parser = new SourceParser(scanner);
+    var parser = asParser(source);
     var structNode = (StructNode) parser.nextNode();
     var structBody = structNode.getBody();
     var enumNode = (EnumNode) parser.nextNode();
@@ -862,7 +736,9 @@ public class SourceParserTest {
     "2<<1, 4",
     "512 >> 8 != 1024 >> 8, 1 ",
     "512 >> 8 != 2, 0 ",
-    "2>>1, 1"
+    "2>>1, 1",
+    "<$DEAD, 173",
+    ">$DEAD, 222"
   })
   public void testExpressions(String expression, int value) {
     final String outfile = "script_commands.out";
@@ -961,4 +837,24 @@ public class SourceParserTest {
             .get(0)
             .getType());
   }
+
+  @Test
+  public void testStringExpressions() {
+    var parser = asParser(".INCLUDE \"test\"");
+    var directive = (DirectiveNode) parser.nextNode();
+
+    assertEquals("test", directive.getArguments().getString(0));
+
+  }
+
+  @Test
+  public void testOpcodes() {
+    var source = "ld l,a";
+    var parser = asParser(source, OpCodeZ80.opcodes());
+    OpcodeNode opcode = (OpcodeNode) parser.nextNode();
+    assertEquals(2, opcode.getChildren().size());
+    assertEquals("l", ((OpcodeArgumentNode)opcode.getChildren().get(0)).getToken().getString());
+    assertEquals("a", ((OpcodeArgumentNode)opcode.getChildren().get(1)).getToken().getString());
+  }
+
 }

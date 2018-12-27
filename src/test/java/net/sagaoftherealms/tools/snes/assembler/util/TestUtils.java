@@ -37,9 +37,12 @@ public class TestUtils {
     return scanner;
   }
 
-  public static SourceParser asParser(String sourceLine) {
-    var scanner = toScanner(sourceLine);
+  public static SourceParser asParser(String sourceLine, OpCode[] opcodes) {
+    var scanner = toScanner(sourceLine, opcodes);
     return new SourceParser(scanner);
+  }
 
+  public static SourceParser asParser(String sourceLine) {
+    return asParser(sourceLine, OpCode65816.opcodes());
   }
 }

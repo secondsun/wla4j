@@ -3,6 +3,7 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionNode;
@@ -49,5 +50,13 @@ public class DirectiveArgumentsNode extends Node {
 
   public int getInt(int index) {
     return (int) arguments.get(index).evaluate();
+  }
+
+  @Override
+  public String toString() {
+    if (arguments == null) {
+      return "";
+    }
+    return arguments.stream().map((obj)->obj == null?"":obj.toString()).collect(Collectors.joining(", "));
   }
 }

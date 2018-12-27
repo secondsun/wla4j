@@ -14,4 +14,9 @@ public class OpcodeArgumentNode extends Node {
   public Token getToken() {
     return token;
   }
+
+  @Override
+  public String toString() {
+    return token.getString();
+  }
 }
