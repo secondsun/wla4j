@@ -17,9 +17,9 @@ public class OpcodeNode extends Node {
     StringBuilder builder = new StringBuilder();
     builder.append(token.getString());
     builder
-        .append("{")
-        .append(getChildren().stream().map(obj -> obj.toString()).collect(Collectors.joining(", ")))
-        .append("}");
+        .append("(")
+        .append(getChildren().stream().map(Object::toString).collect(Collectors.joining(", ")))
+        .append(")");
     return builder.toString();
   }
 }

@@ -1,7 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
@@ -13,7 +12,7 @@ public class PrintvParser extends GenericDirectiveParser {
   }
 
   @Override
-  public DirectiveArgumentsNode arguments(SourceParser parser) throws ParseException {
+  public DirectiveArgumentsNode arguments(SourceParser parser) {
     var node = new DirectiveArgumentsNode();
 
     var token = parser.getCurrentToken();

@@ -59,7 +59,7 @@ public class DirectiveArgumentsNode extends Node {
     }
     return arguments
         .stream()
-        .map((obj) -> obj == null ? "" : obj.toString())
+        .map(obj -> obj == null ? "" : obj.toString())
         .collect(Collectors.joining(", "));
   }
 }

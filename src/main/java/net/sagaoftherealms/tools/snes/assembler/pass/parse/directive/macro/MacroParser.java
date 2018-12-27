@@ -34,7 +34,7 @@ public class MacroParser implements DirectiveParser {
   }
 
   @Override
-  public DirectiveArgumentsNode arguments(SourceParser parser) throws ParseException {
+  public DirectiveArgumentsNode arguments(SourceParser parser) {
     var node = new DirectiveArgumentsNode();
     var token = parser.getCurrentToken();
 

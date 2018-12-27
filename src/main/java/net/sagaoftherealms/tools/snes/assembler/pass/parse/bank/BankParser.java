@@ -4,7 +4,6 @@ import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenType
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.GenericDirectiveParser;
@@ -18,7 +17,7 @@ public class BankParser extends GenericDirectiveParser {
   }
 
   @Override
-  public DirectiveArgumentsNode arguments(SourceParser parser) throws ParseException {
+  public DirectiveArgumentsNode arguments(SourceParser parser) {
     var node = new DirectiveArgumentsNode();
 
     node.add(ExpressionParser.expressionNode(parser));

@@ -28,8 +28,8 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 public final class DirectiveUtils {
 
-  private static DirectiveParser ORG_PARSER =
-      (parser) -> {
+  private static DirectiveParser orgParser =
+      parser -> {
         DirectiveArgumentsNode node = new DirectiveArgumentsNode();
         var expression = ExpressionParser.expressionNode(parser);
         parser.consumeAndClear(EOL, END_OF_INPUT);
@@ -96,7 +96,7 @@ public final class DirectiveUtils {
         return new RepeatParser(type);
       case ORG:
       case ORGA:
-        return ORG_PARSER;
+        return orgParser;
       default:
         return new GenericDirectiveParser(type);
     }

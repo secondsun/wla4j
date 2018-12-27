@@ -235,9 +235,6 @@ public class ExpressionParser {
         leftNode = new IdentifierNode(token);
         break;
       default:
-        if (leftNode == null) {
-          throw new ParseException("Unexpected end of expression", token);
-        }
         parser.consume(EOL, END_OF_INPUT);
     }
 
