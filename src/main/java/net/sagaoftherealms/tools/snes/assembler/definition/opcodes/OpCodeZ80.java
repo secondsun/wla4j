@@ -1150,7 +1150,7 @@ public class OpCodeZ80 extends OpCode {
     new OpCodeZ80("XOR (IYs)", 0xaefd, 4, 0, 0),
     new OpCodeZ80("XOR L", 0xad, 0, 0, 0),
     new OpCodeZ80("XOR x", 0xee, 1, 0, 0),
-    new OpCodeZ80("E", 0x100, -1, 0, 0)
+
   };
 
   private final int hexX;

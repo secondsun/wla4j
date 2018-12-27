@@ -34,47 +34,51 @@ public class SourceParser {
    * @return the nextNode that the current token is on.
    */
   public Node nextNode() {
-    switch (token.getType()) {
-      case STRING:
-        var stringExpression = new StringExpressionNode(token.getString());
-        consume(TokenTypes.STRING);
-        return stringExpression;
-      case DIRECTIVE:
-        var directiveName = token.getString();
-        var directiveNode = directive(directiveName);
-        clearWhiteSpaceTokens();
-        return directiveNode;
-      case NUMBER:
-        return ExpressionParser.expressionNode(this);
-      case LABEL:
-        if (macroMap.containsKey(token.getString())) {
-          MacroCallNode macroCall = macroCall();
+    try {
+      switch (token.getType()) {
+        case STRING:
+          var stringExpression = new StringExpressionNode(token.getString());
+          consume(TokenTypes.STRING);
+          return stringExpression;
+        case DIRECTIVE:
+          var directiveName = token.getString();
+          var directiveNode = directive(directiveName);
           clearWhiteSpaceTokens();
-          return macroCall;
-        } else {
+          return directiveNode;
+        case NUMBER:
+          return ExpressionParser.expressionNode(this);
+        case LABEL:
+          if (macroMap.containsKey(token.getString())) {
+            MacroCallNode macroCall = macroCall();
+            clearWhiteSpaceTokens();
+            return macroCall;
+          } else {
+            var definition = new LabelDefinitionNode(token);
+            consume(token.getType());
+            return definition;
+          }
+        case MINUS:
+        case PLUS:
           var definition = new LabelDefinitionNode(token);
           consume(token.getType());
           return definition;
-        }
-      case MINUS:
-      case PLUS:
-        var definition = new LabelDefinitionNode(token);
-        consume(token.getType());
-        return definition;
-      case LEFT_PAREN:
-        var node = ExpressionParser.expressionNode(this);
-        return node;
-      case COMMA:
-        consume(TokenTypes.COMMA);
-        return nextNode();
-      case OPCODE:
-        OpcodeNode opcodeNode = opcode();
-        return opcodeNode;
-      case EOL:
-        consume(TokenTypes.EOL);
-        return nextNode();
-      default:
-        return null;
+        case LEFT_PAREN:
+          var node = ExpressionParser.expressionNode(this);
+          return node;
+        case COMMA:
+          consume(TokenTypes.COMMA);
+          return nextNode();
+        case OPCODE:
+          OpcodeNode opcodeNode = opcode();
+          return opcodeNode;
+        case EOL:
+          consume(TokenTypes.EOL);
+          return nextNode();
+        default:
+          return null;
+      }
+    } catch (IllegalArgumentException | IllegalStateException e) {
+      throw new ParseException(e.getMessage(), e, token);
     }
   }
 

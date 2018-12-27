@@ -226,7 +226,6 @@ public class OpCodeSpc700 extends OpCode {
     new OpCodeSpc700("TCLR1 !?", 0x4E, 2),
     new OpCodeSpc700("TSET1 !?", 0x0E, 2),
     new OpCodeSpc700("XCN A", 0x9F, 0),
-    new OpCodeSpc700("E", 0x100, -1)
   };
 
   public OpCodeSpc700(String op, int hex, int type) {

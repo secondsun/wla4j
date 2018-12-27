@@ -235,7 +235,7 @@ public class ExpressionParser {
         leftNode = new IdentifierNode(token);
         break;
       default:
-        parser.consume(EOL, END_OF_INPUT);
+        break;
     }
 
     token = parser.getCurrentToken();

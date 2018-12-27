@@ -499,7 +499,6 @@ public class OpCode65816 extends OpCode {
     new OpCode65816("WDM", 0x42, 0, 0),
     new OpCode65816("XBA", 0xEB, 0, 0),
     new OpCode65816("XCE", 0xFB, 0, 0),
-    new OpCode65816("E", 0x100, -1, 0)
   };
 
   public OpCode65816(String op, int hex, int type, int skipXbit) {

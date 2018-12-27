@@ -1,0 +1,62 @@
+; Values for w1Link.animMode.
+; Note: this only applies to Link with ID $00, not variants like ID $08 (LINK_CUTSCENE).
+.enum 0
+
+LINK_ANIM_MODE_NONE		db ; $00: This might not be used except for resetting the animation
+LINK_ANIM_MODE_SPIN		db ; $01
+LINK_ANIM_MODE_COLLAPSED	db ; $02
+LINK_ANIM_MODE_GALE		db ; $03
+LINK_ANIM_MODE_FALL		db ; $04
+LINK_ANIM_MODE_STAND		db ; $05:  Like on blank file
+LINK_ANIM_MODE_SQUISHX		db ; $06
+LINK_ANIM_MODE_SQUISHY		db ; $07
+LINK_ANIM_MODE_DANCELEFT	db ; $08
+LINK_ANIM_MODE_DANCERIGHT	db ; $09
+LINK_ANIM_MODE_DROWN		db ; $0a
+LINK_ANIM_MODE_SWIM		db ; $0b
+LINK_ANIM_MODE_DIVE		db ; $0c
+LINK_ANIM_MODE_FALLINHOLE	db ; $0d
+LINK_ANIM_MODE_GETITEM1HAND	db ; $0e
+LINK_ANIM_MODE_GETITEM2HAND	db ; $0f
+LINK_ANIM_MODE_WALK		db ; $10
+LINK_ANIM_MODE_MERMAID		db ; $11
+LINK_ANIM_MODE_LIFT		db ; $12
+LINK_ANIM_MODE_LIFT_2		db ; $13
+LINK_ANIM_MODE_LIFT_3		db ; $14
+LINK_ANIM_MODE_LIFT_4		db ; $15
+LINK_ANIM_MODE_THROW		db ; $16
+LINK_ANIM_MODE_SWIM_2D		db ; $17
+LINK_ANIM_MODE_JUMP		db ; $18
+LINK_ANIM_MODE_DIG		db ; $19
+LINK_ANIM_MODE_DIG_2		db ; $1a
+LINK_ANIM_MODE_FLUTE		db ; $1b
+LINK_ANIM_MODE_GETITEM1HAND_RIGHT db ; $1c
+LINK_ANIM_MODE_HARP		db ; $1d
+LINK_ANIM_MODE_HARP_2		db ; $1e
+LINK_ANIM_MODE_1f		db ; $1f: Sword poke?
+LINK_ANIM_MODE_20		db ; $20: Sword swing?
+LINK_ANIM_MODE_21		db ; $21: Punch?
+LINK_ANIM_MODE_22		db ; $22: Sword swing?
+LINK_ANIM_MODE_23		db ; $23
+LINK_ANIM_MODE_24		db ; $24
+LINK_ANIM_MODE_25		db ; $25
+LINK_ANIM_MODE_26		db ; $26
+LINK_ANIM_MODE_27		db ; $27
+LINK_ANIM_MODE_28		db ; $28
+LINK_ANIM_MODE_29		db ; $29
+LINK_ANIM_MODE_2a		db ; $2a
+LINK_ANIM_MODE_2b		db ; $2b
+LINK_ANIM_MODE_2c		db ; $2c
+LINK_ANIM_MODE_2d		db ; $2d
+LINK_ANIM_MODE_2e		db ; $2e
+LINK_ANIM_MODE_SLEEPING		db ; $2f
+LINK_ANIM_MODE_30		db ; $30
+LINK_ANIM_MODE_31		db ; $31
+LINK_ANIM_MODE_32		db ; $32
+LINK_ANIM_MODE_33		db ; $33
+LINK_ANIM_MODE_34		db ; $34
+LINK_ANIM_MODE_35		db ; $35: Swinging sword on minecart
+LINK_ANIM_MODE_36		db ; $36: Swinging sword with mermaid suit
+LINK_ANIM_MODE_37		db ; $37: Swinging sword with mermaid suit
+
+.ende

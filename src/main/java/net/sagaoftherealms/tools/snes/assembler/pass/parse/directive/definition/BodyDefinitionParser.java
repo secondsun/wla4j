@@ -54,7 +54,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
     var token = parser.getCurrentToken();
 
     while (token != null
-        && !endDirective.getPattern().startsWith(token.getString())) { // End on ENDE
+        && !endDirective.getPattern().startsWith(token.getString().toUpperCase())) { // End on ENDE
       // Expect the token to be the first label
       if (token.getType().equals(TokenTypes.LABEL)) {
         body.addChild(makeDefinitionNode(parser, token));

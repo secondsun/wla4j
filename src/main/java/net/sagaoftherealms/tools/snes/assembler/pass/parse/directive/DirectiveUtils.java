@@ -1,7 +1,9 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.COMMA;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
@@ -37,10 +39,38 @@ public final class DirectiveUtils {
         return node;
       };
 
+  private static DirectiveParser redefParser =
+      parser -> {
+        DirectiveArgumentsNode node = new DirectiveArgumentsNode();
+
+        var token = parser.getCurrentToken();
+        parser.consume(LABEL);
+        node.add(token.getString());
+
+        token = parser.getCurrentToken();
+        while (!(token.getType().equals(EOL) || token.getType().equals(END_OF_INPUT))) {
+          if (token.getType().equals(COMMA)) {
+            parser.consume(COMMA);
+            token = parser.getCurrentToken();
+            continue;
+          }
+          var expression = ExpressionParser.expressionNode(parser);
+          node.add(expression);
+          token = parser.getCurrentToken();
+        }
+
+        parser.consumeAndClear(EOL, END_OF_INPUT);
+
+        return node;
+      };
+
   private DirectiveUtils() {}
 
   public static DirectiveParser getParser(AllDirectives type) {
     switch (type) {
+      case REDEFINE:
+      case REDEF:
+        return redefParser;
       case BANK:
         return new BankParser();
       case PRINTV:
@@ -290,9 +320,7 @@ public final class DirectiveUtils {
 
       case EQU:
 
-      case REDEFINE:
 
-      case REDEF:
       case UNDEFINE:
 
       case REPEAT:

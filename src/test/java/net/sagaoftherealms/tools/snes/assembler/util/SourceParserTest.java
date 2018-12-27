@@ -20,6 +20,7 @@ import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelDefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.MacroCallNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.MultiFileParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.OpcodeArgumentNode;
@@ -764,16 +765,16 @@ public class SourceParserTest {
 
   /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */
   @ParameterizedTest
-  @CsvSource({"script_commands.s", "main.s"})
+  @CsvSource({"parseLargeFiles/script_commands.s", "parseLargeFiles/main.s","ages-disasm/include/musicMacros.s" })
   public void testLargeFile(String fileName) throws IOException {
     final String macroSource =
         IOUtils.toString(
             SourceParserTest.class
                 .getClassLoader()
-                .getResourceAsStream("parseLargeFiles/" + fileName),
+                .getResourceAsStream(fileName),
             "UTF-8");
     final String outfile = fileName + ".out";
-    final String inputFile = "parseLargeFiles/" + fileName;
+    final String inputFile = fileName;
     final int lineNumber = 0;
 
     var data = new InputData(new Flags(outfile));
@@ -853,4 +854,27 @@ public class SourceParserTest {
     assertEquals("l", ((OpcodeArgumentNode) opcode.getChildren().get(0)).getToken().getString());
     assertEquals("a", ((OpcodeArgumentNode) opcode.getChildren().get(1)).getToken().getString());
   }
+
+  @Test
+  public void testRedef() {
+    var source = ".REDEFINE a 4+2";
+    var parser = asParser(source, OpCodeZ80.opcodes());
+    var node = (DirectiveNode) parser.nextNode();
+    assertEquals(2, node.getChildren().size());
+    assertEquals("a", (node.getArguments().getString(0)));
+    assertEquals(6, node.getArguments().getInt(1));
+  }
+
+
+  @Test
+  public void multiFileTest() throws IOException {
+    var sourceDirectory = "ages-disasm";
+    var sourceRoot = "main.s";
+    var includedFile = "objects/macros.s";
+    MultiFileParser multiParser = new MultiFileParser(OpCodeZ80.opcodes());
+    multiParser.parse(sourceDirectory, sourceRoot);
+    assertNotNull(multiParser.getNodes(includedFile));
+    assertEquals("obj_Conditional", ((MacroNode)((List<Node>)multiParser.getNodes(includedFile)).get(1)).getName());
+  }
+
 }

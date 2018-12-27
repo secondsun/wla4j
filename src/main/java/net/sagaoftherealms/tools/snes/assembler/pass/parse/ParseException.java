@@ -11,6 +11,12 @@ public class ParseException extends RuntimeException {
     this.problemToken = token;
   }
 
+  public ParseException(String message, RuntimeException e, Token token) {
+    super(message + "\n\t" + token, e);
+    this.problemToken = token;
+
+  }
+
   public Token getProblemToken() {
     return problemToken;
   }
