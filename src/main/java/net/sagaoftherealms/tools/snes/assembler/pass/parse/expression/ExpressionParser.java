@@ -70,7 +70,7 @@ public class ExpressionParser {
       toReturn.addChild(leftNode);
       toReturn.setOperationType(OperationType.AND);
       parser.consume(AND);
-      toReturn.addChild(equalityNode(parser));
+      toReturn.addChild(bitWiseAndNode(parser));
       return toReturn;
     }
     return leftNode;
@@ -96,7 +96,7 @@ public class ExpressionParser {
         default:
           throw new ParseException("Unexpected comparison.", token);
       }
-      toReturn.addChild(comparisonNode(parser));
+      toReturn.addChild(equalityNode(parser));
       return toReturn;
     }
     return leftNode;
@@ -132,7 +132,7 @@ public class ExpressionParser {
         default:
           throw new ParseException("Unexpected comparison.", token);
       }
-      toReturn.addChild(shiftNode(parser));
+      toReturn.addChild(comparisonNode(parser));
       return toReturn;
     }
     return leftNode;
@@ -166,7 +166,7 @@ public class ExpressionParser {
         default:
           throw new ParseException("Unexpected shift.", token);
       }
-      toReturn.addChild(termNode(parser));
+      toReturn.addChild(shiftNode(parser));
       return toReturn;
     }
     return leftNode;
@@ -190,7 +190,7 @@ public class ExpressionParser {
         default:
           throw new ParseException("Unexpected term.", token);
       }
-      toReturn.addChild(factorNode(parser));
+      toReturn.addChild(termNode(parser));
       return toReturn;
     }
     return leftNode;

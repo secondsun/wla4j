@@ -79,12 +79,15 @@ public class MultiFileParser {
   }
 
   private SourceParser makeParser(String sourceDirectory, String rootSourceFile) {
+    rootSourceFile = rootSourceFile.replace("/",File.separator  );
     var fileName = sourceDirectory + File.separator + rootSourceFile;
 
     var stream = getClass().getClassLoader().getResourceAsStream(fileName);
     final String outfile = "test.out";
 
     var data = new InputData(new Flags(outfile));
+
+    System.out.println(fileName + "\n" + sourceDirectory);
 
     data.includeFile(stream, rootSourceFile, 0);
 

@@ -30,6 +30,9 @@ public class SourceParser {
   public SourceParser(SourceScanner scanner) {
     this.scanner = scanner;
     token = scanner.getNextToken();
+    scanMacos();
+    scanner.reset();
+    token = scanner.getNextToken();
   }
 
   public SourceParser(SourceScanner scanner, Map<String, Optional<MacroNode>> macroMap ) {
@@ -58,7 +61,7 @@ public class SourceParser {
   }
 
   private void scanMacos() {
-    while (!token.getType().equals(END_OF_INPUT)) {
+    while (token != null && !token.getType().equals(END_OF_INPUT)) {
       if (token.getString().equalsIgnoreCase(".macro")) {
         token = scanner.getNextToken();
         macroMap.put(token.getString(), Optional.empty());

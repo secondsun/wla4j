@@ -811,7 +811,8 @@ public class SourceParserTest {
   public void evilExpression() {
     var parser = asParser("12*\\1+0 + OFFSET");
     ExpressionNode expression = ExpressionParser.expressionNode(parser);
-    assertEquals(NodeTypes.IDENTIFIER_EXPRESSION, expression.getChildren().get(1).getType());
+    assertEquals(NodeTypes.IDENTIFIER_EXPRESSION, expression.getChildren().get(1).getChildren().get(1).getType());
+    assertEquals(NodeTypes.NUMERIC_CONSTANT, expression.getChildren().get(0).getChildren().get(0).getType());
   }
 
   @Test
