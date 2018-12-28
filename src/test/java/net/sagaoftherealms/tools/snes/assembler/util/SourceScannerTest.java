@@ -263,6 +263,7 @@ public class SourceScannerTest {
   @CsvSource({
     "label, label", // basic label, no :
     "label2:, label2", // basic label with colon
+      "\\2:, \\2", // basic label with colon
     ":label2, label2", // basic label with colon at beginning
     ":\\2Test, \\2Test", // a macro label with a bank and a template
     "_label, label",
@@ -273,6 +274,7 @@ public class SourceScannerTest {
     "@@@@label, label", // Deeply nested child label
     "---:, '---'", // unnamed label
     "+++, '+++'", // unnamed label
+      "3BytePointer,3BytePointer",
     "NUM_SEED_TREES*8, 'NUM_SEED_TREES'" // label during a
   })
   public void testBasicLabel(String sourceLine, String labelName) {

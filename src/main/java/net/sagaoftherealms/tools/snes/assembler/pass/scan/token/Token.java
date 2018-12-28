@@ -25,15 +25,22 @@ public class Token implements Serializable {
 
   @Override
   public String toString() {
+    if (line != null) {
+      return "Token{type="
+          + type
+          + ", string='"
+          + string
+          + '\''
+          + "@"
+          + line.getFileName()
+          + ":"
+          + line.getSourceLineNumber()
+          + '}';
+    }
     return "Token{type="
         + type
         + ", string='"
         + string
-        + '\''
-        + "@"
-        + line.getFileName()
-        + ":"
-        + line.getSourceLineNumber()
-        + '}';
+        + "'}";
   }
 }

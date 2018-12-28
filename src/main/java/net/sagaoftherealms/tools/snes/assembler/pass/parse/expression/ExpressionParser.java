@@ -256,6 +256,11 @@ public class ExpressionParser {
       toReturn.addChild(factorNode(parser));
       return toReturn;
     }
+
+    if (leftNode == null) {
+      throw new ParseException("Unexpected factor.", token);
+    }
+
     return leftNode;
   }
 }

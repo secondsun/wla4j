@@ -82,13 +82,8 @@ public class SourceScanner {
       }
     } else if (tokenString.length() == 1 && operators.contains(tokenString.charAt(0))) {
       type = operatorType(tokenString.charAt(0));
-    } else if (tokenString.matches("\\-+:?") || tokenString.matches("\\++:?")) {
+    } else{
       type = TokenTypes.LABEL;
-    } else if (tokenString.matches("\\\\\\d+?")) {
-      type = TokenTypes.LABEL;
-    } else {
-      throw new IllegalArgumentException(
-          "Could not getString TokenType for " + tokenString + "@" + getCurrentLine().toString());
     }
 
     return new Token(getCurrentLine(), tokenString, type);
@@ -135,7 +130,9 @@ public class SourceScanner {
       } else if (character == '.') {
         return directiveToken(sourceString);
       } else if (Character.isDigit(character) || character == '$' || character == '%') {
-        return numberToken(sourceString, character);
+        {
+          return numberToken(sourceString, character);
+        }
       } else if (character
           == '\'') { // Escape character unless it is \1 \2 etc then it is a macro label.
         return characterToken(sourceString);
@@ -268,15 +265,14 @@ public class SourceScanner {
   private String numberToken(String sourceString, char character) {
     var chars =
         new Character[] {
-          'A', 'B', 'C', 'D', 'E', 'F', 'H', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a',
-          'b', 'c', 'd', 'e', 'f', 'h', '.', '$', '%'
+          '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '$', '%'
         };
     final List<Character> allowedCharacters = Arrays.asList(chars);
     StringBuilder builder = new StringBuilder().append(character);
 
     do {
 
-      if (!allowedCharacters.contains(character)) {
+      if (!((Character.isAlphabetic(character) || allowedCharacters.contains(character)))) {
         linePosition--;
         break;
       }
@@ -294,12 +290,12 @@ public class SourceScanner {
           return builder.toString().trim();
         }
       }
-      if (!allowedCharacters.contains(character)) {
+      if (!(Character.isAlphabetic(character) || allowedCharacters.contains(character))) {
         linePosition--;
         break;
       }
       builder.append(character);
-    } while (allowedCharacters.contains(character));
+    } while (allowedCharacters.contains(character) || Character.isAlphabetic(character));
 
     return builder.toString().trim();
   }

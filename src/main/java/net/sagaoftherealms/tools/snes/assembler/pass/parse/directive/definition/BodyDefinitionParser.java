@@ -97,9 +97,13 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
 
     token = parser.getCurrentToken();
 
-    parser.consumeAndClear(TokenTypes.LABEL);
+    parser.consumeAndClear(TokenTypes.LABEL, DIRECTIVE);//.DB and .DW are allowed
 
     switch (token.getString().toUpperCase()) {
+      case ".DW":
+      case ".DB":
+        bodyNode.setSize(0);
+        break;
       case "DB":
       case "BYTE":
       case "BYT":

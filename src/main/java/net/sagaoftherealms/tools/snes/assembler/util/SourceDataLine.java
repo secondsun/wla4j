@@ -6,9 +6,9 @@ import java.util.Objects;
 /** This is a line in the InputData with metadata back to the original file. */
 public class SourceDataLine implements Serializable {
 
-  private String fileName;
-  private int sourceLineNumber;
-  private String dataLine;
+  private String fileName = "";
+  private int sourceLineNumber = 0;
+  private String dataLine = "";
 
   public SourceDataLine(String sourceFileName, int sourceLineNumber, String sourceCode) {
     fileName = sourceFileName;

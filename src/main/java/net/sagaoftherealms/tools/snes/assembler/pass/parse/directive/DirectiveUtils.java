@@ -20,6 +20,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.RepeatParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.incbin.IncbinParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamSectionParser;
@@ -64,10 +65,35 @@ public final class DirectiveUtils {
         return node;
       };
 
-  private DirectiveUtils() {}
+  private static DirectiveParser trigDefinesParser = parser -> {
+    DirectiveArgumentsNode arguments = new DirectiveArgumentsNode();
+    arguments.add(ExpressionParser.expressionNode(parser));
+    if (parser.getCurrentToken().getType().equals(COMMA)) {
+      parser.consume(COMMA);
+    }
+    arguments.add(ExpressionParser.expressionNode(parser));
+    if (parser.getCurrentToken().getType().equals(COMMA)) {
+      parser.consume(COMMA);
+    }
+    arguments.add(ExpressionParser.expressionNode(parser));
+    if (parser.getCurrentToken().getType().equals(COMMA)) {
+      parser.consume(COMMA);
+    }
+    arguments.add(ExpressionParser.expressionNode(parser));
+    if (parser.getCurrentToken().getType().equals(COMMA)) {
+      parser.consume(COMMA);
+    }
+    arguments.add(ExpressionParser.expressionNode(parser));
+    return arguments;
+  };
+
+  private DirectiveUtils() {
+  }
 
   public static DirectiveParser getParser(AllDirectives type) {
     switch (type) {
+      case INCBIN:
+        return new IncbinParser();
       case REDEFINE:
       case REDEF:
         return redefParser;
@@ -127,6 +153,11 @@ public final class DirectiveUtils {
       case ORG:
       case ORGA:
         return orgParser;
+      case DWSIN:
+      case DWCOS:
+      case DBSIN:
+      case DBCOS:
+        return trigDefinesParser;
       default:
         return new GenericDirectiveParser(type);
     }
@@ -167,6 +198,8 @@ public final class DirectiveUtils {
       case MACRO:
         node = new MacroNode(token);
         break;
+      case INCBIN:
+
       case IFDEFM:
       case IFNDEFM:
       case IF:
@@ -230,8 +263,6 @@ public final class DirectiveUtils {
       case INCDIR:
 
       case INCLUDE:
-
-      case INCBIN:
 
       case INPUT:
 

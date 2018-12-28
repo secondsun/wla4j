@@ -6,9 +6,12 @@ import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenType
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveUtils;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
@@ -22,13 +25,36 @@ public class SourceParser {
   private final SourceScanner scanner;
   private Token token;
   private Map<String, Optional<MacroNode>> macroMap = new HashMap<>();
+  private Set<String> includes = new HashSet<>();
 
   public SourceParser(SourceScanner scanner) {
+    this.scanner = scanner;
+    token = scanner.getNextToken();
+  }
+
+  public SourceParser(SourceScanner scanner, Map<String, Optional<MacroNode>> macroMap ) {
+
+    this.macroMap.putAll(macroMap);
+
     this.scanner = scanner;
     token = scanner.getNextToken();
     scanMacos();
     scanner.reset();
     token = scanner.getNextToken();
+    scanIncludes();
+    scanner.reset();
+    token = scanner.getNextToken();
+
+  }
+
+  private void scanIncludes() {
+    while (!token.getType().equals(END_OF_INPUT)) {
+      if (token.getString().equalsIgnoreCase(".include")) {
+        token = scanner.getNextToken();
+        includes.add(token.getString());
+      }
+      token = scanner.getNextToken();
+    }
   }
 
   private void scanMacos() {
@@ -129,9 +155,7 @@ public class SourceParser {
     return opcode;
   }
 
-  /**
-   * Confirms that the current token is expected and advances to the next token.
-   */
+  /** Confirms that the current token is expected and advances to the next token. */
   public void consume(TokenTypes... types) {
     final var typesList = Arrays.asList(types);
     if (typesList.contains(token.getType())) {
@@ -178,9 +202,7 @@ public class SourceParser {
     return node;
   }
 
-  /**
-   * Move the token past any whitespace / comments
-   */
+  /** Move the token past any whitespace / comments */
   public void clearWhiteSpaceTokens() {
     var testToken = getCurrentToken();
 
@@ -192,5 +214,13 @@ public class SourceParser {
 
   public Token peekNextToken() {
     return scanner.peekNextToken();
+  }
+
+  public Map<String, Optional<MacroNode>> getMacroMap() {
+    return Collections.unmodifiableMap(macroMap);
+  }
+
+  public Set<String> getIncludes() {
+    return Collections.unmodifiableSet(includes);
   }
 }

@@ -40,7 +40,7 @@ public class DirectiveArgumentsValidatorTester {
       new SourceScanner(null, OpCodeZ80.opcodes()) {
         @Override
         public Token getNextToken() {
-          return new Token(null, null, null);
+          return new Token(new SourceDataLine(), "\n", TokenTypes.END_OF_INPUT);
         }
       };
   private final SourceParser parser =

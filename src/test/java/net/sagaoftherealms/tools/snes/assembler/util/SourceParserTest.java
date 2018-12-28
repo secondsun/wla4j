@@ -39,6 +39,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.Macro
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode.SectionStatus;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.IdentifierNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
@@ -62,6 +63,19 @@ public class SourceParserTest {
     assertEquals(NodeTypes.NUMERIC_CONSTANT, expressionNode.getChildren().get(1).getType());
     assertEquals(
         OperationType.MULTIPLY, ((NumericExpressionNode) expressionNode).getOperationType());
+  }
+
+  @Test
+  public void testExpressionParser2() {
+    var sourceLine = "\\2|:\\2";
+    var parser = asParser(sourceLine);
+
+    var expressionNode = ExpressionParser.expressionNode(parser);
+
+    assertEquals(NodeTypes.IDENTIFIER_EXPRESSION, expressionNode.getChildren().get(0).getType());
+    assertEquals(NodeTypes.IDENTIFIER_EXPRESSION, expressionNode.getChildren().get(1).getType());
+    assertEquals(
+        OperationType.OR, ((NumericExpressionNode) expressionNode).getOperationType());
   }
 
   @ParameterizedTest
@@ -794,6 +808,13 @@ public class SourceParserTest {
   }
 
   @Test
+  public void evilExpression() {
+    var parser = asParser("12*\\1+0 + OFFSET");
+    ExpressionNode expression = ExpressionParser.expressionNode(parser);
+    assertEquals(NodeTypes.IDENTIFIER_EXPRESSION, expression.getChildren().get(1).getType());
+  }
+
+  @Test
   public void testMacroCall() {
     var program =
         "\n\n"
@@ -826,9 +847,9 @@ public class SourceParserTest {
         17, (int) ((NumericExpressionNode) writeobjectwordCall1.getArguments().get(0)).evaluate());
     assertEquals(
         512, (int) ((NumericExpressionNode) writeobjectwordCall2.getArguments().get(1)).evaluate());
-    assertEquals(writeobjectwordMacro, writeobjectwordCall2.getMacroNode());
+    assertEquals(writeobjectwordMacro.getName(), writeobjectwordCall2.getMacroNode());
     assertEquals(
-        writeobjectbyteMacro,
+        writeobjectbyteMacro.getName(),
         ((MacroCallNode) writeobjectwordMacro.getBody().getChildren().get(0)).getMacroNode());
     assertEquals(
         NodeTypes.IDENTIFIER_EXPRESSION,
