@@ -21,7 +21,6 @@ public class EnumParser extends BodyDefinitionParser {
     var token = parser.getCurrentToken();
     var arguments = new EnumArgumentsNode(token);
 
-    
     parser.consume(TokenTypes.NUMBER);
     arguments.put(KEYS.ADDRESS, "" + TokenUtil.getInt(token), token);
 

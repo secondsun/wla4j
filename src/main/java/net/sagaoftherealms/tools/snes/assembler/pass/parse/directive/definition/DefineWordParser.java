@@ -38,7 +38,6 @@ public class DefineWordParser extends GenericDirectiveParser {
     var token = parser.getCurrentToken();
     DirectiveArgumentsNode arguments = new DirectiveArgumentsNode(token);
 
-    
     while (token.getType() != EOL && token.getType() != END_OF_INPUT) {
       if (token.getType().equals(TokenTypes.STRING)) {
         throw new ParseException("Strings are not allowed in DW/WORD", token);

@@ -10,9 +10,8 @@ public class Node {
   private final NodeTypes type;
   private final List<Node> children = new ArrayList<>();
   private final Token sourceToken;
-  
-  public Node(NodeTypes nodeType, 
-      Token token) {
+
+  public Node(NodeTypes nodeType, Token token) {
     this.type = nodeType;
     this.sourceToken = token;
   }

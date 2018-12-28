@@ -19,9 +19,9 @@ public class MemoryMapParser implements DirectiveParser {
     var body = new DirectiveBodyNode(token);
     token = parser.getCurrentToken();
 
-    while(true) {
+    while (true) {
       parser.consume(TokenTypes.LABEL);
-      switch(token.getString().toUpperCase()) {
+      switch (token.getString().toUpperCase()) {
         case "SLOTSIZE":
         case "DEFAULTSLOT":
           var definition = new DefinitionNode(token.getString(), token);
@@ -29,7 +29,6 @@ public class MemoryMapParser implements DirectiveParser {
           definition.setSize((NumericExpressionNode) ExpressionParser.expressionNode(parser));
           break;
         case "SLOT":
-          
           var node = new SlotNode(token);
           body.addChild(node);
           token = parser.getCurrentToken();
@@ -37,12 +36,12 @@ public class MemoryMapParser implements DirectiveParser {
 
           parser.consume(TokenTypes.NUMBER);
           token = parser.getCurrentToken();
-          
+
           if (token.getString().equalsIgnoreCase("START")) {
             parser.consume(TokenTypes.LABEL);
             token = parser.getCurrentToken();
           }
-          
+
           node.setStart(TokenUtil.getInt(token));
 
           parser.consume(TokenTypes.NUMBER);
@@ -52,11 +51,11 @@ public class MemoryMapParser implements DirectiveParser {
             parser.consume(TokenTypes.LABEL);
             token = parser.getCurrentToken();
           }
-          
+
           if (EOL.equals(token.getType())) {
             break;
           }
-          
+
           token = parser.getCurrentToken();
           node.setSize(TokenUtil.getInt(token));
 
@@ -70,12 +69,11 @@ public class MemoryMapParser implements DirectiveParser {
       parser.consumeAndClear(EOL);
 
       token = parser.getCurrentToken();
-      if (token.getString().toUpperCase().equals(".ENDME")  ) {
+      if (token.getString().toUpperCase().equals(".ENDME")) {
         parser.consumeAndClear(TokenTypes.DIRECTIVE);
         break;
       }
     }
-
 
     return body;
   }

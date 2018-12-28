@@ -82,7 +82,7 @@ public class SourceScanner {
       }
     } else if (tokenString.length() == 1 && operators.contains(tokenString.charAt(0))) {
       type = operatorType(tokenString.charAt(0));
-    } else{
+    } else {
       type = TokenTypes.LABEL;
     }
 
@@ -264,9 +264,7 @@ public class SourceScanner {
 
   private String numberToken(String sourceString, char character) {
     var chars =
-        new Character[] {
-          '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '$', '%', '_'
-        };
+        new Character[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '$', '%', '_'};
     final List<Character> allowedCharacters = Arrays.asList(chars);
     StringBuilder builder = new StringBuilder().append(character);
 

@@ -212,7 +212,7 @@ public class ExpressionParser {
         if (token.getType().equals(LABEL)) {
           parser.consume(LABEL);
           leftNode = new NegateIdentifierNode(token);
-        } else if (token.getType().equals(NUMBER)){ // assume number
+        } else if (token.getType().equals(NUMBER)) { // assume number
           parser.consume(NUMBER);
           leftNode = new ConstantNode(-1 * TokenUtil.getInt(token), token);
         } else {

@@ -66,30 +66,30 @@ public final class DirectiveUtils {
         return node;
       };
 
-  private static DirectiveParser trigDefinesParser = parser -> {
-    DirectiveArgumentsNode arguments = new DirectiveArgumentsNode(parser.getCurrentToken());
-    arguments.add(ExpressionParser.expressionNode(parser));
-    if (parser.getCurrentToken().getType().equals(COMMA)) {
-      parser.consume(COMMA);
-    }
-    arguments.add(ExpressionParser.expressionNode(parser));
-    if (parser.getCurrentToken().getType().equals(COMMA)) {
-      parser.consume(COMMA);
-    }
-    arguments.add(ExpressionParser.expressionNode(parser));
-    if (parser.getCurrentToken().getType().equals(COMMA)) {
-      parser.consume(COMMA);
-    }
-    arguments.add(ExpressionParser.expressionNode(parser));
-    if (parser.getCurrentToken().getType().equals(COMMA)) {
-      parser.consume(COMMA);
-    }
-    arguments.add(ExpressionParser.expressionNode(parser));
-    return arguments;
-  };
+  private static DirectiveParser trigDefinesParser =
+      parser -> {
+        DirectiveArgumentsNode arguments = new DirectiveArgumentsNode(parser.getCurrentToken());
+        arguments.add(ExpressionParser.expressionNode(parser));
+        if (parser.getCurrentToken().getType().equals(COMMA)) {
+          parser.consume(COMMA);
+        }
+        arguments.add(ExpressionParser.expressionNode(parser));
+        if (parser.getCurrentToken().getType().equals(COMMA)) {
+          parser.consume(COMMA);
+        }
+        arguments.add(ExpressionParser.expressionNode(parser));
+        if (parser.getCurrentToken().getType().equals(COMMA)) {
+          parser.consume(COMMA);
+        }
+        arguments.add(ExpressionParser.expressionNode(parser));
+        if (parser.getCurrentToken().getType().equals(COMMA)) {
+          parser.consume(COMMA);
+        }
+        arguments.add(ExpressionParser.expressionNode(parser));
+        return arguments;
+      };
 
-  private DirectiveUtils() {
-  }
+  private DirectiveUtils() {}
 
   public static DirectiveParser getParser(AllDirectives type) {
     switch (type) {

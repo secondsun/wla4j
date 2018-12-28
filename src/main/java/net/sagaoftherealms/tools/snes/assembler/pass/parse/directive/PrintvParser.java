@@ -16,7 +16,6 @@ public class PrintvParser extends GenericDirectiveParser {
     var token = parser.getCurrentToken();
     var node = new DirectiveArgumentsNode(token);
 
-    
     if (token.getString().equalsIgnoreCase("hex")) {
       node.add(new StringExpressionNode("hex", token));
       parser.consume(token.getType());

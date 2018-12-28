@@ -1,12 +1,8 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro;
 
-import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
@@ -18,14 +14,14 @@ public class MacroParser implements DirectiveParser {
   public DirectiveBodyNode body(SourceParser parser, Token token) {
     DirectiveBodyNode body = new DirectiveBodyNode(token);
     token = parser.getCurrentToken();
-    
-    while (!token.getType().equals(TokenTypes.END_OF_INPUT) ) {
+
+    while (!token.getType().equals(TokenTypes.END_OF_INPUT)) {
       if (token.getString().equalsIgnoreCase(".endm")) {
         break;
       }
-      
+
       body.addChild(new MacroBodyNode(token));
-      
+
       parser.consume(token.getType());
       token = parser.getCurrentToken();
     }
@@ -39,7 +35,6 @@ public class MacroParser implements DirectiveParser {
   public DirectiveArgumentsNode arguments(SourceParser parser) {
     var token = parser.getCurrentToken();
     var node = new DirectiveArgumentsNode(token);
-    
 
     var nodeName = token.getString();
     node.add(new StringExpressionNode(nodeName, token));

@@ -14,32 +14,30 @@ public class RomBankMapParser implements DirectiveParser {
   public DirectiveBodyNode body(SourceParser parser, Token token) {
     var body = new DirectiveBodyNode(token);
     token = parser.getCurrentToken();
-    
-    while(true) {
+
+    while (true) {
       parser.consume(TokenTypes.LABEL);
-      switch(token.getString().toUpperCase()) {
+      switch (token.getString().toUpperCase()) {
         case "BANKSTOTAL":
         case "BANKSIZE":
         case "BANKS":
           var definition = new DefinitionNode(token.getString(), token);
           body.addChild(definition);
-          
-          definition.setSize(
-              (NumericExpressionNode) ExpressionParser.expressionNode(parser));
+
+          definition.setSize((NumericExpressionNode) ExpressionParser.expressionNode(parser));
           break;
         default:
           throw new ParseException("Unexpected label", token);
       }
       parser.consumeAndClear(TokenTypes.EOL);
-      
+
       token = parser.getCurrentToken();
-      if (token.getString().toUpperCase().equals(".ENDRO")  ) {
+      if (token.getString().toUpperCase().equals(".ENDRO")) {
         parser.consumeAndClear(TokenTypes.DIRECTIVE);
         break;
       }
     }
-    
-    
+
     return body;
   }
 

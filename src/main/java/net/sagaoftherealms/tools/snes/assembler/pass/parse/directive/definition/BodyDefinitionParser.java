@@ -48,11 +48,11 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
   }
 
   @Override
-  public DirectiveBodyNode body(SourceParser parser, Token token) {
-    
+  public DirectiveBodyNode body(SourceParser parser, Token initialToken) {
+
     parser.clearWhiteSpaceTokens();
-    token = parser.getCurrentToken();
-    var body = new DirectiveBodyNode(token);
+    var token = parser.getCurrentToken();
+    var body = new DirectiveBodyNode(initialToken);
     while (token != null
         && !endDirective.getPattern().startsWith(token.getString().toUpperCase())) { // End on ENDE
       // Expect the token to be the first label
@@ -97,7 +97,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
 
     token = parser.getCurrentToken();
 
-    parser.consumeAndClear(TokenTypes.LABEL, DIRECTIVE);//.DB and .DW are allowed
+    parser.consumeAndClear(TokenTypes.LABEL, DIRECTIVE); // .DB and .DW are allowed
 
     switch (token.getString().toUpperCase()) {
       case ".DW":
@@ -166,12 +166,12 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
 
     @Override
     public DirectiveBodyNode body(SourceParser parser, Token token) {
-      
+
       DirectiveBodyNode thenBody = new DirectiveBodyNode(token);
       DirectiveBodyNode elseBody = new DirectiveBodyNode(token);
 
       var currentBody = thenBody;
-      
+
       token = parser.getCurrentToken();
 
       while (token != null

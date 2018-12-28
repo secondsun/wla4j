@@ -21,8 +21,6 @@ public class IfDefForMacrosParser extends IfParser {
     var label = parser.getCurrentToken();
     var node = new DirectiveArgumentsNode(label);
 
-    
-
     if (!label.getString().matches("\\\\\\d+")) {
       throw new ParseException("Macro labels should be in the form \\d+", label);
     }

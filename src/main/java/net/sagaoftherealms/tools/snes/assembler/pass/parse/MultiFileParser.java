@@ -23,7 +23,6 @@ public class MultiFileParser {
   private final Set<String> filesToParse = new HashSet<>();
   private final Map<String, Optional<MacroNode>> macroNames = new HashMap<>();
 
-
   public MultiFileParser(OpCode[] opcodes) {
     this.opcodes = opcodes;
   }
@@ -46,19 +45,20 @@ public class MultiFileParser {
    * @param sourceDirectory directory relative to pwd
    * @param rootSourceFile the filename
    */
-  private void preParse(String sourceDirectory, String rootSourceFile, HashSet<String> scannedIncludes) {
+  private void preParse(
+      String sourceDirectory, String rootSourceFile, HashSet<String> scannedIncludes) {
     var parser = makeParser(sourceDirectory, rootSourceFile);
 
     var includesToScan = parser.getIncludes();
     macroNames.putAll(parser.getMacroMap());
 
-    includesToScan.forEach(fileName -> {
-      if (!scannedIncludes.contains(fileName)) {
-        preParse(sourceDirectory,fileName,scannedIncludes);
-        scannedIncludes.add(fileName);
-      }
-    });
-
+    includesToScan.forEach(
+        fileName -> {
+          if (!scannedIncludes.contains(fileName)) {
+            preParse(sourceDirectory, fileName, scannedIncludes);
+            scannedIncludes.add(fileName);
+          }
+        });
   }
 
   private void parseFile(String sourceDirectory, final String rootSourceFile) {
@@ -67,7 +67,7 @@ public class MultiFileParser {
 
     List<Node> newList = new ArrayList<>();
     Node node = parser.nextNode();
-    
+
     while (node != null) {
       if (node.getType().equals(NodeTypes.DIRECTIVE)
           && ((DirectiveNode) node).getDirectiveType().equals(AllDirectives.INCLUDE)) {
@@ -80,7 +80,7 @@ public class MultiFileParser {
   }
 
   private SourceParser makeParser(String sourceDirectory, String rootSourceFile) {
-    rootSourceFile = rootSourceFile.replace("/",File.separator  );
+    rootSourceFile = rootSourceFile.replace("/", File.separator);
     var fileName = sourceDirectory + File.separator + rootSourceFile;
 
     var stream = getClass().getClassLoader().getResourceAsStream(fileName);

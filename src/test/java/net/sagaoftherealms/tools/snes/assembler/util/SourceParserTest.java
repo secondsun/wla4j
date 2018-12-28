@@ -76,8 +76,7 @@ public class SourceParserTest {
 
     assertEquals(NodeTypes.IDENTIFIER_EXPRESSION, expressionNode.getChildren().get(0).getType());
     assertEquals(NodeTypes.IDENTIFIER_EXPRESSION, expressionNode.getChildren().get(1).getType());
-    assertEquals(
-        OperationType.OR, ((NumericExpressionNode) expressionNode).getOperationType());
+    assertEquals(OperationType.OR, ((NumericExpressionNode) expressionNode).getOperationType());
   }
 
   @ParameterizedTest
@@ -356,68 +355,66 @@ public class SourceParserTest {
 
   @ParameterizedTest
   @CsvSource({
-      "+",
-      "-",
-      "++",
-      "--",
-      "++++",
-      "----",
+    "+", "-", "++", "--", "++++", "----",
   })
   public void testAnonymousLabelsEvaluate(String line) {
     var parser = asParser(line);
     IdentifierNode node = (IdentifierNode) ExpressionParser.expressionNode(parser);
     assertEquals(line, node.getLabelName());
   }
+
   @Test
   public void testMemorymap() {
-    var source = ".MEMORYMAP\n"
-        + "DEFAULTSLOT 1\n"
-        + "SLOTSIZE $2000\n"
-        + "SLOT 0 $0000\n"
-        + "SLOTSIZE $6000\n"
-        + "SLOT 1 $2000\n"
-        + ".ENDME";
+    var source =
+        ".MEMORYMAP\n"
+            + "DEFAULTSLOT 1\n"
+            + "SLOTSIZE $2000\n"
+            + "SLOT 0 $0000\n"
+            + "SLOTSIZE $6000\n"
+            + "SLOT 1 $2000\n"
+            + ".ENDME";
     var parser = asParser(source);
-    var gbNode = (DirectiveNode)parser.nextNode();
+    var gbNode = (DirectiveNode) parser.nextNode();
     assertEquals(5, gbNode.getBody().getChildren().size());
   }
 
   @Test
   public void testRommap() {
-    var source = ".ROMBANKMAP\n"
-        + "BANKSTOTAL 2\n"
-        + "BANKSIZE $2000\n"
-        + "BANKS 1\n"
-        + "BANKSIZE $6000\n"
-        + "BANKS 1\n"
-        + ".ENDRO";
+    var source =
+        ".ROMBANKMAP\n"
+            + "BANKSTOTAL 2\n"
+            + "BANKSIZE $2000\n"
+            + "BANKS 1\n"
+            + "BANKSIZE $6000\n"
+            + "BANKS 1\n"
+            + ".ENDRO";
     var parser = asParser(source);
-    var gbNode = (DirectiveNode)parser.nextNode();
+    var gbNode = (DirectiveNode) parser.nextNode();
     assertEquals(5, gbNode.getBody().getChildren().size());
   }
-  
-  
+
   @Test
   public void testGBSection() {
-    var source = ".GBHEADER\n"
-        + "    NAME \"TANKBOMBPANIC\"  ; identical to a freestanding .NAME.\n"
-        + "    LICENSEECODEOLD $34   ; identical to a freestanding .LICENSEECODEOLD.\n"
-        + "    LICENSEECODENEW \"HI\"  ; identical to a freestanding .LICENSEECODENEW.\n"
-        + "    CARTRIDGETYPE $00     ; identical to a freestanding .CARTRIDGETYPE.\n"
-        + "    RAMSIZE $09           ; identical to a freestanding .RAMSIZE.\n"
-        + "    COUNTRYCODE $01       ; identical to a freestanding .COUNTRYCODE/DESTINATIONCODE.\n"
-        + "    DESTINATIONCODE $01   ; identical to a freestanding .DESTINATIONCODE/COUNTRYCODE.\n"
-        + "    NINTENDOLOGO          ; identical to a freestanding .NINTENDOLOGO.\n"
-        + "    VERSION $01           ; identical to a freestanding .VERSION.\n"
-        + "    ROMDMG                ; identical to a freestanding .ROMDMG.\n"
-        + "                          ; Alternatively, ROMGBC or ROMGBCONLY can be used\n"
-        + ".ENDGB";
-    
+    var source =
+        ".GBHEADER\n"
+            + "    NAME \"TANKBOMBPANIC\"  ; identical to a freestanding .NAME.\n"
+            + "    LICENSEECODEOLD $34   ; identical to a freestanding .LICENSEECODEOLD.\n"
+            + "    LICENSEECODENEW \"HI\"  ; identical to a freestanding .LICENSEECODENEW.\n"
+            + "    CARTRIDGETYPE $00     ; identical to a freestanding .CARTRIDGETYPE.\n"
+            + "    RAMSIZE $09           ; identical to a freestanding .RAMSIZE.\n"
+            + "    COUNTRYCODE $01       ; identical to a freestanding .COUNTRYCODE/DESTINATIONCODE.\n"
+            + "    DESTINATIONCODE $01   ; identical to a freestanding .DESTINATIONCODE/COUNTRYCODE.\n"
+            + "    NINTENDOLOGO          ; identical to a freestanding .NINTENDOLOGO.\n"
+            + "    VERSION $01           ; identical to a freestanding .VERSION.\n"
+            + "    ROMDMG                ; identical to a freestanding .ROMDMG.\n"
+            + "                          ; Alternatively, ROMGBC or ROMGBCONLY can be used\n"
+            + ".ENDGB";
+
     var parser = asParser(source);
-    var gbNode = (DirectiveNode)parser.nextNode();
+    var gbNode = (DirectiveNode) parser.nextNode();
     assertEquals(10, gbNode.getBody().getChildren().size());
   }
-  
+
   @Test
   public void parseEnumBodyWithIfDirective() {
     var source =
@@ -734,7 +731,6 @@ public class SourceParserTest {
     var body = node.getBody();
     assertEquals(NodeTypes.MACRO_BODY, body.getChildren().get(0).getType());
     assertEquals(TokenTypes.LABEL, body.getChildren().get(1).getSourceToken().getType());
-    
   }
 
   /** macro_2 is a basic macro with two variables */
@@ -792,14 +788,10 @@ public class SourceParserTest {
     assertEquals(1, arguments.size());
     var body = node.getBody();
     MacroBodyNode dbNode = (MacroBodyNode) body.getChildren().get(0);
-    
+
     assertEquals(8, body.getChildren().size());
-    assertEquals(
-        "\\1",
-        body.getChildren().get(3).getSourceToken().getString());
-    assertEquals(
-        TokenTypes.EOL,
-        body.getChildren().get(7).getSourceToken().getType());
+    assertEquals("\\1", body.getChildren().get(3).getSourceToken().getString());
+    assertEquals(TokenTypes.EOL, body.getChildren().get(7).getSourceToken().getType());
   }
 
   @ParameterizedTest
@@ -877,8 +869,11 @@ public class SourceParserTest {
   public void evilExpression() {
     var parser = asParser("12*\\1+0 + OFFSET");
     ExpressionNode expression = ExpressionParser.expressionNode(parser);
-    assertEquals(NodeTypes.IDENTIFIER_EXPRESSION, expression.getChildren().get(1).getChildren().get(1).getType());
-    assertEquals(NodeTypes.NUMERIC_CONSTANT, expression.getChildren().get(0).getChildren().get(0).getType());
+    assertEquals(
+        NodeTypes.IDENTIFIER_EXPRESSION,
+        expression.getChildren().get(1).getChildren().get(1).getType());
+    assertEquals(
+        NodeTypes.NUMERIC_CONSTANT, expression.getChildren().get(0).getChildren().get(0).getType());
   }
 
   @Test
@@ -918,7 +913,6 @@ public class SourceParserTest {
     assertEquals(
         "writeobjectbyte",
         writeobjectwordMacro.getBody().getChildren().get(0).getSourceToken().getString());
-    
   }
 
   @Test

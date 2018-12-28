@@ -29,8 +29,6 @@ public class GenericDirectiveParser implements DirectiveParser {
     var argumentsPattern = type.getPattern().split("\\." + type.getName())[1].trim();
     var validator = new DirectiveArgumentsValidator(argumentsPattern);
 
-    
-
     while (token.getType() != TokenTypes.END_OF_INPUT) {
       Optional<Node> potentialNode = validator.accept(token, parser);
       if (potentialNode.isPresent()) {

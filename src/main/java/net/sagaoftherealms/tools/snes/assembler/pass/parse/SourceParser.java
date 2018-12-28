@@ -35,7 +35,7 @@ public class SourceParser {
     token = scanner.getNextToken();
   }
 
-  public SourceParser(SourceScanner scanner, Map<String, Optional<MacroNode>> macroMap ) {
+  public SourceParser(SourceScanner scanner, Map<String, Optional<MacroNode>> macroMap) {
 
     this.macroMap.putAll(macroMap);
 
@@ -47,7 +47,6 @@ public class SourceParser {
     scanIncludes();
     scanner.reset();
     token = scanner.getNextToken();
-
   }
 
   private void scanIncludes() {

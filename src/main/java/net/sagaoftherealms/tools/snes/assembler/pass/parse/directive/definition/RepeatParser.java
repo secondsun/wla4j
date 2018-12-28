@@ -22,7 +22,7 @@ public class RepeatParser extends GenericDirectiveParser {
   public DirectiveArgumentsNode arguments(SourceParser parser) {
     var token = parser.getCurrentToken();
     DirectiveArgumentsNode arguments = new DirectiveArgumentsNode(token);
-    
+
     if (token.getType().equals(TokenTypes.LABEL)) {
       arguments.add(new IdentifierNode(token));
       parser.consume(TokenTypes.LABEL);

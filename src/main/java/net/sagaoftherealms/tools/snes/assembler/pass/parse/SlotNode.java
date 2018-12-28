@@ -5,7 +5,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 public class SlotNode extends Node {
 
   private int number, start, size;
-  
+
   public SlotNode(Token token) {
     super(NodeTypes.SLOT, token);
   }

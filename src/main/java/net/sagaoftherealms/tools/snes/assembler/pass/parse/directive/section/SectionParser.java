@@ -20,16 +20,16 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 /** This class parses Enums, Structs */
 public class SectionParser implements DirectiveParser {
 
-  private final AllDirectives endDirective = ENDS;
+  private static final AllDirectives endDirective = ENDS;
 
   private boolean isBankheader = false;
 
   @Override
-  public DirectiveBodyNode body(SourceParser parser, Token token) {
-    
+  public DirectiveBodyNode body(SourceParser parser, Token initialToken) {
+
     parser.clearWhiteSpaceTokens();
-    token = parser.getCurrentToken();
-    var body = new DirectiveBodyNode(token);
+    var token = parser.getCurrentToken();
+    var body = new DirectiveBodyNode(initialToken);
     var node = parser.nextNode();
 
     while (node != null) {
@@ -69,14 +69,13 @@ public class SectionParser implements DirectiveParser {
   @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
     var localToken = parser.getCurrentToken();
-    var arguments = new SectionArgumentsNode(localToken );
+    var arguments = new SectionArgumentsNode(localToken);
 
-    
     parser.consume(TokenTypes.STRING, TokenTypes.LABEL);
     arguments.put(KEYS.NAME, "" + localToken.getString(), localToken);
 
     if (localToken.getString().equalsIgnoreCase("BANKHEADER")) {
-      arguments.put(KEYS.BANKHEADER, localToken.getString(),  localToken);
+      arguments.put(KEYS.BANKHEADER, localToken.getString(), localToken);
       isBankheader = true;
     }
 

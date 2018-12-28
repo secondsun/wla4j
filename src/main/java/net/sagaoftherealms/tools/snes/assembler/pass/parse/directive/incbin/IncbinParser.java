@@ -9,9 +9,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.GenericDirectiveParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumParser.KEYS;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.incbin.IncBinArgumentsNode.Arguments;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 
@@ -26,7 +24,6 @@ public class IncbinParser extends GenericDirectiveParser {
     var token = parser.getCurrentToken();
     var arguments = new IncBinArgumentsNode(token);
 
-    
     parser.consume(TokenTypes.STRING);
 
     arguments.put(Arguments.NAME, new StringExpressionNode(token.getString(), token));

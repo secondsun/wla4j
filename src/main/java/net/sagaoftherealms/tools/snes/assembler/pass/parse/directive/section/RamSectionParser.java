@@ -28,7 +28,6 @@ public class RamSectionParser extends BodyDefinitionParser {
     var token = parser.getCurrentToken();
     var arguments = new RamsectionArgumentsNode(token);
 
-    
     parser.consume(TokenTypes.STRING, TokenTypes.LABEL);
     arguments.put(NAME, "" + token.getString(), token);
 
@@ -78,7 +77,7 @@ public class RamSectionParser extends BodyDefinitionParser {
     parser.consume(LABEL);
     var token = parser.getCurrentToken();
     if (arguments.get(argument) == null) {
-      arguments.put(argument, TokenUtil.getInt(token) + "",token);
+      arguments.put(argument, TokenUtil.getInt(token) + "", token);
       parser.consume(TokenTypes.NUMBER);
     } else {
       throw new ParseException("Arguments may only be specified once", token);

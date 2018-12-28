@@ -17,13 +17,13 @@ public class EnumArgumentsNode extends DirectiveArgumentsNode {
   public void put(EnumParser.KEYS key, String value, Token token) {
     switch (key) {
       case ORDINAL:
-        arguments.set(1, new StringExpressionNode(value,token));
+        arguments.set(1, new StringExpressionNode(value, token));
         break;
       case EXPORT:
-        arguments.set(2, new StringExpressionNode(value,token));
+        arguments.set(2, new StringExpressionNode(value, token));
         break;
       case ADDRESS:
-        arguments.set(0, new StringExpressionNode(value,token));
+        arguments.set(0, new StringExpressionNode(value, token));
         break;
     }
   }

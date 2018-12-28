@@ -22,28 +22,28 @@ public class SectionArgumentsNode extends DirectiveArgumentsNode {
   public void put(SectionParser.KEYS key, String value, Token token) {
     switch (key) {
       case NAME:
-        arguments.set(0, new StringExpressionNode(value,token));
+        arguments.set(0, new StringExpressionNode(value, token));
         break;
       case BANKHEADER:
-        arguments.set(1, new StringExpressionNode(value,token));
+        arguments.set(1, new StringExpressionNode(value, token));
         break;
       case NAMESPACE:
-        arguments.set(2, new StringExpressionNode(value,token));
+        arguments.set(2, new StringExpressionNode(value, token));
         break;
       case SIZE:
-        arguments.set(3, new StringExpressionNode(value,token));
+        arguments.set(3, new StringExpressionNode(value, token));
         break;
       case ALIGN:
-        arguments.set(4, new StringExpressionNode(value,token));
+        arguments.set(4, new StringExpressionNode(value, token));
         break;
       case STATUS:
-        arguments.set(5, new StringExpressionNode(value,token));
+        arguments.set(5, new StringExpressionNode(value, token));
         break;
       case APPEND_TO:
-        arguments.set(6, new StringExpressionNode(value,token));
+        arguments.set(6, new StringExpressionNode(value, token));
         break;
       case RETURNORG:
-        arguments.set(7, new StringExpressionNode(value,token));
+        arguments.set(7, new StringExpressionNode(value, token));
         break;
     }
   }

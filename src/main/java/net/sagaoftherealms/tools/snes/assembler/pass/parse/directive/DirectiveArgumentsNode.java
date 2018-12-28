@@ -21,7 +21,6 @@ public class DirectiveArgumentsNode extends Node {
     return (arguments.get(index).evaluate()) + "";
   }
 
-
   public DirectiveArgumentsNode add(ExpressionNode argumentValue) {
     arguments.add(argumentValue);
     return this;

@@ -37,11 +37,7 @@ public class Token implements Serializable {
           + line.getSourceLineNumber()
           + '}';
     }
-    return "Token{type="
-        + type
-        + ", string='"
-        + string
-        + "'}";
+    return "Token{type=" + type + ", string='" + string + "'}";
   }
 
   public SourceDataLine getSourceDataLine() {

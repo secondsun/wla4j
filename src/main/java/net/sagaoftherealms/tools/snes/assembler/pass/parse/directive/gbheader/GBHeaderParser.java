@@ -18,15 +18,20 @@ public class GBHeaderParser implements DirectiveParser {
     DirectiveBodyNode body = new DirectiveBodyNode(token);
     parser.clearWhiteSpaceTokens();
     token = parser.getCurrentToken();
-    while (token.getType().equals(TokenTypes.LABEL) || token.getType()
-        .equals(TokenTypes.DIRECTIVE)) {
+    while (token.getType().equals(TokenTypes.LABEL)
+        || token.getType().equals(TokenTypes.DIRECTIVE)) {
       switch (token.getType()) {
         case LABEL:
-          //convert to directive
+          // convert to directive
           parser.consume(TokenTypes.LABEL);
-          var transformedToken = new Token(token.getSourceDataLine(), "." + token.getString().toUpperCase(), TokenTypes.DIRECTIVE);
+          var transformedToken =
+              new Token(
+                  token.getSourceDataLine(),
+                  "." + token.getString().toUpperCase(),
+                  TokenTypes.DIRECTIVE);
           var dParser = DirectiveUtils.getParser(AllDirectives.valueOf(token.getString()));
-          DirectiveNode node = DirectiveUtils.createDirectiveNode(transformedToken.getString(), token);
+          DirectiveNode node =
+              DirectiveUtils.createDirectiveNode(transformedToken.getString(), token);
           node.setArguments(dParser.arguments(parser));
           body.addChild(node);
           break;

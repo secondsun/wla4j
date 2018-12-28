@@ -18,8 +18,7 @@ public class DefinitionNode extends Node {
   private String structName;
   private NumericExpressionNode size;
 
-  public DefinitionNode(String label, 
-      Token token) {
+  public DefinitionNode(String label, Token token) {
     super(NodeTypes.DIRECTIVE_BODY, token);
     this.label = label;
   }
