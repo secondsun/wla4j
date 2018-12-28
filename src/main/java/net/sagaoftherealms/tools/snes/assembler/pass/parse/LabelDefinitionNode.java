@@ -9,13 +9,13 @@ public class LabelDefinitionNode extends Node {
   private final String labelName;
 
   public LabelDefinitionNode(Token token) {
-    super(NodeTypes.LABEL_DEFINITION);
+    super(NodeTypes.LABEL_DEFINITION, token);
     this.token = token;
     this.labelName = TokenUtil.getLabelName(token);
   }
 
   public LabelDefinitionNode(String labelName, Token token) {
-    super(NodeTypes.LABEL);
+    super(NodeTypes.LABEL, token);
     this.token = token;
     this.labelName = labelName;
   }

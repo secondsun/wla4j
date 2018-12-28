@@ -80,7 +80,7 @@ public class SourceParser {
     try {
       switch (token.getType()) {
         case STRING:
-          var stringExpression = new StringExpressionNode(token.getString());
+          var stringExpression = new StringExpressionNode(token.getString(), token);
           consume(TokenTypes.STRING);
           return stringExpression;
         case DIRECTIVE:
@@ -126,7 +126,7 @@ public class SourceParser {
   }
 
   private MacroCallNode macroCall() {
-    var node = new MacroCallNode(token.getString());
+    var node = new MacroCallNode(token.getString(), token);
     consume(LABEL);
     while (!token.getType().equals(EOL) && !token.getType().equals(END_OF_INPUT)) {
       if (!token.getType().equals(TokenTypes.COMMA)) {
@@ -195,7 +195,7 @@ public class SourceParser {
     var node = DirectiveUtils.createDirectiveNode(directiveName, getCurrentToken());
     var nodeParser = DirectiveUtils.getParser(node.getDirectiveType());
     node.setArguments(nodeParser.arguments(this));
-    node.setBody(nodeParser.body(this));
+    node.setBody(nodeParser.body(this, getCurrentToken()));
 
     if (node instanceof MacroNode) {
       var macroNode = (MacroNode) node;

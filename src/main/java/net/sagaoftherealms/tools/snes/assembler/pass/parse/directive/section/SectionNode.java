@@ -5,6 +5,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionParser.KEYS;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 public class SectionNode extends DirectiveNode {
 
@@ -13,8 +14,8 @@ public class SectionNode extends DirectiveNode {
     return (SectionArgumentsNode) super.getArguments();
   }
 
-  public SectionNode() {
-    super(AllDirectives.SECTION);
+  public SectionNode(Token token) {
+    super(AllDirectives.SECTION, token);
   }
 
   public String getName() {

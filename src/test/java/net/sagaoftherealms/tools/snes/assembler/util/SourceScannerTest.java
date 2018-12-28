@@ -275,6 +275,7 @@ public class SourceScannerTest {
     "---:, '---'", // unnamed label
     "+++, '+++'", // unnamed label
       "3BytePointer,3BytePointer",
+      "100TH_RING, 100TH_RING",
     "NUM_SEED_TREES*8, 'NUM_SEED_TREES'" // label during a
   })
   public void testBasicLabel(String sourceLine, String labelName) {

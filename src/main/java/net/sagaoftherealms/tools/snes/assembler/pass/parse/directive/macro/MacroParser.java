@@ -8,38 +8,41 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveAr
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 
 public class MacroParser implements DirectiveParser {
 
   @Override
-  public DirectiveBodyNode body(SourceParser parser) {
-    DirectiveBodyNode body = new DirectiveBodyNode();
-    var node = parser.nextNode();
-    while (node.getType() != NodeTypes.DIRECTIVE
-        || (((DirectiveNode) node).getDirectiveType() != AllDirectives.ENDM)) {
-      body.addChild(node);
-      node = parser.nextNode();
-
-      if (node == null) {
-        throw new ParseException("Unexpected end of file", parser.getCurrentToken());
+  public DirectiveBodyNode body(SourceParser parser, Token token) {
+    DirectiveBodyNode body = new DirectiveBodyNode(token);
+    token = parser.getCurrentToken();
+    
+    while (!token.getType().equals(TokenTypes.END_OF_INPUT) ) {
+      if (token.getString().equalsIgnoreCase(".endm")) {
+        break;
       }
+      
+      body.addChild(new MacroBodyNode(token));
+      
+      parser.consume(token.getType());
+      token = parser.getCurrentToken();
     }
 
-    if (((DirectiveNode) node).getDirectiveType() != AllDirectives.ENDM) {
-      throw new IllegalStateException("Expected End");
-    }
+    parser.consumeAndClear(TokenTypes.DIRECTIVE);
 
     return body;
   }
 
   @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
-    var node = new DirectiveArgumentsNode();
     var token = parser.getCurrentToken();
+    var node = new DirectiveArgumentsNode(token);
+    
 
     var nodeName = token.getString();
-    node.add(nodeName);
+    node.add(new StringExpressionNode(nodeName, token));
     parser.consume(TokenTypes.LABEL);
     token = parser.getCurrentToken();
 
@@ -47,7 +50,7 @@ public class MacroParser implements DirectiveParser {
       parser.consume(TokenTypes.LABEL);
       token = parser.getCurrentToken();
       while (!token.getType().equals(TokenTypes.EOL)) {
-        node.add(token.getString());
+        node.add(new StringExpressionNode(token.getString(), token));
         parser.consume(TokenTypes.LABEL);
         token = parser.getCurrentToken();
         if (!token.getType().equals(TokenTypes.EOL)) {

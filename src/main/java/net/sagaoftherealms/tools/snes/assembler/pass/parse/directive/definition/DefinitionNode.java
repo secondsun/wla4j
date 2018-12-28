@@ -5,6 +5,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ConstantNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 /**
  * This class represents a label definition.
@@ -17,8 +18,9 @@ public class DefinitionNode extends Node {
   private String structName;
   private NumericExpressionNode size;
 
-  public DefinitionNode(String label) {
-    super(NodeTypes.DIRECTIVE_BODY);
+  public DefinitionNode(String label, 
+      Token token) {
+    super(NodeTypes.DIRECTIVE_BODY, token);
     this.label = label;
   }
 
@@ -35,9 +37,9 @@ public class DefinitionNode extends Node {
    *
    * @param size number of bytes
    */
-  public void setSize(int size) {
-    NumericExpressionNode node = new NumericExpressionNode();
-    node.addChild(new ConstantNode(size));
+  public void setSize(int size, Token token) {
+    NumericExpressionNode node = new NumericExpressionNode(token);
+    node.addChild(new ConstantNode(size, token));
     this.size = node;
   }
 

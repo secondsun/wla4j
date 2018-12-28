@@ -35,9 +35,10 @@ public class DefineByteParser extends GenericDirectiveParser {
    */
   @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
-    DirectiveArgumentsNode arguments = new DirectiveArgumentsNode();
-
     var token = parser.getCurrentToken();
+    DirectiveArgumentsNode arguments = new DirectiveArgumentsNode(token);
+
+    
     while (token.getType() != EOL && token.getType() != END_OF_INPUT) {
       arguments.add(ExpressionParser.expressionNode(parser));
       token = parser.getCurrentToken();

@@ -20,6 +20,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.RepeatParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.gbheader.GBHeaderParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.incbin.IncbinParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroParser;
@@ -33,7 +34,7 @@ public final class DirectiveUtils {
 
   private static DirectiveParser orgParser =
       parser -> {
-        DirectiveArgumentsNode node = new DirectiveArgumentsNode();
+        DirectiveArgumentsNode node = new DirectiveArgumentsNode(parser.getCurrentToken());
         var expression = ExpressionParser.expressionNode(parser);
         parser.consumeAndClear(EOL, END_OF_INPUT);
         node.add(expression);
@@ -42,11 +43,11 @@ public final class DirectiveUtils {
 
   private static DirectiveParser redefParser =
       parser -> {
-        DirectiveArgumentsNode node = new DirectiveArgumentsNode();
+        DirectiveArgumentsNode node = new DirectiveArgumentsNode(parser.getCurrentToken());
 
         var token = parser.getCurrentToken();
         parser.consume(LABEL);
-        node.add(token.getString());
+        node.add(new StringExpressionNode(token.getString(), token));
 
         token = parser.getCurrentToken();
         while (!(token.getType().equals(EOL) || token.getType().equals(END_OF_INPUT))) {
@@ -66,7 +67,7 @@ public final class DirectiveUtils {
       };
 
   private static DirectiveParser trigDefinesParser = parser -> {
-    DirectiveArgumentsNode arguments = new DirectiveArgumentsNode();
+    DirectiveArgumentsNode arguments = new DirectiveArgumentsNode(parser.getCurrentToken());
     arguments.add(ExpressionParser.expressionNode(parser));
     if (parser.getCurrentToken().getType().equals(COMMA)) {
       parser.consume(COMMA);
@@ -92,10 +93,18 @@ public final class DirectiveUtils {
 
   public static DirectiveParser getParser(AllDirectives type) {
     switch (type) {
+      case MEMORYMAP:
+        return new MemoryMapParser();
+      case ROMBANKMAP:
+        return new RomBankMapParser();
+      case GBHEADER:
+        return new GBHeaderParser();
       case INCBIN:
         return new IncbinParser();
       case REDEFINE:
       case REDEF:
+      case DEF:
+      case DEFINE:
         return redefParser;
       case BANK:
         return new BankParser();
@@ -183,17 +192,17 @@ public final class DirectiveUtils {
     DirectiveNode node;
     switch (directive) {
       case BANK:
-        node = new BankNode();
+        node = new BankNode(token);
         break;
       case ENUM:
-        node = new EnumNode();
+        node = new EnumNode(token);
         break;
 
       case STRUCT:
-        node = new StructNode();
+        node = new StructNode(token);
         break;
       case SECTION:
-        node = new SectionNode();
+        node = new SectionNode(token);
         break;
       case MACRO:
         node = new MacroNode(token);
@@ -400,7 +409,7 @@ public final class DirectiveUtils {
       case ENDEMUVECTOR:
 
       default:
-        node = new DirectiveNode(directive);
+        node = new DirectiveNode(directive, token);
     }
 
     return node;

@@ -2,6 +2,7 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.expression;
 
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 /**
  * This is a marker that says a node is actually a calculation to be evaluated during analysis.
@@ -10,8 +11,8 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
  */
 public abstract class ExpressionNode<TYPE> extends Node {
 
-  public ExpressionNode(NodeTypes nodeType) {
-    super(nodeType);
+  public ExpressionNode(NodeTypes nodeType, Token token) {
+    super(nodeType, token);
   }
 
   public abstract TYPE evaluate();

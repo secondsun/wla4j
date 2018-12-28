@@ -18,31 +18,32 @@ public class EnumParser extends BodyDefinitionParser {
 
   @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
-    var arguments = new EnumArgumentsNode();
-
     var token = parser.getCurrentToken();
+    var arguments = new EnumArgumentsNode(token);
+
+    
     parser.consume(TokenTypes.NUMBER);
-    arguments.put(KEYS.ADDRESS, "" + TokenUtil.getInt(token));
+    arguments.put(KEYS.ADDRESS, "" + TokenUtil.getInt(token), token);
 
     token = parser.getCurrentToken();
 
     while (token != null && token.getType() != EOL) {
 
       parser.consume(TokenTypes.LABEL);
-      var argument = token.getString();
+      var argument = token.getString().toUpperCase();
 
       switch (argument) {
         case "ASC":
         case "DESC":
           if (arguments.get(KEYS.ORDINAL) == null) {
-            arguments.put(KEYS.ORDINAL, argument);
+            arguments.put(KEYS.ORDINAL, argument, token);
           } else {
             throw new ParseException("The Ordinal of an enum may only be specified once", token);
           }
           break;
         case "EXPORT":
           if (arguments.get(KEYS.EXPORT) == null) {
-            arguments.put(KEYS.EXPORT, argument);
+            arguments.put(KEYS.EXPORT, argument, token);
           } else {
             throw new ParseException("Duplicate Export Token.", token);
           }

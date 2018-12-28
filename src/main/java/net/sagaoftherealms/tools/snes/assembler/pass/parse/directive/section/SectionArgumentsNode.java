@@ -2,10 +2,12 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section;
 
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 public class SectionArgumentsNode extends DirectiveArgumentsNode {
 
-  public SectionArgumentsNode() {
+  public SectionArgumentsNode(Token token) {
+    super(token);
     arguments.add(null);
     arguments.add(null);
     arguments.add(null);
@@ -17,31 +19,31 @@ public class SectionArgumentsNode extends DirectiveArgumentsNode {
     // Add eight blank arguments
   }
 
-  public void put(SectionParser.KEYS key, String value) {
+  public void put(SectionParser.KEYS key, String value, Token token) {
     switch (key) {
       case NAME:
-        arguments.set(0, new StringExpressionNode(value));
+        arguments.set(0, new StringExpressionNode(value,token));
         break;
       case BANKHEADER:
-        arguments.set(1, new StringExpressionNode(value));
+        arguments.set(1, new StringExpressionNode(value,token));
         break;
       case NAMESPACE:
-        arguments.set(2, new StringExpressionNode(value));
+        arguments.set(2, new StringExpressionNode(value,token));
         break;
       case SIZE:
-        arguments.set(3, new StringExpressionNode(value));
+        arguments.set(3, new StringExpressionNode(value,token));
         break;
       case ALIGN:
-        arguments.set(4, new StringExpressionNode(value));
+        arguments.set(4, new StringExpressionNode(value,token));
         break;
       case STATUS:
-        arguments.set(5, new StringExpressionNode(value));
+        arguments.set(5, new StringExpressionNode(value,token));
         break;
       case APPEND_TO:
-        arguments.set(6, new StringExpressionNode(value));
+        arguments.set(6, new StringExpressionNode(value,token));
         break;
       case RETURNORG:
-        arguments.set(7, new StringExpressionNode(value));
+        arguments.set(7, new StringExpressionNode(value,token));
         break;
     }
   }

@@ -15,6 +15,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBo
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.GenericDirectiveParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 public class IfParser extends GenericDirectiveParser {
 
@@ -50,7 +51,7 @@ public class IfParser extends GenericDirectiveParser {
 
   @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
-    DirectiveArgumentsNode arguments = new DirectiveArgumentsNode();
+    DirectiveArgumentsNode arguments = new DirectiveArgumentsNode(parser.getCurrentToken());
 
     arguments.add(ExpressionParser.expressionNode(parser));
 
@@ -65,9 +66,9 @@ public class IfParser extends GenericDirectiveParser {
   }
 
   @Override
-  public DirectiveBodyNode body(SourceParser parser) {
-    DirectiveBodyNode thenBody = new DirectiveBodyNode();
-    DirectiveBodyNode elseBody = new DirectiveBodyNode();
+  public DirectiveBodyNode body(SourceParser parser, Token token) {
+    DirectiveBodyNode thenBody = new DirectiveBodyNode(parser.getCurrentToken());
+    DirectiveBodyNode elseBody = new DirectiveBodyNode(parser.getCurrentToken());
     var node = parser.nextNode();
     while (node.getType() != NodeTypes.DIRECTIVE
         || (((DirectiveNode) node).getDirectiveType() != AllDirectives.ELSE
@@ -91,6 +92,6 @@ public class IfParser extends GenericDirectiveParser {
       throw new ParseException("Expected End or else", parser.getCurrentToken());
     }
 
-    return new IfBodyNode(thenBody, elseBody);
+    return new IfBodyNode(thenBody, elseBody, token);
   }
 }

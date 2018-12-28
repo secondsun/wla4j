@@ -42,7 +42,7 @@ public class ExpressionParser {
 
     if (token.getType().equals(TokenTypes.STRING)) {
       parser.consume(TokenTypes.STRING);
-      return new StringExpressionNode(token.getString());
+      return new StringExpressionNode(token.getString(), token);
     }
 
     return bitwiseOrNode(parser);
@@ -52,7 +52,7 @@ public class ExpressionParser {
     NumericExpressionNode leftNode = bitWiseAndNode(parser);
     var token = parser.getCurrentToken();
     if (TokenTypes.OR.equals(token.getType())) {
-      NumericExpressionNode toReturn = new NumericExpressionNode();
+      NumericExpressionNode toReturn = new NumericExpressionNode(token);
       toReturn.addChild(leftNode);
       toReturn.setOperationType(OperationType.OR);
       parser.consume(OR);
@@ -66,7 +66,7 @@ public class ExpressionParser {
     NumericExpressionNode leftNode = equalityNode(parser);
     var token = parser.getCurrentToken();
     if (TokenTypes.AND.equals(token.getType())) {
-      NumericExpressionNode toReturn = new NumericExpressionNode();
+      NumericExpressionNode toReturn = new NumericExpressionNode(token);
       toReturn.addChild(leftNode);
       toReturn.setOperationType(OperationType.AND);
       parser.consume(AND);
@@ -80,7 +80,7 @@ public class ExpressionParser {
     NumericExpressionNode leftNode = comparisonNode(parser);
     var token = parser.getCurrentToken();
     if (equalityTokens.contains(token.getType())) {
-      NumericExpressionNode toReturn = new NumericExpressionNode();
+      NumericExpressionNode toReturn = new NumericExpressionNode(token);
       toReturn.addChild(leftNode);
       switch (token.getType()) {
         case EQUAL:
@@ -106,7 +106,7 @@ public class ExpressionParser {
     NumericExpressionNode leftNode = shiftNode(parser);
     var token = parser.getCurrentToken();
     if (comparisonTokens.contains(token.getType())) {
-      NumericExpressionNode toReturn = new NumericExpressionNode();
+      NumericExpressionNode toReturn = new NumericExpressionNode(token);
       toReturn.addChild(leftNode);
       switch (token.getType()) {
         case GT:
@@ -142,7 +142,7 @@ public class ExpressionParser {
     NumericExpressionNode leftNode = termNode(parser);
     var token = parser.getCurrentToken();
     if (shiftTokens.contains(token.getType())) {
-      NumericExpressionNode toReturn = new NumericExpressionNode();
+      NumericExpressionNode toReturn = new NumericExpressionNode(token);
       toReturn.addChild(leftNode);
       switch (token.getType()) {
         case GT:
@@ -176,7 +176,7 @@ public class ExpressionParser {
     NumericExpressionNode leftNode = factorNode(parser);
     var token = parser.getCurrentToken();
     if (termTokens.contains(token.getType())) {
-      NumericExpressionNode toReturn = new NumericExpressionNode();
+      NumericExpressionNode toReturn = new NumericExpressionNode(token);
       toReturn.addChild(leftNode);
       switch (token.getType()) {
         case PLUS:
@@ -206,30 +206,37 @@ public class ExpressionParser {
         parser.consume(RIGHT_PAREN);
         break;
       case MINUS:
+        var minusToken = token;
         parser.consume(MINUS);
         token = parser.getCurrentToken();
         if (token.getType().equals(LABEL)) {
           parser.consume(LABEL);
           leftNode = new NegateIdentifierNode(token);
-        } else { // assume number
+        } else if (token.getType().equals(NUMBER)){ // assume number
           parser.consume(NUMBER);
-          leftNode = new ConstantNode(-1 * TokenUtil.getInt(token));
+          leftNode = new ConstantNode(-1 * TokenUtil.getInt(token), token);
+        } else {
+          leftNode = new IdentifierNode(minusToken);
         }
         break;
       case LT:
         parser.consume(LT);
-        leftNode = new LowByteNode(bitwiseOrNode(parser));
+        leftNode = new LowByteNode(bitwiseOrNode(parser), token);
         break;
       case GT:
         parser.consume(GT);
-        leftNode = new HighByteNode(bitwiseOrNode(parser));
+        leftNode = new HighByteNode(bitwiseOrNode(parser), token);
         break;
       case NUMBER:
         parser.consume(NUMBER);
-        leftNode = new ConstantNode(TokenUtil.getInt(token));
+        leftNode = new ConstantNode(TokenUtil.getInt(token), token);
         break;
       case LABEL:
         parser.consume(LABEL);
+        leftNode = new IdentifierNode(token);
+        break;
+      case PLUS:
+        parser.consume(PLUS);
         leftNode = new IdentifierNode(token);
         break;
       default:
@@ -239,7 +246,7 @@ public class ExpressionParser {
     token = parser.getCurrentToken();
 
     if (factorTokens.contains(token.getType())) {
-      NumericExpressionNode toReturn = new NumericExpressionNode();
+      NumericExpressionNode toReturn = new NumericExpressionNode(token);
       toReturn.addChild(leftNode);
       switch (token.getType()) {
         case MULTIPLY:

@@ -67,6 +67,7 @@ public class MultiFileParser {
 
     List<Node> newList = new ArrayList<>();
     Node node = parser.nextNode();
+    
     while (node != null) {
       if (node.getType().equals(NodeTypes.DIRECTIVE)
           && ((DirectiveNode) node).getDirectiveType().equals(AllDirectives.INCLUDE)) {

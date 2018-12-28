@@ -18,7 +18,7 @@ public class BankParser extends GenericDirectiveParser {
 
   @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
-    var node = new DirectiveArgumentsNode();
+    var node = new DirectiveArgumentsNode(parser.getCurrentToken());
 
     node.add(ExpressionParser.expressionNode(parser));
 

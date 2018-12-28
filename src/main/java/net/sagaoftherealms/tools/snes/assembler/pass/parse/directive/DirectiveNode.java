@@ -2,20 +2,21 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 public class DirectiveNode extends Node {
 
   private final AllDirectives directive;
 
-  public DirectiveNode(AllDirectives directive) {
+  public DirectiveNode(AllDirectives directive, Token token) {
 
-    super(DirectiveUtils.getDirectiveNodeType(directive));
+    super(DirectiveUtils.getDirectiveNodeType(directive), token);
     this.directive = directive;
   }
 
   public DirectiveArgumentsNode getArguments() {
     if (getChildren() == null || getChildren().isEmpty()) {
-      return new DirectiveArgumentsNode();
+      return new DirectiveArgumentsNode(getSourceToken());
     }
     return (DirectiveArgumentsNode)
         getChildren().get(0); // TODO throw exception if missing children?

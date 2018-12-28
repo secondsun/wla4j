@@ -25,10 +25,11 @@ public class SectionParser implements DirectiveParser {
   private boolean isBankheader = false;
 
   @Override
-  public DirectiveBodyNode body(SourceParser parser) {
-    var body = new DirectiveBodyNode();
+  public DirectiveBodyNode body(SourceParser parser, Token token) {
+    
     parser.clearWhiteSpaceTokens();
-    var token = parser.getCurrentToken();
+    token = parser.getCurrentToken();
+    var body = new DirectiveBodyNode(token);
     var node = parser.nextNode();
 
     while (node != null) {
@@ -67,14 +68,15 @@ public class SectionParser implements DirectiveParser {
 
   @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
-    var arguments = new SectionArgumentsNode();
-
     var localToken = parser.getCurrentToken();
+    var arguments = new SectionArgumentsNode(localToken );
+
+    
     parser.consume(TokenTypes.STRING, TokenTypes.LABEL);
-    arguments.put(KEYS.NAME, "" + localToken.getString());
+    arguments.put(KEYS.NAME, "" + localToken.getString(), localToken);
 
     if (localToken.getString().equalsIgnoreCase("BANKHEADER")) {
-      arguments.put(KEYS.BANKHEADER, localToken.getString());
+      arguments.put(KEYS.BANKHEADER, localToken.getString(),  localToken);
       isBankheader = true;
     }
 
@@ -84,7 +86,7 @@ public class SectionParser implements DirectiveParser {
 
       var argument = localToken.getString();
 
-      switch (argument) {
+      switch (argument.toUpperCase()) {
         case "NAMESPACE":
           parser.consume(LABEL);
           localToken = parser.getCurrentToken();
@@ -138,7 +140,7 @@ public class SectionParser implements DirectiveParser {
 
   private void setIntArgument(Token token, SectionArgumentsNode arguments, KEYS key) {
     if (arguments.get(key) == null) {
-      arguments.put(key, TokenUtil.getInt(token) + ""); // TYPECHECK
+      arguments.put(key, TokenUtil.getInt(token) + "", token); // TYPECHECK
 
     } else {
       throw new ParseException("The namespace of an section may only be specified once", token);
@@ -147,7 +149,7 @@ public class SectionParser implements DirectiveParser {
 
   private void setStringArgument(Token token, SectionArgumentsNode arguments, KEYS key) {
     if (arguments.get(key) == null) {
-      arguments.put(key, token.getString());
+      arguments.put(key, token.getString(), token);
     } else {
       throw new ParseException("Arguments of a section may only be specified once", token);
     }

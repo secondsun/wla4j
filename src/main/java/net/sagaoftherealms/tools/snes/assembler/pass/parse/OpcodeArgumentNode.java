@@ -7,7 +7,7 @@ public class OpcodeArgumentNode extends Node {
   private final Token token;
 
   public OpcodeArgumentNode(Token token) {
-    super(NodeTypes.OPCODE_ARGUMENT);
+    super(NodeTypes.OPCODE_ARGUMENT, token);
     this.token = token;
   }
 

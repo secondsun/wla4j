@@ -7,23 +7,20 @@ import java.util.stream.Collectors;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 public class DirectiveArgumentsNode extends Node {
 
   protected final List<ExpressionNode> arguments = new ArrayList<>();
 
-  public DirectiveArgumentsNode() {
-    super(NodeTypes.DIRECTIVE_ARGUMENTS);
+  public DirectiveArgumentsNode(Token token) {
+    super(NodeTypes.DIRECTIVE_ARGUMENTS, token);
   }
 
   public String getString(int index) {
     return (arguments.get(index).evaluate()) + "";
   }
 
-  public DirectiveArgumentsNode add(String argumentValue) {
-    arguments.add(new StringExpressionNode(argumentValue));
-    return this;
-  }
 
   public DirectiveArgumentsNode add(ExpressionNode argumentValue) {
     arguments.add(argumentValue);

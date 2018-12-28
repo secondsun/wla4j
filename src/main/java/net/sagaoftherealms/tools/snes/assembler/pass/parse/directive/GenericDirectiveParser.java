@@ -19,7 +19,8 @@ public class GenericDirectiveParser implements DirectiveParser {
 
   @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
-    var argumentsNode = new DirectiveArgumentsNode();
+    var token = parser.getCurrentToken();
+    var argumentsNode = new DirectiveArgumentsNode(token);
 
     if (!hasArguments(type)) {
       return argumentsNode;
@@ -28,7 +29,7 @@ public class GenericDirectiveParser implements DirectiveParser {
     var argumentsPattern = type.getPattern().split("\\." + type.getName())[1].trim();
     var validator = new DirectiveArgumentsValidator(argumentsPattern);
 
-    var token = parser.getCurrentToken();
+    
 
     while (token.getType() != TokenTypes.END_OF_INPUT) {
       Optional<Node> potentialNode = validator.accept(token, parser);
@@ -38,7 +39,7 @@ public class GenericDirectiveParser implements DirectiveParser {
         if (node instanceof ExpressionNode) {
           argumentsNode.add((ExpressionNode) node);
         } else {
-          argumentsNode.add(token.getString());
+          argumentsNode.add(new StringExpressionNode(token.getString(), token));
         }
         token = parser.getCurrentToken();
         if (token.getType() == TokenTypes.COMMA) {

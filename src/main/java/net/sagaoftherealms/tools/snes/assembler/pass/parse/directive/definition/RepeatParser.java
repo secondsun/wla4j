@@ -20,14 +20,15 @@ public class RepeatParser extends GenericDirectiveParser {
 
   @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
-    DirectiveArgumentsNode arguments = new DirectiveArgumentsNode();
     var token = parser.getCurrentToken();
+    DirectiveArgumentsNode arguments = new DirectiveArgumentsNode(token);
+    
     if (token.getType().equals(TokenTypes.LABEL)) {
       arguments.add(new IdentifierNode(token));
       parser.consume(TokenTypes.LABEL);
     } else {
       int times = TokenUtil.getInt(token);
-      arguments.add(new ConstantNode(times));
+      arguments.add(new ConstantNode(times, token));
       parser.consume(TokenTypes.NUMBER);
     }
     token = parser.getCurrentToken();

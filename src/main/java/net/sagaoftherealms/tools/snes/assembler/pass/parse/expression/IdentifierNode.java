@@ -9,7 +9,7 @@ public class IdentifierNode extends NumericExpressionNode {
   private final Token token;
 
   public IdentifierNode(Token token) {
-    super(NodeTypes.IDENTIFIER_EXPRESSION);
+    super(NodeTypes.IDENTIFIER_EXPRESSION, token);
     this.token = token;
   }
 

@@ -25,11 +25,12 @@ public class RamSectionParser extends BodyDefinitionParser {
 
   @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
-    var arguments = new RamsectionArgumentsNode();
-
     var token = parser.getCurrentToken();
+    var arguments = new RamsectionArgumentsNode(token);
+
+    
     parser.consume(TokenTypes.STRING, TokenTypes.LABEL);
-    arguments.put(NAME, "" + token.getString());
+    arguments.put(NAME, "" + token.getString(), token);
 
     token = parser.getCurrentToken();
 
@@ -51,7 +52,7 @@ public class RamSectionParser extends BodyDefinitionParser {
           parser.consume(LABEL);
           token = parser.getCurrentToken();
           if (arguments.get(APPEND_TO) == null) {
-            arguments.put(APPEND_TO, token.getString()); // TYPECHECK
+            arguments.put(APPEND_TO, token.getString(), token); // TYPECHECK
             parser.consume(TokenTypes.LABEL);
           } else {
             throw new ParseException(
@@ -77,7 +78,7 @@ public class RamSectionParser extends BodyDefinitionParser {
     parser.consume(LABEL);
     var token = parser.getCurrentToken();
     if (arguments.get(argument) == null) {
-      arguments.put(argument, TokenUtil.getInt(token) + "");
+      arguments.put(argument, TokenUtil.getInt(token) + "",token);
       parser.consume(TokenTypes.NUMBER);
     } else {
       throw new ParseException("Arguments may only be specified once", token);

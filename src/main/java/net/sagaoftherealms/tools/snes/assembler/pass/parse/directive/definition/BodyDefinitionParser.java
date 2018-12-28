@@ -48,11 +48,11 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
   }
 
   @Override
-  public DirectiveBodyNode body(SourceParser parser) {
-    var body = new DirectiveBodyNode();
+  public DirectiveBodyNode body(SourceParser parser, Token token) {
+    
     parser.clearWhiteSpaceTokens();
-    var token = parser.getCurrentToken();
-
+    token = parser.getCurrentToken();
+    var body = new DirectiveBodyNode(token);
     while (token != null
         && !endDirective.getPattern().startsWith(token.getString().toUpperCase())) { // End on ENDE
       // Expect the token to be the first label
@@ -85,7 +85,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
     var ifParser = new IfInDefinitionBodyParser(directive);
 
     ifNode.setArguments(ifParser.arguments(parser));
-    ifNode.setBody(ifParser.body(parser));
+    ifNode.setBody(ifParser.body(parser, parser.getCurrentToken()));
 
     return ifNode;
   }
@@ -93,7 +93,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
   private Node makeDefinitionNode(SourceParser parser, Token token) {
     parser.consumeAndClear(TokenTypes.LABEL);
 
-    var bodyNode = new DefinitionNode(TokenUtil.getLabelName(token));
+    var bodyNode = new DefinitionNode(TokenUtil.getLabelName(token), token);
 
     token = parser.getCurrentToken();
 
@@ -102,16 +102,16 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
     switch (token.getString().toUpperCase()) {
       case ".DW":
       case ".DB":
-        bodyNode.setSize(0);
+        bodyNode.setSize(new ConstantNode(0, token));
         break;
       case "DB":
       case "BYTE":
       case "BYT":
-        bodyNode.setSize(1);
+        bodyNode.setSize(new ConstantNode(1, token));
         break;
       case "DW":
       case "WORD":
-        bodyNode.setSize(2);
+        bodyNode.setSize(new ConstantNode(2, token));
         break;
       case "DS":
       case "DSB":
@@ -126,9 +126,9 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
           var expression = expressionNode(parser);
 
           // We have to fake a double expression
-          var constant = new ConstantNode(2);
+          var constant = new ConstantNode(2, token);
 
-          var doubleExpression = new NumericExpressionNode();
+          var doubleExpression = new NumericExpressionNode(token);
           doubleExpression.addChild(expression);
 
           doubleExpression.addChild(constant);
@@ -143,11 +143,11 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
         parser.consumeAndClear(TokenTypes.LABEL);
 
         bodyNode.setStructName(TokenUtil.getLabelName(token));
-        bodyNode.setSize(1);
+        bodyNode.setSize((new ConstantNode(1, token)));
         token = parser.getCurrentToken();
 
         if (NUMBER.equals(token.getType())) {
-          bodyNode.setSize(TokenUtil.getInt(token));
+          bodyNode.setSize(TokenUtil.getInt(token), token);
           parser.consumeAndClear(TokenTypes.NUMBER);
         }
         break;
@@ -165,12 +165,14 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
     }
 
     @Override
-    public DirectiveBodyNode body(SourceParser parser) {
-      DirectiveBodyNode thenBody = new DirectiveBodyNode();
-      DirectiveBodyNode elseBody = new DirectiveBodyNode();
+    public DirectiveBodyNode body(SourceParser parser, Token token) {
+      
+      DirectiveBodyNode thenBody = new DirectiveBodyNode(token);
+      DirectiveBodyNode elseBody = new DirectiveBodyNode(token);
 
       var currentBody = thenBody;
-      var token = parser.getCurrentToken();
+      
+      token = parser.getCurrentToken();
 
       while (token != null
           && !token.getString().equalsIgnoreCase(".endif")
@@ -192,6 +194,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
             currentBody.addChild(makeIfNode(parser, token));
             break;
           case "ELSE":
+            elseBody = new DirectiveBodyNode(token);
             currentBody = elseBody;
             parser.consumeAndClear(TokenTypes.DIRECTIVE);
             break;
@@ -204,7 +207,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
       }
       parser.consumeAndClear(TokenTypes.DIRECTIVE); // Consume endif
 
-      return new IfBodyNode(thenBody, elseBody);
+      return new IfBodyNode(thenBody, elseBody, thenBody.getSourceToken());
     }
   }
 }

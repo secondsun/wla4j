@@ -43,4 +43,8 @@ public class Token implements Serializable {
         + string
         + "'}";
   }
+
+  public SourceDataLine getSourceDataLine() {
+    return line;
+  }
 }

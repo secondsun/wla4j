@@ -8,7 +8,7 @@ public class OpcodeNode extends Node {
   private final Token token;
 
   public OpcodeNode(Token token) {
-    super(NodeTypes.OPCODE);
+    super(NodeTypes.OPCODE, token);
     this.token = token;
   }
 

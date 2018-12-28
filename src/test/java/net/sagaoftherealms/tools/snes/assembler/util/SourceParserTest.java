@@ -35,6 +35,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.OperationType;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
@@ -43,6 +44,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.Expression
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.IdentifierNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -352,6 +354,70 @@ public class SourceParserTest {
             + ".DL for 65816 works just like you'd expect it. It write the bank byte when used with labels. :D");
   }
 
+  @ParameterizedTest
+  @CsvSource({
+      "+",
+      "-",
+      "++",
+      "--",
+      "++++",
+      "----",
+  })
+  public void testAnonymousLabelsEvaluate(String line) {
+    var parser = asParser(line);
+    IdentifierNode node = (IdentifierNode) ExpressionParser.expressionNode(parser);
+    assertEquals(line, node.getLabelName());
+  }
+  @Test
+  public void testMemorymap() {
+    var source = ".MEMORYMAP\n"
+        + "DEFAULTSLOT 1\n"
+        + "SLOTSIZE $2000\n"
+        + "SLOT 0 $0000\n"
+        + "SLOTSIZE $6000\n"
+        + "SLOT 1 $2000\n"
+        + ".ENDME";
+    var parser = asParser(source);
+    var gbNode = (DirectiveNode)parser.nextNode();
+    assertEquals(5, gbNode.getBody().getChildren().size());
+  }
+
+  @Test
+  public void testRommap() {
+    var source = ".ROMBANKMAP\n"
+        + "BANKSTOTAL 2\n"
+        + "BANKSIZE $2000\n"
+        + "BANKS 1\n"
+        + "BANKSIZE $6000\n"
+        + "BANKS 1\n"
+        + ".ENDRO";
+    var parser = asParser(source);
+    var gbNode = (DirectiveNode)parser.nextNode();
+    assertEquals(5, gbNode.getBody().getChildren().size());
+  }
+  
+  
+  @Test
+  public void testGBSection() {
+    var source = ".GBHEADER\n"
+        + "    NAME \"TANKBOMBPANIC\"  ; identical to a freestanding .NAME.\n"
+        + "    LICENSEECODEOLD $34   ; identical to a freestanding .LICENSEECODEOLD.\n"
+        + "    LICENSEECODENEW \"HI\"  ; identical to a freestanding .LICENSEECODENEW.\n"
+        + "    CARTRIDGETYPE $00     ; identical to a freestanding .CARTRIDGETYPE.\n"
+        + "    RAMSIZE $09           ; identical to a freestanding .RAMSIZE.\n"
+        + "    COUNTRYCODE $01       ; identical to a freestanding .COUNTRYCODE/DESTINATIONCODE.\n"
+        + "    DESTINATIONCODE $01   ; identical to a freestanding .DESTINATIONCODE/COUNTRYCODE.\n"
+        + "    NINTENDOLOGO          ; identical to a freestanding .NINTENDOLOGO.\n"
+        + "    VERSION $01           ; identical to a freestanding .VERSION.\n"
+        + "    ROMDMG                ; identical to a freestanding .ROMDMG.\n"
+        + "                          ; Alternatively, ROMGBC or ROMGBCONLY can be used\n"
+        + ".ENDGB";
+    
+    var parser = asParser(source);
+    var gbNode = (DirectiveNode)parser.nextNode();
+    assertEquals(10, gbNode.getBody().getChildren().size());
+  }
+  
   @Test
   public void parseEnumBodyWithIfDirective() {
     var source =
@@ -666,10 +732,9 @@ public class SourceParserTest {
     assertEquals("wait_1s", node.getName());
 
     var body = node.getBody();
-    assertEquals(NodeTypes.OPCODE, body.getChildren().get(0).getType());
-    assertEquals(NodeTypes.LABEL_DEFINITION, body.getChildren().get(1).getType());
-    assertEquals("-", ((LabelDefinitionNode) body.getChildren().get(1)).getLabelName());
-    assertEquals(NodeTypes.OPCODE, body.getChildren().get(2).getType());
+    assertEquals(NodeTypes.MACRO_BODY, body.getChildren().get(0).getType());
+    assertEquals(TokenTypes.LABEL, body.getChildren().get(1).getSourceToken().getType());
+    
   }
 
   /** macro_2 is a basic macro with two variables */
@@ -726,14 +791,15 @@ public class SourceParserTest {
     var arguments = node.getArguments();
     assertEquals(1, arguments.size());
     var body = node.getBody();
-    DirectiveNode dbNode = (DirectiveNode) body.getChildren().get(0);
-    var dbArgs = dbNode.getArguments();
-    assertEquals(2, dbArgs.size());
+    MacroBodyNode dbNode = (MacroBodyNode) body.getChildren().get(0);
+    
+    assertEquals(8, body.getChildren().size());
     assertEquals(
         "\\1",
-        ((IdentifierNode)
-                ((NumericExpressionNode) dbArgs.getChildren().get(1)).getChildren().get(0))
-            .getLabelName());
+        body.getChildren().get(3).getSourceToken().getString());
+    assertEquals(
+        TokenTypes.EOL,
+        body.getChildren().get(7).getSourceToken().getType());
   }
 
   @ParameterizedTest
@@ -850,14 +916,9 @@ public class SourceParserTest {
         512, (int) ((NumericExpressionNode) writeobjectwordCall2.getArguments().get(1)).evaluate());
     assertEquals(writeobjectwordMacro.getName(), writeobjectwordCall2.getMacroNode());
     assertEquals(
-        writeobjectbyteMacro.getName(),
-        ((MacroCallNode) writeobjectwordMacro.getBody().getChildren().get(0)).getMacroNode());
-    assertEquals(
-        NodeTypes.IDENTIFIER_EXPRESSION,
-        ((MacroCallNode) writeobjectwordMacro.getBody().getChildren().get(0))
-            .getArguments()
-            .get(0)
-            .getType());
+        "writeobjectbyte",
+        writeobjectwordMacro.getBody().getChildren().get(0).getSourceToken().getString());
+    
   }
 
   @Test
@@ -892,7 +953,7 @@ public class SourceParserTest {
   public void multiFileTest() throws IOException {
     var sourceDirectory = "ages-disasm";
     var sourceRoot = "main.s";
-    var includedFile = "objects/macros.s";
+    var includedFile = "ages-disasm/objects/macros.s";
     MultiFileParser multiParser = new MultiFileParser(OpCodeZ80.opcodes());
     multiParser.parse(sourceDirectory, sourceRoot);
     assertNotNull(multiParser.getNodes(includedFile));

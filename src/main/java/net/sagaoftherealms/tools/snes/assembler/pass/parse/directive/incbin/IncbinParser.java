@@ -23,12 +23,13 @@ public class IncbinParser extends GenericDirectiveParser {
 
   @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
-    var arguments = new IncBinArgumentsNode();
-
     var token = parser.getCurrentToken();
+    var arguments = new IncBinArgumentsNode(token);
+
+    
     parser.consume(TokenTypes.STRING);
 
-    arguments.put(Arguments.NAME, new StringExpressionNode(token.getString()));
+    arguments.put(Arguments.NAME, new StringExpressionNode(token.getString(), token));
 
     token = parser.getCurrentToken();
     while (token != null && token.getType() != EOL && token.getType() != END_OF_INPUT) {
@@ -66,7 +67,7 @@ public class IncbinParser extends GenericDirectiveParser {
           break;
         case "SWAP":
           if (arguments.get(Arguments.SWAP) == null) {
-            arguments.put(Arguments.SWAP, new StringExpressionNode(argument));
+            arguments.put(Arguments.SWAP, new StringExpressionNode(argument, token));
           } else {
             throw new ParseException("Duplicate Swap Token.", token);
           }

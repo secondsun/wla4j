@@ -265,7 +265,7 @@ public class SourceScanner {
   private String numberToken(String sourceString, char character) {
     var chars =
         new Character[] {
-          '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '$', '%'
+          '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '$', '%', '_'
         };
     final List<Character> allowedCharacters = Arrays.asList(chars);
     StringBuilder builder = new StringBuilder().append(character);

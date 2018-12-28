@@ -1,12 +1,13 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.expression;
 
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 public class ConstantNode extends NumericExpressionNode {
   private String value;
 
-  public ConstantNode(int value) {
-    super(NodeTypes.NUMERIC_CONSTANT);
+  public ConstantNode(int value, Token token) {
+    super(NodeTypes.NUMERIC_CONSTANT, token);
     this.value = value + "";
   }
 

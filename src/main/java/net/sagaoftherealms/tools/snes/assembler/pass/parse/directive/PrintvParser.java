@@ -13,17 +13,18 @@ public class PrintvParser extends GenericDirectiveParser {
 
   @Override
   public DirectiveArgumentsNode arguments(SourceParser parser) {
-    var node = new DirectiveArgumentsNode();
-
     var token = parser.getCurrentToken();
+    var node = new DirectiveArgumentsNode(token);
+
+    
     if (token.getString().equalsIgnoreCase("hex")) {
-      node.add("hex");
+      node.add(new StringExpressionNode("hex", token));
       parser.consume(token.getType());
     } else if (token.getString().equalsIgnoreCase("dec")) {
-      node.add("dec");
+      node.add(new StringExpressionNode("dec", token));
       parser.consume(token.getType());
     } else {
-      node.add("dec");
+      node.add(new StringExpressionNode("dec", token));
     }
 
     node.add(ExpressionParser.expressionNode(parser));
