@@ -1,7 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.main;
 
-import static net.sagaoftherealms.tools.snes.assembler.Defines.DefinitionType.DEFINITION_TYPE_STRING;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,21 +15,13 @@ import org.apache.commons.io.IOUtils;
  */
 public class InputData {
 
-  final Flags flags;
   private String defaultIncludeDirectory = "." + File.pathSeparator;
 
   private SourceFileDataMap combinedSourceFile = new SourceFileDataMap();
 
-  public InputData(Flags flags) {
-    this.flags = flags;
-  }
+  public InputData() {}
 
   public void includeFile(InputStream fileStream, String fileName, int includeAt) {
-
-    if (flags.isExtraDefinitions()) {
-      flags.redefine("WLA_FILENAME", 0.0, fileName, DEFINITION_TYPE_STRING);
-      flags.redefine("wla_filename", 0.0, fileName, DEFINITION_TYPE_STRING);
-    }
 
     String fileContents = null;
 
@@ -55,12 +45,7 @@ public class InputData {
       name = "";
     }
 
-    /* create the full output file name */
-    if (flags.useExternalIncludesDirectory()) {
-      includeDirectory = flags.getExternalIncludesDirectory();
-    } else {
-      includeDirectory = defaultIncludeDirectory;
-    }
+    includeDirectory = defaultIncludeDirectory;
 
     fullName = createFullName(includeDirectory, name);
 

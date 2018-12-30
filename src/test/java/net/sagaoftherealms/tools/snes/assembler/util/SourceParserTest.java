@@ -16,7 +16,6 @@ import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode65816;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeZ80;
-import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelDefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.MacroCallNode;
@@ -628,7 +627,7 @@ public class SourceParserTest {
     final String inputFile = "test.s";
     final int lineNumber = 0;
 
-    var data = new InputData(new Flags(outfile));
+    var data = new InputData();
     data.includeFile($(enumSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
@@ -646,7 +645,7 @@ public class SourceParserTest {
     final String inputFile = "test.s";
     final int lineNumber = 0;
 
-    var data = new InputData(new Flags(outfile));
+    var data = new InputData();
     data.includeFile($(enumSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
@@ -681,7 +680,7 @@ public class SourceParserTest {
     final String inputFile = "test.s";
     final int lineNumber = 0;
 
-    var data = new InputData(new Flags(outfile));
+    var data = new InputData();
     data.includeFile($(enumSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
@@ -718,7 +717,7 @@ public class SourceParserTest {
     final String inputFile = "define_macro_1.s";
     final int lineNumber = 0;
 
-    var data = new InputData(new Flags(outfile));
+    var data = new InputData();
     data.includeFile($(macroSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCodeZ80.opcodes());
@@ -746,7 +745,7 @@ public class SourceParserTest {
     final String inputFile = "parseMacro/define_macro_2.s";
     final int lineNumber = 0;
 
-    var data = new InputData(new Flags(outfile));
+    var data = new InputData();
     data.includeFile($(macroSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCodeZ80.opcodes());
@@ -775,7 +774,7 @@ public class SourceParserTest {
     final String inputFile = "parseMacro/define_macro_3.s";
     final int lineNumber = 0;
 
-    var data = new InputData(new Flags(outfile));
+    var data = new InputData();
     data.includeFile($(macroSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCodeZ80.opcodes());
@@ -817,7 +816,7 @@ public class SourceParserTest {
     final String inputFile = "script_commands.s";
     final int lineNumber = 0;
 
-    var data = new InputData(new Flags(outfile));
+    var data = new InputData();
     data.includeFile($(expression), inputFile, lineNumber);
     var scanner = data.startRead(OpCodeZ80.opcodes());
 
@@ -850,7 +849,7 @@ public class SourceParserTest {
     final String inputFile = fileName;
     final int lineNumber = 0;
 
-    var data = new InputData(new Flags(outfile));
+    var data = new InputData();
     data.includeFile($(macroSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCodeZ80.opcodes());
@@ -896,7 +895,7 @@ public class SourceParserTest {
     final String inputFile = "parseLargeFiles/script_commands.s";
     final int lineNumber = 0;
 
-    var data = new InputData(new Flags(outfile));
+    var data = new InputData();
     data.includeFile($(program), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCodeZ80.opcodes());

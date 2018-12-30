@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.Set;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
-import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
@@ -86,7 +85,7 @@ public class MultiFileParser {
     var stream = getClass().getClassLoader().getResourceAsStream(fileName);
     final String outfile = "test.out";
 
-    var data = new InputData(new Flags(outfile));
+    var data = new InputData();
 
     System.out.println(fileName + "\n" + sourceDirectory);
 

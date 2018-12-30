@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode65816;
-import net.sagaoftherealms.tools.snes.assembler.main.Flags;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefinitionNode;
@@ -87,7 +86,7 @@ public class SourceAnalyzerTest {
     final String inputFile = "test.s";
     final int lineNumber = 0;
 
-    var data = new InputData(new Flags(outfile));
+    var data = new InputData();
     data.includeFile($(source), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());

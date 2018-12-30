@@ -12,7 +12,7 @@ public class Test65816IncludeData {
 
   @Test
   public void basicInclude() throws IOException {
-    InputData data = new InputData(new Flags(" test.out "));
+    InputData data = new InputData();
     data.includeFile(
         Test65816IncludeData.class.getClassLoader().getResourceAsStream("main.s"), "main.s", 0);
 
@@ -30,7 +30,7 @@ public class Test65816IncludeData {
   @Test
   public void multiInclude() throws IOException {
 
-    InputData data = new InputData(new Flags(" test.out "));
+    InputData data = new InputData();
     data.includeFile(
         Test65816IncludeData.class.getClassLoader().getResourceAsStream("main.s"), "main.s", 0);
     data.includeFile(
