@@ -26,9 +26,10 @@ public class GBHeaderParser implements DirectiveParser {
           parser.consume(TokenTypes.LABEL);
           var transformedToken =
               new Token(
-                  token.getSourceDataLine(),
                   "." + token.getString().toUpperCase(),
-                  TokenTypes.DIRECTIVE);
+                  TokenTypes.DIRECTIVE,
+                  token.getFileName(),
+                  token.getPosition());
           var dParser = DirectiveUtils.getParser(AllDirectives.valueOf(token.getString()));
           DirectiveNode node =
               DirectiveUtils.createDirectiveNode(transformedToken.getString(), token);

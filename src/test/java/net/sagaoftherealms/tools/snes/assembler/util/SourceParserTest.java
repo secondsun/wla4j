@@ -438,7 +438,7 @@ public class SourceParserTest {
             +
             // 7 = monster 8 = monster.name 12 = monster.1.age 17 = monster.3.name
             "     dragon    INSTANCEOF mon   ; one mon\n"
-            + ".ENDIF\n"
+            + ".ENDIF; COMMENT\n"
             + ".ELSE\n"
             +
             // 7 = monster 8 = monster.name 12 = monster.1.age 17 = monster.3.name

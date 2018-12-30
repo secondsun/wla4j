@@ -2,6 +2,7 @@ package net.sagaoftherealms.tools.snes.assembler.pass.scan.token;
 
 public enum TokenTypes {
   STRING,
+  COMMENT,
   DIRECTIVE,
   NUMBER,
   LABEL,
@@ -28,5 +29,6 @@ public enum TokenTypes {
   ESCAPE,
   AT,
   EOL,
-  END_OF_INPUT
+  END_OF_INPUT;
+  
 }

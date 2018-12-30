@@ -7,12 +7,14 @@ import java.util.Objects;
 public class SourceDataLine implements Serializable {
 
   private String fileName = "";
-  private int sourceLineNumber = 0;
+  private int beginSourceLineNumber = 0;
+  private int beginPosition = 0;
+  
   private String dataLine = "";
 
   public SourceDataLine(String sourceFileName, int sourceLineNumber, String sourceCode) {
     fileName = sourceFileName;
-    this.sourceLineNumber = sourceLineNumber;
+    this.beginSourceLineNumber = sourceLineNumber;
     this.dataLine = sourceCode;
   }
 
@@ -41,17 +43,17 @@ public class SourceDataLine implements Serializable {
    *
    * @return the line of the original source file
    */
-  public int getSourceLineNumber() {
-    return sourceLineNumber;
+  public int getBeginSourceLineNumber() {
+    return beginSourceLineNumber;
   }
 
   /**
    * SourceLineNumber is the line in the original Source file
    *
-   * @param sourceLineNumber the line of the original source file
+   * @param beginSourceLineNumber the line of the original source file
    */
-  public void setSourceLineNumber(int sourceLineNumber) {
-    this.sourceLineNumber = sourceLineNumber;
+  public void setBeginSourceLineNumber(int beginSourceLineNumber) {
+    this.beginSourceLineNumber = beginSourceLineNumber;
   }
 
   /**
@@ -62,7 +64,7 @@ public class SourceDataLine implements Serializable {
    * @return the text of a line of data
    */
   public String getDataLine() {
-    return dataLine.trim();
+    return dataLine;
   }
 
   /**
@@ -85,14 +87,14 @@ public class SourceDataLine implements Serializable {
       return false;
     }
     SourceDataLine that = (SourceDataLine) o;
-    return sourceLineNumber == that.sourceLineNumber
+    return beginSourceLineNumber == that.beginSourceLineNumber
         && Objects.equals(fileName, that.fileName)
         && Objects.equals(dataLine, that.dataLine);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(fileName, sourceLineNumber, dataLine);
+    return Objects.hash(fileName, beginSourceLineNumber, dataLine);
   }
 
   /**
@@ -115,14 +117,22 @@ public class SourceDataLine implements Serializable {
     return fileName.hashCode();
   }
 
+  public int getBeginPosition() {
+    return beginPosition;
+  }
+
+  public void setBeginPosition(int beginPosition) {
+    this.beginPosition = beginPosition;
+  }
+
   @Override
   public String toString() {
     return "SourceDataLine{"
         + "fileName='"
         + fileName
         + '\''
-        + ", sourceLineNumber="
-        + sourceLineNumber
+        + ", beginSourceLineNumber="
+        + beginSourceLineNumber
         + ", dataLine='"
         + dataLine
         + '\''

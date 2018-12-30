@@ -19,7 +19,7 @@ public class SourceFileDataMapTest {
     SourceDataLine line = new SourceDataLine();
     line.setDataLine(".DEFINE TESA $fe");
     line.setFileName("testfile.s");
-    line.setSourceLineNumber(2);
+    line.setBeginSourceLineNumber(2);
 
     assertEquals(line, datamap.getLine(2));
   }

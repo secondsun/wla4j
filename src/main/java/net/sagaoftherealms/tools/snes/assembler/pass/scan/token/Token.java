@@ -1,18 +1,19 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.scan.token;
 
 import java.io.Serializable;
-import net.sagaoftherealms.tools.snes.assembler.util.SourceDataLine;
 
 public class Token implements Serializable {
 
   private final TokenTypes type;
   private final String string;
-  private final SourceDataLine line;
-
-  public Token(SourceDataLine line, String tokenString, TokenTypes type) {
-    this.line = line;
+  private final String fileName;
+  private final Position position;
+  
+  public Token(String tokenString, TokenTypes type, String fileName, Position position) {
     this.string = tokenString;
     this.type = type;
+    this.fileName = fileName;
+    this.position = position;
   }
 
   public TokenTypes getType() {
@@ -25,22 +26,39 @@ public class Token implements Serializable {
 
   @Override
   public String toString() {
-    if (line != null) {
+    if (position != null) {
       return "Token{type="
           + type
           + ", string='"
           + string
           + '\''
           + "@"
-          + line.getFileName()
+          + fileName
           + ":"
-          + line.getSourceLineNumber()
+          + position.beginLine
           + '}';
     }
     return "Token{type=" + type + ", string='" + string + "'}";
   }
 
-  public SourceDataLine getSourceDataLine() {
-    return line;
+  public String getFileName() {
+    return fileName;
   }
+
+  public Position getPosition() {
+    return position;
+  }
+
+  public static class Position implements  Serializable{
+    public final int beginLine, beginOffset, endLine, endOffset;
+
+
+    public Position(int beginLine, int beginPosition, int endLine, int endPosition) {
+      this.beginLine = beginLine;
+      this.beginOffset = beginPosition;
+      this.endLine = endLine;
+      this.endOffset = endPosition;
+    }
+  }
+  
 }

@@ -42,7 +42,7 @@ public class DefineByteParser extends GenericDirectiveParser {
       arguments.add(ExpressionParser.expressionNode(parser));
       token = parser.getCurrentToken();
       while (token.getType().equals(COMMA)) {
-        parser.consumeAndClear(COMMA);
+        parser.consume(COMMA);
         token = parser.getCurrentToken();
       }
     }

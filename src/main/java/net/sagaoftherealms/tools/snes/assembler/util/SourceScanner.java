@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token.Position;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
@@ -13,8 +14,9 @@ public class SourceScanner {
 
   private final SourceFileDataMap source;
   private final List<String> opCodes;
-  private int lineNumber = 0;
+  private int lineNumber = 1;
   private int linePosition = 0;
+  private int tokenPosition = 0;
   private boolean newLineBeginning = true;
 
   public SourceScanner(SourceFileDataMap source, OpCode[] opcodes) {
@@ -41,12 +43,24 @@ public class SourceScanner {
     return getNextToken(true);
   }
 
-  private Token getNextToken(boolean advance) {
+  public Token getNextToken(boolean advance) {
+    return getNextToken(advance, true);
+  }
+  
+  public Token getNextToken(boolean advance, boolean skipComments) {
     if (endOfInput()) {
-      return new Token(getCurrentLine(), "", TokenTypes.END_OF_INPUT);
+      return new Token("", TokenTypes.END_OF_INPUT, getCurrentLine().getFileName(), new Position(lineNumber,linePosition,lineNumber,linePosition));
     }
 
+    //line number is advanced in getNextTokenString so we need this value.
+    var initialLineNumber = lineNumber;
+    
     String tokenString = getNextTokenString(advance);
+
+    //getNextTokenString updates token position to the correct value.  This is why the two initial values are on either side of getNextTokenString
+    var initialLinePosition = tokenPosition;
+    
+
     TokenTypes type;
     final List<Character> operators =
         Arrays.asList(
@@ -54,12 +68,20 @@ public class SourceScanner {
             '=', '\\', '@');
     final List<String> sizeTokens = Arrays.asList(".b", ".w", ".l", ".B", ".W", ".L");
 
-    if (tokenString.equals("\n")) {
+    if (tokenString == null) {
+      type = TokenTypes.END_OF_INPUT;
+    }else if (tokenString.equals("\n")) {
       type = TokenTypes.EOL;
     } else if (tokenString.startsWith("\"")) {
       type = TokenTypes.STRING;
       // trim quotes;
       tokenString = tokenString.substring(1, tokenString.length() - 1);
+    } else if (tokenString.startsWith(";")) {
+      type = TokenTypes.COMMENT;
+    } else if (tokenString.startsWith("*") && tokenPosition == 0) {
+      type = TokenTypes.COMMENT;
+    } else if (tokenString.startsWith("/*")) {
+      type = TokenTypes.COMMENT;
     } else if (sizeTokens.contains(tokenString)) {
       type = TokenTypes.SIZE;
     } else if (tokenString.startsWith(".")) {
@@ -86,7 +108,11 @@ public class SourceScanner {
       type = TokenTypes.LABEL;
     }
 
-    return new Token(getCurrentLine(), tokenString, type);
+    if (type == TokenTypes.COMMENT && skipComments) {
+      return getNextToken(advance, skipComments);
+    }
+    
+    return new Token(tokenString, type, getCurrentLine().getFileName(), new Position(initialLineNumber,initialLinePosition,lineNumber,linePosition));
   }
 
   private String getNextTokenString(boolean advance) {
@@ -105,28 +131,22 @@ public class SourceScanner {
     var sourceString = line.getDataLine();
     var initialLinePosition = linePosition;
     var initialLineNumber = lineNumber;
-    var initialNewline = newLineBeginning;
+
     try {
-      while (linePosition >= sourceString.length()) {
-        getNextLine();
-        line = getCurrentLine();
-        sourceString = line.getDataLine();
-        if (linePosition < sourceString.length()) {
-          return "\n"; // collapse multiple newlines
-        }
+      Character character = getNextCharacter();
+
+      if (character == null || character == '\n') {
+        return character + "";
       }
-
-      char character = sourceString.charAt(linePosition);
-      linePosition++;
-
-      // Consume leading whitespace
-      while (Character.isWhitespace(character)) {
-        character = sourceString.charAt(linePosition);
-        linePosition++;
-      }
-
+      
       if (character == '"') {
         return stringToken(sourceString);
+      } else if (character == ';') {
+        return commentToken(sourceString, ';');
+      } else if (character == '*' && linePosition == 1) {
+        return commentToken(sourceString,'*');
+      } else if (character == '/' && linePosition < sourceString.length() && sourceString.charAt(linePosition) == '*') {
+        return multiLineCommentToken(sourceString);
       } else if (character == '.') {
         return directiveToken(sourceString);
       } else if (Character.isDigit(character) || character == '$' || character == '%') {
@@ -177,10 +197,77 @@ public class SourceScanner {
     }
   }
 
+  private Character getNextCharacter() {
+    var sourceString = getCurrentLine().getDataLine();
+    
+    while (linePosition >= sourceString.length()) {
+      if (sourceString.length() == 0 && lineNumber >= source.lineCount()) {//last line is an empty string, we are at end of input
+        tokenPosition = linePosition;
+        return null;
+      }
+      getNextLine();
+      sourceString = getCurrentLine().getDataLine();
+      if (linePosition < sourceString.length()) {
+        tokenPosition = Math.max(0,linePosition-1);
+        return '\n'; // collapse multiple newlines
+      }
+    }
+
+    char character = sourceString.charAt(linePosition);
+    linePosition++;
+
+    // Consume leading whitespace
+    while (Character.isWhitespace(character)) {
+      if (linePosition >= sourceString.length()) {
+        if (lineNumber >= source.lineCount()) {
+          return null;
+        } else {
+          return '\n';
+        }
+      }
+      character = sourceString.charAt(linePosition);
+      linePosition++;
+    }
+    tokenPosition = linePosition-1;
+    return character;
+  }
+
+  private String multiLineCommentToken(String sourceString) {
+    StringBuilder builder = new StringBuilder().append("/");
+    char character;
+    do {
+      
+      character = sourceString.charAt(linePosition);
+      builder.append(character);
+      
+      linePosition++;
+      if (linePosition >= sourceString.length() && (lineNumber + 1) <= source.lineCount()) {
+        builder.append("\n");
+        sourceString = getNextLine().getDataLine();
+      }
+      
+    } while (!builder.toString().endsWith("*/"));
+    return builder.toString();
+  }
+
+  private String commentToken(String sourceString, char initial) {
+    StringBuilder builder = new StringBuilder().append(initial);
+    char character;
+    do {
+      if (linePosition >= sourceString.length()) {
+        return builder.toString();//Comment is at the end of the file
+      }
+      character = sourceString.charAt(linePosition);
+      linePosition++;
+      builder.append(character);
+    } while (character != '\n' && character != '\r' );
+    return builder.toString();
+  }
+
   private String labelToken(String sourceString, char character) {
     final List<Character> operators =
         Arrays.asList(
-            ',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')', '!',
+            ',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')', '!',';',
             '=');
 
     StringBuilder builder = new StringBuilder();
@@ -231,7 +318,7 @@ public class SourceScanner {
         && character != '.'
         && !operators.contains(character));
 
-    if (character == '.' || operators.contains(character)) {
+    if (character == '.' || operators.contains(character) || Character.isWhitespace(character)) {
       linePosition--;
     }
 
@@ -311,9 +398,13 @@ public class SourceScanner {
         break;
       }
       character = sourceString.charAt(linePosition);
-      linePosition++;
-      builder.append(character);
+      
+      if (Character.isAlphabetic(character) || Character.isDigit(character)) {
+        builder.append(character);
+        linePosition++;
+      }
     } while (Character.isAlphabetic(character) || Character.isDigit(character));
+    
     return builder.toString().trim();
   }
 

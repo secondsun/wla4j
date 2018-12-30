@@ -73,10 +73,6 @@ public class SourceFileDataMap {
     lines.addAll(includeAt, preprocessedDataMap.lines);
   }
 
-  /** Removes empty lines, extra white space etc. */
-  public void compress() {
-    lines = lines.stream().filter(it -> !it.getDataLine().isEmpty()).collect(Collectors.toList());
-  }
 
   public int lineCount() {
     return lines.size();
