@@ -8,7 +8,7 @@ public class Token implements Serializable {
   private final String string;
   private final String fileName;
   private final Position position;
-  
+
   public Token(String tokenString, TokenTypes type, String fileName, Position position) {
     this.string = tokenString;
     this.type = type;
@@ -49,9 +49,8 @@ public class Token implements Serializable {
     return position;
   }
 
-  public static class Position implements  Serializable{
+  public static class Position implements Serializable {
     public final int beginLine, beginOffset, endLine, endOffset;
-
 
     public Position(int beginLine, int beginPosition, int endLine, int endPosition) {
       this.beginLine = beginLine;
@@ -60,5 +59,4 @@ public class Token implements Serializable {
       this.endOffset = endPosition;
     }
   }
-  
 }

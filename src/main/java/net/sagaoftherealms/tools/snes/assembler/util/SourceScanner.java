@@ -46,20 +46,24 @@ public class SourceScanner {
   public Token getNextToken(boolean advance) {
     return getNextToken(advance, true);
   }
-  
+
   public Token getNextToken(boolean advance, boolean skipComments) {
     if (endOfInput()) {
-      return new Token("", TokenTypes.END_OF_INPUT, getCurrentLine().getFileName(), new Position(lineNumber,linePosition,lineNumber,linePosition));
+      return new Token(
+          "",
+          TokenTypes.END_OF_INPUT,
+          getCurrentLine().getFileName(),
+          new Position(lineNumber, linePosition, lineNumber, linePosition));
     }
 
-    //line number is advanced in getNextTokenString so we need this value.
+    // line number is advanced in getNextTokenString so we need this value.
     var initialLineNumber = lineNumber;
-    
+
     String tokenString = getNextTokenString(advance);
 
-    //getNextTokenString updates token position to the correct value.  This is why the two initial values are on either side of getNextTokenString
+    // getNextTokenString updates token position to the correct value.  This is why the two initial
+    // values are on either side of getNextTokenString
     var initialLinePosition = tokenPosition;
-    
 
     TokenTypes type;
     final List<Character> operators =
@@ -70,7 +74,7 @@ public class SourceScanner {
 
     if (tokenString == null) {
       type = TokenTypes.END_OF_INPUT;
-    }else if (tokenString.equals("\n")) {
+    } else if (tokenString.equals("\n")) {
       type = TokenTypes.EOL;
     } else if (tokenString.startsWith("\"")) {
       type = TokenTypes.STRING;
@@ -111,8 +115,12 @@ public class SourceScanner {
     if (type == TokenTypes.COMMENT && skipComments) {
       return getNextToken(advance, skipComments);
     }
-    
-    return new Token(tokenString, type, getCurrentLine().getFileName(), new Position(initialLineNumber,initialLinePosition,lineNumber,linePosition));
+
+    return new Token(
+        tokenString,
+        type,
+        getCurrentLine().getFileName(),
+        new Position(initialLineNumber, initialLinePosition, lineNumber, linePosition));
   }
 
   private String getNextTokenString(boolean advance) {
@@ -138,14 +146,16 @@ public class SourceScanner {
       if (character == null || character == '\n') {
         return character + "";
       }
-      
+
       if (character == '"') {
         return stringToken(sourceString);
       } else if (character == ';') {
         return commentToken(sourceString, ';');
       } else if (character == '*' && linePosition == 1) {
-        return commentToken(sourceString,'*');
-      } else if (character == '/' && linePosition < sourceString.length() && sourceString.charAt(linePosition) == '*') {
+        return commentToken(sourceString, '*');
+      } else if (character == '/'
+          && linePosition < sourceString.length()
+          && sourceString.charAt(linePosition) == '*') {
         return multiLineCommentToken(sourceString);
       } else if (character == '.') {
         return directiveToken(sourceString);
@@ -199,16 +209,18 @@ public class SourceScanner {
 
   private Character getNextCharacter() {
     var sourceString = getCurrentLine().getDataLine();
-    
+
     while (linePosition >= sourceString.length()) {
-      if (sourceString.length() == 0 && lineNumber >= source.lineCount()) {//last line is an empty string, we are at end of input
+      if (sourceString.length() == 0
+          && lineNumber
+              >= source.lineCount()) { // last line is an empty string, we are at end of input
         tokenPosition = linePosition;
         return null;
       }
       getNextLine();
       sourceString = getCurrentLine().getDataLine();
       if (linePosition < sourceString.length()) {
-        tokenPosition = Math.max(0,linePosition-1);
+        tokenPosition = Math.max(0, linePosition - 1);
         return '\n'; // collapse multiple newlines
       }
     }
@@ -228,7 +240,7 @@ public class SourceScanner {
       character = sourceString.charAt(linePosition);
       linePosition++;
     }
-    tokenPosition = linePosition-1;
+    tokenPosition = linePosition - 1;
     return character;
   }
 
@@ -236,16 +248,16 @@ public class SourceScanner {
     StringBuilder builder = new StringBuilder().append("/");
     char character;
     do {
-      
+
       character = sourceString.charAt(linePosition);
       builder.append(character);
-      
+
       linePosition++;
       if (linePosition >= sourceString.length() && (lineNumber + 1) <= source.lineCount()) {
         builder.append("\n");
         sourceString = getNextLine().getDataLine();
       }
-      
+
     } while (!builder.toString().endsWith("*/"));
     return builder.toString();
   }
@@ -255,20 +267,20 @@ public class SourceScanner {
     char character;
     do {
       if (linePosition >= sourceString.length()) {
-        return builder.toString();//Comment is at the end of the file
+        return builder.toString(); // Comment is at the end of the file
       }
       character = sourceString.charAt(linePosition);
       linePosition++;
       builder.append(character);
-    } while (character != '\n' && character != '\r' );
+    } while (character != '\n' && character != '\r');
     return builder.toString();
   }
 
   private String labelToken(String sourceString, char character) {
     final List<Character> operators =
         Arrays.asList(
-            ',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')', '!',';',
-            '=');
+            ',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')', '!',
+            ';', '=');
 
     StringBuilder builder = new StringBuilder();
 
@@ -398,13 +410,13 @@ public class SourceScanner {
         break;
       }
       character = sourceString.charAt(linePosition);
-      
+
       if (Character.isAlphabetic(character) || Character.isDigit(character)) {
         builder.append(character);
         linePosition++;
       }
     } while (Character.isAlphabetic(character) || Character.isDigit(character));
-    
+
     return builder.toString().trim();
   }
 

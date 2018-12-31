@@ -114,7 +114,6 @@ public final class DirectiveArgumentsValidator {
       case '?':
 
       case 'e': // e = a integer expression
-        System.out.println(token);
         throw new IllegalStateException("Expression No Longer used here.");
 
       case ',':

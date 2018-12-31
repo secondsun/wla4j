@@ -1,6 +1,8 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Logger;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
@@ -15,6 +18,9 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNo
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 
 public class MultiFileParser {
+
+  private static final java.util.logging.Logger LOG =
+      Logger.getLogger(MultiFileParser.class.getName());
 
   private final OpCode[] opcodes;
 
@@ -24,6 +30,10 @@ public class MultiFileParser {
 
   public MultiFileParser(OpCode[] opcodes) {
     this.opcodes = opcodes;
+  }
+
+  public Set<String> getParsedFiles() {
+    return parsedFiles.keySet();
   }
 
   public void parse(final String sourceDirectory, final String rootSourceFile) {
@@ -36,6 +46,7 @@ public class MultiFileParser {
         parseFile(sourceDirectory, fileToParse);
       }
     }
+    parsedFiles.keySet().stream().forEach(key -> LOG.info(key));
   }
 
   /**
@@ -79,15 +90,23 @@ public class MultiFileParser {
   }
 
   private SourceParser makeParser(String sourceDirectory, String rootSourceFile) {
+    LOG.info(sourceDirectory);
+
     rootSourceFile = rootSourceFile.replace("/", File.separator);
     var fileName = sourceDirectory + File.separator + rootSourceFile;
+    LOG.info(fileName);
 
     var stream = getClass().getClassLoader().getResourceAsStream(fileName);
+    if (stream == null) {
+      try {
+        stream = new FileInputStream(fileName);
+      } catch (FileNotFoundException e) {
+        LOG.severe(e.getMessage());
+      }
+    }
     final String outfile = "test.out";
 
     var data = new InputData();
-
-    System.out.println(fileName + "\n" + sourceDirectory);
 
     data.includeFile(stream, rootSourceFile, 0);
 

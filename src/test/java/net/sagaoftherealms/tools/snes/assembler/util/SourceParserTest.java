@@ -1,6 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
 import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.BANK;
 import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.NAME;
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
@@ -11,8 +10,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
+import java.util.stream.Collectors;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode65816;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeZ80;
@@ -44,7 +46,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.Expression
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.IdentifierNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -708,11 +709,14 @@ public class SourceParserTest {
   @Test
   public void testDefineMacro1BasicMacro() throws IOException {
     final String macroSource =
-        IOUtils.toString(
-            SourceParserTest.class
-                .getClassLoader()
-                .getResourceAsStream("parseMacro/define-macro-1.s"),
-            "UTF-8");
+        new BufferedReader(
+                new InputStreamReader(
+                    SourceParserTest.class
+                        .getClassLoader()
+                        .getResourceAsStream("parseMacro/define-macro-1.s")))
+            .lines()
+            .collect(Collectors.joining("\n"));
+
     final String outfile = "define_macro_1.out";
     final String inputFile = "define_macro_1.s";
     final int lineNumber = 0;
@@ -736,11 +740,13 @@ public class SourceParserTest {
   @Test
   public void testDefineMacro2DeclaredVariables() throws IOException {
     final String macroSource =
-        IOUtils.toString(
-            SourceParserTest.class
-                .getClassLoader()
-                .getResourceAsStream("parseMacro/define_macro_2.s"),
-            "UTF-8");
+        new BufferedReader(
+                new InputStreamReader(
+                    SourceParserTest.class
+                        .getClassLoader()
+                        .getResourceAsStream("parseMacro/define_macro_2.s")))
+            .lines()
+            .collect(Collectors.joining("\n"));
     final String outfile = "define_macro_2.out";
     final String inputFile = "parseMacro/define_macro_2.s";
     final int lineNumber = 0;
@@ -764,12 +770,15 @@ public class SourceParserTest {
   /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */
   @Test
   public void testDefineMacro3DeclaredVariables() throws IOException {
+
     final String macroSource =
-        IOUtils.toString(
-            SourceParserTest.class
-                .getClassLoader()
-                .getResourceAsStream("parseMacro/define_macro_3.s"),
-            "UTF-8");
+        new BufferedReader(
+                new InputStreamReader(
+                    SourceParserTest.class
+                        .getClassLoader()
+                        .getResourceAsStream("parseMacro/define_macro_3.s")))
+            .lines()
+            .collect(Collectors.joining("\n"));
     final String outfile = "define_macro_3.out";
     final String inputFile = "parseMacro/define_macro_3.s";
     final int lineNumber = 0;
@@ -842,9 +851,13 @@ public class SourceParserTest {
     "ages-disasm/include/musicMacros.s"
   })
   public void testLargeFile(String fileName) throws IOException {
+
     final String macroSource =
-        IOUtils.toString(
-            SourceParserTest.class.getClassLoader().getResourceAsStream(fileName), "UTF-8");
+        new BufferedReader(
+                new InputStreamReader(
+                    SourceParserTest.class.getClassLoader().getResourceAsStream(fileName)))
+            .lines()
+            .collect(Collectors.joining("\n"));
     final String outfile = fileName + ".out";
     final String inputFile = fileName;
     final int lineNumber = 0;
@@ -953,5 +966,9 @@ public class SourceParserTest {
     assertEquals(
         "obj_Conditional",
         ((MacroNode) ((List<Node>) multiParser.getNodes(includedFile)).get(1)).getName());
+  }
+
+  private boolean isNullOrEmpty(String string) {
+    return string == null || string.isEmpty();
   }
 }

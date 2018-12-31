@@ -5,7 +5,6 @@ import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.toScanner;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import com.google.common.base.Strings;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.Stream;
@@ -245,10 +244,12 @@ public class SourceScannerTest {
   }
 
   @ParameterizedTest
-  @CsvSource({"singleLine: ;a great label, LABEL",
-      ".endIf;a great label, DIRECTIVE",
-      "'multiLine: /* This is a \n multiline comment*/', LABEL",
-      "'multiLine:\n* This is a commentedLine as well.', LABEL"})
+  @CsvSource({
+    "singleLine: ;a great label, LABEL",
+    ".endIf;a great label, DIRECTIVE",
+    "'multiLine: /* This is a \n multiline comment*/', LABEL",
+    "'multiLine:\n* This is a commentedLine as well.', LABEL"
+  })
   public void sourceKeepsComments(String source, String tokenType) {
     final String inputFile = "test.s";
     final int lineNumber = 0;
@@ -257,21 +258,29 @@ public class SourceScannerTest {
     data.includeFile($(source), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
-    
+
     var token1 = scanner.getNextToken(true, false);
     var token2 = scanner.getNextToken(true, false);
     if (token2.getType().equals(TokenTypes.EOL)) {
       token2 = scanner.getNextToken(true, false);
     }
-    
+
     assertEquals(TokenTypes.valueOf(tokenType), token1.getType());
     assertEquals(TokenTypes.COMMENT, token2.getType());
-    
   }
 
   @ParameterizedTest
   @CsvSource({"'multiLine: /* This is a \n multiline comment*/', 1,0,1,10,1,11,2,20 "})
-  public void scannerIncludesLinePositionInformation(String source, int beginLine1, int beginPosition1, int endLine1, int endPosition1, int beginLine2, int beginPosition2, int endLine2, int endPosition2) {
+  public void scannerIncludesLinePositionInformation(
+      String source,
+      int beginLine1,
+      int beginPosition1,
+      int endLine1,
+      int endPosition1,
+      int beginLine2,
+      int beginPosition2,
+      int endLine2,
+      int endPosition2) {
 
     final String inputFile = "test.s";
     final int lineNumber = 0;
@@ -298,11 +307,7 @@ public class SourceScannerTest {
 
     assertEquals(beginPosition2, token2.getPosition().beginOffset);
     assertEquals(endPosition2, token2.getPosition().endOffset);
-
-
-
   }
-
 
   @Test()
   public void emptyDirectiveThrowsException() {
@@ -419,9 +424,7 @@ public class SourceScannerTest {
     data.includeFile(
         SourceScannerTest.class.getClassLoader().getResourceAsStream("main.s"), "main.s", 0);
     data.includeFile(
-        SourceScannerTest.class.getClassLoader().getResourceAsStream("defines.i"),
-        "defines.i",
-        1);
+        SourceScannerTest.class.getClassLoader().getResourceAsStream("defines.i"), "defines.i", 1);
     data.includeFile(
         SourceScannerTest.class.getClassLoader().getResourceAsStream("snes_memory.i"),
         "snes_memeory.i",
@@ -469,7 +472,7 @@ public class SourceScannerTest {
 
               var scanner = data.startRead(OpCodeSpc700.opcodes());
               System.out.println(sourceLine);
-              
+
               while (!scanner.endOfInput()) {
                 System.out.print(scanner.getNextToken());
                 System.out.print(" ");
@@ -480,7 +483,7 @@ public class SourceScannerTest {
 
   @ParameterizedTest
   @CsvSource({
-    "!, NOT, ''", 
+    "!, NOT, ''",
     "\tLINK_STATE_SLEEPING\t\t\tdb; $05, LABEL, LABEL",
     "<=, LT, EQUAL",
     ">=, GT, EQUAL",
@@ -502,7 +505,7 @@ public class SourceScannerTest {
     var token = scanner.getNextToken();
 
     assertEquals(TokenTypes.valueOf(operator1), token.getType());
-    if (!Strings.isNullOrEmpty(operator2)) {
+    if (!(operator2 == null || operator2.isEmpty())) {
       token = scanner.getNextToken();
       assertEquals(TokenTypes.valueOf(operator2), token.getType());
     }

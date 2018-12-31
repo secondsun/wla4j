@@ -1,7 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionParser.KEYS;
@@ -36,7 +34,7 @@ public class SectionNode extends DirectiveNode {
 
   private Integer safeInteger(KEYS key) {
     String arg = getArguments().get(key);
-    if (isNullOrEmpty(arg)) {
+    if (arg == null || arg.isEmpty()) {
       return null;
     }
     return Integer.parseInt(arg);

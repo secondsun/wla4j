@@ -1,14 +1,13 @@
 package net.sagaoftherealms.tools.snes.assembler.main;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceFileDataMap;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
-import org.apache.commons.io.IOUtils;
 
 /**
  * This class is the "object" which is all of the input files. It is mutable and has a few
@@ -26,11 +25,10 @@ public class InputData {
 
     String fileContents = null;
 
-    try {
-      fileContents = IOUtils.toString(fileStream, "UTF-8");
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    fileContents =
+        new BufferedReader(new InputStreamReader(fileStream))
+            .lines()
+            .collect(Collectors.joining("\n"));
     /* preprocess */
     SourceFileDataMap preprocessedDataMap = preprocess_file(fileContents, fileName);
     combinedSourceFile.addMapAt(preprocessedDataMap, includeAt);
@@ -44,7 +42,7 @@ public class InputData {
     SourceFileDataMap buffer = new SourceFileDataMap();
     String[] lines = inputString.split("\n");
     for (int index = 0; index < lines.length; index++) {
-      buffer.addLine(file_name,index, lines[index]);
+      buffer.addLine(file_name, index, lines[index]);
     }
     return buffer;
   }

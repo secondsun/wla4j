@@ -9,7 +9,7 @@ public class SourceDataLine implements Serializable {
   private String fileName = "";
   private int beginSourceLineNumber = 0;
   private int beginPosition = 0;
-  
+
   private String dataLine = "";
 
   public SourceDataLine(String sourceFileName, int sourceLineNumber, String sourceCode) {

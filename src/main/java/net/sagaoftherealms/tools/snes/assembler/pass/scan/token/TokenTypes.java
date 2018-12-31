@@ -30,5 +30,4 @@ public enum TokenTypes {
   AT,
   EOL,
   END_OF_INPUT;
-  
 }

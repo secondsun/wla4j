@@ -2,7 +2,6 @@ package net.sagaoftherealms.tools.snes.assembler.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * This file is the the {@link net.sagaoftherealms.tools.snes.assembler.main.InputData} data and
@@ -72,7 +71,6 @@ public class SourceFileDataMap {
   public void addMapAt(SourceFileDataMap preprocessedDataMap, int includeAt) {
     lines.addAll(includeAt, preprocessedDataMap.lines);
   }
-
 
   public int lineCount() {
     return lines.size();
