@@ -4,7 +4,7 @@ open module wla_parser {
   exports net.sagaoftherealms.tools.snes.assembler.definition.directives;
   exports net.sagaoftherealms.tools.snes.assembler.definition.opcodes;
   exports net.sagaoftherealms.tools.snes.assembler.pass.parse.bank;
-  exports net.sagaoftherealms.tools.snes.assembler.pass.parse.directive
+  exports net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
   exports net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
   exports net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control;
   exports net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.gbheader;
