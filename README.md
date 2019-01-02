@@ -17,7 +17,9 @@ Currently, this is a work in progress project.  The current work is focusing on 
  ## Features to be implemented
   * A library that can turn assembly inputs into syntax trees.
   * A maven plugin that can generate either wla files to be consumed by wlalink or a snes binary (TBD)
-  * A IntelliJ or Netbeans plugin that can be used to as a basis for future work, but provides basic editing, building, etc support.
 
-# Post 1.0
+# WLA-Language-Server
   * A language server implementation to allow this project to be used in editors such as Visual Studio Code.
+  * https://github.com/secondsun/wla-language-server
+  
+  [![VS CODE DEMO](https://img.youtube.com/vi/LOv05pIG0Fc/0.jpg)](https://www.youtube.com/watch?v=LOv05pIG0Fc)
