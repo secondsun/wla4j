@@ -926,6 +926,34 @@ public class SourceParserTest {
         "writeobjectbyte",
         writeobjectwordMacro.getBody().getChildren().get(0).getSourceToken().getString());
   }
+  
+  @Test
+  public void testIncludeDirective() {
+    var source = ".include \"constants/areaFlags.s\"\n"
+        + ".include \"constants/breakableTileSources.s\"\n"
+        + ".include \"constants/directions.s\"\n"
+        + ".include \"constants/collisionEffects.s\"\n"
+        + ".include \"constants/collisionTypes.s\"";
+    
+    var parser = asParser(source);
+    
+    DirectiveNode node1 = (DirectiveNode) parser.nextNode();
+    DirectiveNode node2 = (DirectiveNode) parser.nextNode();
+    DirectiveNode node3 = (DirectiveNode) parser.nextNode();
+    DirectiveNode node4 = (DirectiveNode) parser.nextNode();
+    DirectiveNode node5 = (DirectiveNode) parser.nextNode();
+    
+    var arguments3 = node3.getArguments();
+    var fileName = arguments3.getString(0);
+    var fileName2 = arguments3.getChildren().get(0).getSourceToken().getString();
+    
+    assertEquals(fileName, fileName2);
+    assertEquals("constants/directions.s", fileName);
+    assertEquals("constants/directions.s", fileName2);
+    
+    
+  }
+  
 
   @Test
   public void testStringExpressions() {
