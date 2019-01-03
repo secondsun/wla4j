@@ -38,12 +38,12 @@ public class MultiFileParser {
 
   public void parse(final String sourceDirectory, final String rootSourceFile) {
     preParse(sourceDirectory, rootSourceFile, new HashSet<>());
-    parseFile(sourceDirectory, rootSourceFile);
+    reparseFile(sourceDirectory, rootSourceFile);
     while (!filesToParse.isEmpty()) {
       List<String> filesList = new ArrayList<>(filesToParse);
       filesToParse.clear();
       for (String fileToParse : filesList) {
-        parseFile(sourceDirectory, fileToParse);
+        reparseFile(sourceDirectory, fileToParse);
       }
     }
     parsedFiles.keySet().stream().forEach(key -> LOG.info(key));
@@ -71,7 +71,7 @@ public class MultiFileParser {
         });
   }
 
-  private void parseFile(String sourceDirectory, final String rootSourceFile) {
+  public void reparseFile(String sourceDirectory, final String rootSourceFile) {
     var fileName = sourceDirectory + File.separator + rootSourceFile;
     var parser = makeParser(sourceDirectory, rootSourceFile);
 
