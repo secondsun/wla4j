@@ -27,6 +27,7 @@ public class MultiFileParser {
   private final Map<String, List<Node>> parsedFiles = new HashMap<>();
   private final Set<String> filesToParse = new HashSet<>();
   private final Map<String, Optional<MacroNode>> macroNames = new HashMap<>();
+  private final Map<String, List<ErrorNode>> errorNodes = new HashMap<>();
 
   public MultiFileParser(OpCode[] opcodes) {
     this.opcodes = opcodes;
@@ -86,6 +87,7 @@ public class MultiFileParser {
       newList.add(node);
       node = parser.nextNode();
     }
+    errorNodes.put(fileName, parser.getErrors());
     parsedFiles.put(fileName, newList);
   }
 
@@ -124,5 +126,9 @@ public class MultiFileParser {
 
   public List<Node> getNodes(String includedFile) {
     return parsedFiles.get(includedFile);
+  }
+
+  public List<ErrorNode> getErrors(String fileName) {
+    return errorNodes.getOrDefault(fileName, new ArrayList<>());
   }
 }
