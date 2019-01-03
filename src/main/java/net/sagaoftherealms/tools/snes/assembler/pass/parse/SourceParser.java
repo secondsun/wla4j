@@ -5,13 +5,17 @@ import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenType
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveUtils;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
@@ -22,10 +26,13 @@ import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
 
 public class SourceParser {
 
+  private static final Logger LOG = Logger.getLogger("SourceParser");
+
   private final SourceScanner scanner;
   private Token token;
   private Map<String, Optional<MacroNode>> macroMap = new HashMap<>();
   private Set<String> includes = new HashSet<>();
+  private List<ErrorNode> errors = new ArrayList<>();
 
   public SourceParser(SourceScanner scanner) {
     this.scanner = scanner;
@@ -113,14 +120,21 @@ public class SourceParser {
         case OPCODE:
           OpcodeNode opcodeNode = opcode();
           return opcodeNode;
+        case ERROR:
+          var problemToken = token;
+          consume(TokenTypes.ERROR);
+          throw new ParseException("Invalid token", problemToken);
         case EOL:
           consume(TokenTypes.EOL);
           return nextNode();
         default:
           return null;
       }
-    } catch (Exception e) {
-      throw new ParseException(e.getMessage(), e, token);
+    } catch (ParseException e) {
+      LOG.log(Level.SEVERE, e.getMessage(), e);
+      var node = new ErrorNode(token, e);
+      errors.add(node);
+      return node;
     }
   }
 
@@ -224,5 +238,9 @@ public class SourceParser {
 
   public Set<String> getIncludes() {
     return Collections.unmodifiableSet(includes);
+  }
+
+  public List<ErrorNode> getErrors() {
+    return Collections.unmodifiableList(errors);
   }
 }

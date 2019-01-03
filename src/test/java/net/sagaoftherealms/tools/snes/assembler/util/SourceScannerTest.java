@@ -1,6 +1,7 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.asParser;
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.toScanner;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -13,9 +14,10 @@ import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode65816;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeSpc700;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeZ80;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.ErrorNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -50,6 +52,17 @@ public class SourceScannerTest {
               sourceLine = sourceLine.replace("&", "0ah");
               return Arguments.of(sourceLine, code);
             });
+  }
+
+  @Test
+  public void testScanErrorHandling() {
+
+    var source = "."; // If true  {errorNode} end;
+
+    var parser = asParser(source);
+    ErrorNode ifNode = (ErrorNode) parser.nextNode();
+    assertEquals(
+        TokenTypes.ERROR, ((ParseException) ifNode.getException()).getProblemToken().getType());
   }
 
   @ParameterizedTest
@@ -130,11 +143,11 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($("\"This should crash"), inputFile, lineNumber);
+    data.includeFile($("\"This \nshould\n crash"), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
-    Assertions.assertThrows(IllegalStateException.class, () -> scanner.getNextToken());
+    assertEquals(TokenTypes.ERROR, scanner.getNextToken().getType());
   }
 
   @ParameterizedTest
@@ -320,7 +333,7 @@ public class SourceScannerTest {
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
-    Assertions.assertThrows(IllegalStateException.class, () -> scanner.getNextToken());
+    assertEquals(TokenTypes.ERROR, scanner.getNextToken().getType());
   }
 
   @ParameterizedTest

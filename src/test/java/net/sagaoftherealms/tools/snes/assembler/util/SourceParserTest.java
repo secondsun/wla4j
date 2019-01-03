@@ -13,12 +13,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode65816;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeZ80;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.ErrorNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelDefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.MacroCallNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.MultiFileParser;
@@ -489,7 +491,7 @@ public class SourceParserTest {
   public void testDWFailsWithString() {
     String source = ".dw \"Fail\"";
     var parser = asParser(source);
-    assertThrows(ParseException.class, () -> parser.nextNode());
+    assertEquals(NodeTypes.ERROR, parser.nextNode().getType());
   }
 
   @Test
@@ -926,34 +928,32 @@ public class SourceParserTest {
         "writeobjectbyte",
         writeobjectwordMacro.getBody().getChildren().get(0).getSourceToken().getString());
   }
-  
+
   @Test
   public void testIncludeDirective() {
-    var source = ".include \"constants/areaFlags.s\"\n"
-        + ".include \"constants/breakableTileSources.s\"\n"
-        + ".include \"constants/directions.s\"\n"
-        + ".include \"constants/collisionEffects.s\"\n"
-        + ".include \"constants/collisionTypes.s\"";
-    
+    var source =
+        ".include \"constants/areaFlags.s\"\n"
+            + ".include \"constants/breakableTileSources.s\"\n"
+            + ".include \"constants/directions.s\"\n"
+            + ".include \"constants/collisionEffects.s\"\n"
+            + ".include \"constants/collisionTypes.s\"";
+
     var parser = asParser(source);
-    
+
     DirectiveNode node1 = (DirectiveNode) parser.nextNode();
     DirectiveNode node2 = (DirectiveNode) parser.nextNode();
     DirectiveNode node3 = (DirectiveNode) parser.nextNode();
     DirectiveNode node4 = (DirectiveNode) parser.nextNode();
     DirectiveNode node5 = (DirectiveNode) parser.nextNode();
-    
+
     var arguments3 = node3.getArguments();
     var fileName = arguments3.getString(0);
     var fileName2 = arguments3.getChildren().get(0).getSourceToken().getString();
-    
+
     assertEquals(fileName, fileName2);
     assertEquals("constants/directions.s", fileName);
     assertEquals("constants/directions.s", fileName2);
-    
-    
   }
-  
 
   @Test
   public void testStringExpressions() {
@@ -994,6 +994,21 @@ public class SourceParserTest {
     assertEquals(
         "obj_Conditional",
         ((MacroNode) ((List<Node>) multiParser.getNodes(includedFile)).get(1)).getName());
+  }
+
+  @Test
+  public void testParseErrors() {
+    List<ErrorNode> errors = new ArrayList<>();
+    var source = ".if 1\n .include \n .endif"; // If true  {errorNode} end;
+
+    var parser = asParser(source);
+    DirectiveNode ifNode = (DirectiveNode) parser.nextNode();
+    assertEquals(
+        NodeTypes.ERROR,
+        ((DirectiveBodyNode) (ifNode.getBody().getChildren().get(0)))
+            .getChildren()
+            .get(0)
+            .getType());
   }
 
   private boolean isNullOrEmpty(String string) {

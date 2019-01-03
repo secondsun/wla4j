@@ -1,7 +1,11 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
+import static java.lang.Math.min;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
@@ -11,6 +15,8 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
 /** A stateful object that is used to read data from a {@link SourceFileDataMap} */
 public class SourceScanner {
+
+  private static final Logger LOG = Logger.getLogger("SourceScanner");
 
   private final SourceFileDataMap source;
   private final List<String> opCodes;
@@ -48,79 +54,101 @@ public class SourceScanner {
   }
 
   public Token getNextToken(boolean advance, boolean skipComments) {
-    if (endOfInput()) {
-      return new Token(
-          "",
-          TokenTypes.END_OF_INPUT,
-          getCurrentLine().getFileName(),
-          new Position(lineNumber, linePosition, lineNumber, linePosition));
-    }
-
-    // line number is advanced in getNextTokenString so we need this value.
-    var initialLineNumber = lineNumber;
-
-    String tokenString = getNextTokenString(advance);
-
-    // getNextTokenString updates token position to the correct value.  This is why the two initial
-    // values are on either side of getNextTokenString
+    var initialLineNumber = Math.max(1, lineNumber);
     var initialLinePosition = tokenPosition;
+    try {
+      if (endOfInput()) {
+        return new Token(
+            "",
+            TokenTypes.END_OF_INPUT,
+            getCurrentLine().getFileName(),
+            new Position(lineNumber, linePosition, lineNumber, linePosition));
+      }
 
-    TokenTypes type;
-    final List<Character> operators =
-        Arrays.asList(
-            ',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')', '!',
-            '=', '\\', '@');
-    final List<String> sizeTokens = Arrays.asList(".b", ".w", ".l", ".B", ".W", ".L");
+      // line number is advanced in getNextTokenString so we need this value.
 
-    if (tokenString == null) {
-      type = TokenTypes.END_OF_INPUT;
-    } else if (tokenString.equals("\n")) {
-      type = TokenTypes.EOL;
-    } else if (tokenString.startsWith("\"")) {
-      type = TokenTypes.STRING;
-      // trim quotes;
-      tokenString = tokenString.substring(1, tokenString.length() - 1);
-    } else if (tokenString.startsWith(";")) {
-      type = TokenTypes.COMMENT;
-    } else if (tokenString.startsWith("*") && tokenPosition == 0) {
-      type = TokenTypes.COMMENT;
-    } else if (tokenString.startsWith("/*")) {
-      type = TokenTypes.COMMENT;
-    } else if (sizeTokens.contains(tokenString)) {
-      type = TokenTypes.SIZE;
-    } else if (tokenString.startsWith(".")) {
-      type = TokenTypes.DIRECTIVE;
-    } else if (tokenString.matches(TokenUtil.DECIMAL_NUMBER_REGEX)
-        || tokenString.matches(TokenUtil.HEX_NUMBER_REGEX_0)
-        || tokenString.matches(TokenUtil.HEX_NUMBER_REGEX_$)
-        || tokenString.matches(TokenUtil.CHARACTER_NUMBER_REGEX)
-        || tokenString.matches(TokenUtil.BINARY_NUMBER_REGEX)) {
-      type = TokenTypes.NUMBER;
-    } else if ((!tokenString.equals("@"))
-        && (Character.isAlphabetic(tokenString.charAt(0))
-            || tokenString.charAt(0) == '_'
-            || tokenString.charAt(0) == ':'
-            || tokenString.charAt(0) == '@')) {
-      if (opCodes.contains(tokenString.toUpperCase())) {
-        type = TokenTypes.OPCODE;
+      String tokenString = getNextTokenString(advance);
+
+      // getNextTokenString updates token position to the correct value.  This is why the two
+      // initial
+      // values are on either side of getNextTokenString
+      initialLinePosition = tokenPosition;
+
+      TokenTypes type;
+      final List<Character> operators =
+          Arrays.asList(
+              ',', '|', '&', '^', '+', '-', '#', '~', '*', '/', '<', '>', '[', ']', '(', ')', '!',
+              '=', '\\', '@');
+      final List<String> sizeTokens = Arrays.asList(".b", ".w", ".l", ".B", ".W", ".L");
+
+      if (tokenString == null) {
+        type = TokenTypes.END_OF_INPUT;
+      } else if (tokenString.equals("\n")) {
+        type = TokenTypes.EOL;
+      } else if (tokenString.startsWith("\"")) {
+        type = TokenTypes.STRING;
+        // trim quotes;
+        tokenString = tokenString.substring(1, tokenString.length() - 1);
+      } else if (tokenString.startsWith(";")) {
+        type = TokenTypes.COMMENT;
+      } else if (tokenString.startsWith("*") && tokenPosition == 0) {
+        type = TokenTypes.COMMENT;
+      } else if (tokenString.startsWith("/*")) {
+        type = TokenTypes.COMMENT;
+      } else if (sizeTokens.contains(tokenString)) {
+        type = TokenTypes.SIZE;
+      } else if (tokenString.startsWith(".")) {
+        type = TokenTypes.DIRECTIVE;
+      } else if (tokenString.matches(TokenUtil.DECIMAL_NUMBER_REGEX)
+          || tokenString.matches(TokenUtil.HEX_NUMBER_REGEX_0)
+          || tokenString.matches(TokenUtil.HEX_NUMBER_REGEX_$)
+          || tokenString.matches(TokenUtil.CHARACTER_NUMBER_REGEX)
+          || tokenString.matches(TokenUtil.BINARY_NUMBER_REGEX)) {
+        type = TokenTypes.NUMBER;
+      } else if ((!tokenString.equals("@"))
+          && (Character.isAlphabetic(tokenString.charAt(0))
+              || tokenString.charAt(0) == '_'
+              || tokenString.charAt(0) == ':'
+              || tokenString.charAt(0) == '@')) {
+        if (opCodes.contains(tokenString.toUpperCase())) {
+          type = TokenTypes.OPCODE;
+        } else {
+          type = TokenTypes.LABEL;
+        }
+      } else if (tokenString.length() == 1 && operators.contains(tokenString.charAt(0))) {
+        type = operatorType(tokenString.charAt(0));
       } else {
         type = TokenTypes.LABEL;
       }
-    } else if (tokenString.length() == 1 && operators.contains(tokenString.charAt(0))) {
-      type = operatorType(tokenString.charAt(0));
-    } else {
-      type = TokenTypes.LABEL;
-    }
 
-    if (type == TokenTypes.COMMENT && skipComments) {
-      return getNextToken(advance, skipComments);
-    }
+      if (type == TokenTypes.COMMENT && skipComments) {
+        return getNextToken(advance, skipComments);
+      }
 
-    return new Token(
-        tokenString,
-        type,
-        getCurrentLine().getFileName(),
-        new Position(initialLineNumber, initialLinePosition, lineNumber, linePosition));
+      return new Token(
+          tokenString,
+          type,
+          getCurrentLine().getFileName(),
+          new Position(initialLineNumber, initialLinePosition, lineNumber, linePosition));
+    } catch (Exception e) {
+      var tokenString = "";
+      try {
+        var line = this.getCurrentLine();
+        var sourceLength = line.getDataLine().length();
+        tokenString =
+            line.getDataLine()
+                .substring(min(sourceLength, initialLineNumber), min(sourceLength, linePosition));
+
+      } catch (Exception ex) {
+        LOG.log(Level.SEVERE, ex.getMessage(), ex);
+      }
+      /// bobobobob
+      return new Token(
+          tokenString,
+          TokenTypes.ERROR,
+          getCurrentLine().getFileName(),
+          new Position(initialLineNumber, initialLinePosition, lineNumber, linePosition));
+    }
   }
 
   private String getNextTokenString(boolean advance) {

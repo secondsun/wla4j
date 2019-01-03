@@ -29,5 +29,6 @@ public enum TokenTypes {
   ESCAPE,
   AT,
   EOL,
-  END_OF_INPUT;
+  END_OF_INPUT,
+  ERROR;
 }

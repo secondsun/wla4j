@@ -17,5 +17,6 @@ public enum NodeTypes {
   MACRO_CALL,
   SLOT,
   MACRO_BODY,
+  ERROR,
   ENUM
 }
