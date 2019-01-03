@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
@@ -72,8 +73,10 @@ public class MultiFileParser {
         });
   }
 
-  public void reparseFile(String sourceDirectory, final String rootSourceFile) {
+  public void reparseFile(String sourceDirectory, String rootSourceFile) {
+
     var fileName = sourceDirectory + File.separator + rootSourceFile;
+
     var parser = makeParser(sourceDirectory, rootSourceFile);
 
     List<Node> newList = new ArrayList<>();
@@ -94,7 +97,6 @@ public class MultiFileParser {
   private SourceParser makeParser(String sourceDirectory, String rootSourceFile) {
     LOG.info(sourceDirectory);
 
-    rootSourceFile = rootSourceFile.replace("/", File.separator);
     var fileName = sourceDirectory + File.separator + rootSourceFile;
     LOG.info(fileName);
 
@@ -129,6 +131,8 @@ public class MultiFileParser {
   }
 
   public List<ErrorNode> getErrors(String fileName) {
+    LOG.info("getErrors:" + fileName);
+    LOG.info(errorNodes.keySet().stream().collect(Collectors.joining("\n")));
     return errorNodes.getOrDefault(fileName, new ArrayList<>());
   }
 }

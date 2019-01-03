@@ -202,10 +202,10 @@ public class SourceParser {
   }
 
   private Node directive(String directiveName) {
-
+    var directiveToken = token;
     consume(TokenTypes.DIRECTIVE);
 
-    var node = DirectiveUtils.createDirectiveNode(directiveName, getCurrentToken());
+    var node = DirectiveUtils.createDirectiveNode(directiveName, directiveToken);
     var nodeParser = DirectiveUtils.getParser(node.getDirectiveType());
     node.setArguments(nodeParser.arguments(this));
     node.setBody(nodeParser.body(this, getCurrentToken()));

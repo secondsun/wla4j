@@ -964,6 +964,14 @@ public class SourceParserTest {
   }
 
   @Test
+  public void testDirectiveError() {
+    var source = ".kaboom";
+    var parser = asParser(source, OpCodeZ80.opcodes());
+    ErrorNode opcode = (ErrorNode) parser.nextNode();
+    assertEquals(1, parser.getErrors().size());
+  }
+
+  @Test
   public void testOpcodes() {
     var source = "ld l,a";
     var parser = asParser(source, OpCodeZ80.opcodes());

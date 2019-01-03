@@ -7,6 +7,7 @@ import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenType
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.bank.BankNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.bank.BankParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfDefForMacrosParser;
@@ -176,243 +177,247 @@ public final class DirectiveUtils {
    * Creates the appropriate class of directive node
    *
    * @param directiveName the name of the directive
-   * @param token the token that the directive begins at
+   * @param directiveToken
    * @return a directive node with all of its arguments and body
    */
-  public static DirectiveNode createDirectiveNode(String directiveName, Token token) {
+  public static DirectiveNode createDirectiveNode(String directiveName, Token directiveToken) {
     // A few directive enums don't match the source pattern.  We do a manual mapping here.
-    switch (directiveName.toUpperCase()) {
-      case ".8BIT":
-        directiveName = ".EIGHT_BIT";
-        break;
-      default:
-        break;
+    try {
+      switch (directiveName.toUpperCase()) {
+        case ".8BIT":
+          directiveName = ".EIGHT_BIT";
+          break;
+        default:
+          break;
+      }
+      AllDirectives directive = AllDirectives.valueOf(directiveName.replace(".", "").toUpperCase());
+      DirectiveNode node;
+      switch (directive) {
+        case BANK:
+          node = new BankNode(directiveToken);
+          break;
+        case ENUM:
+          node = new EnumNode(directiveToken);
+          break;
+
+        case STRUCT:
+          node = new StructNode(directiveToken);
+          break;
+        case SECTION:
+          node = new SectionNode(directiveToken);
+          break;
+        case MACRO:
+          node = new MacroNode(directiveToken);
+          break;
+        case INCBIN:
+
+        case IFDEFM:
+        case IFNDEFM:
+        case IF:
+
+        case IFDEF:
+
+        case IFEXISTS:
+
+        case IFNDEF:
+
+        case IFEQ:
+
+        case IFNEQ:
+
+        case IFLE:
+
+        case IFLEEQ:
+
+        case IFGR:
+
+        case IFGREQ:
+
+        case ELSE:
+
+        case ENDIF:
+
+        case UNDEF:
+
+        case EIGHT_BIT:
+
+        case SIXTEEN_BIT:
+
+        case TWENTYFOUR_BIT:
+
+        case ACCU:
+
+        case INDEX:
+
+        case ASM:
+
+        case ENDASM:
+
+        case DBRND:
+
+        case DWRND:
+
+        case DBCOS:
+
+        case DBSIN:
+
+        case DWCOS:
+
+        case DWSIN:
+
+        case ROMBANKS:
+
+        case EMPTYFILL:
+
+        case COMPUTESNESCHECKSUM:
+
+        case INCDIR:
+
+        case INCLUDE:
+
+        case INPUT:
+
+        case BACKGROUND:
+
+        case UNBACKGROUND:
+
+        case FAIL:
+
+        case FCLOSE:
+
+        case FOPEN:
+
+        case FREAD:
+
+        case FSIZE:
+        case ENDM:
+
+        case SHIFT:
+
+        case FASTROM:
+
+        case SLOWROM:
+
+        case SMC:
+
+        case HIROM:
+
+        case EXHIROM:
+
+        case LOROM:
+
+        case BASE:
+
+        case BLOCK:
+
+        case ENDB:
+
+        case SLOT:
+
+        case ROMBANKSIZE:
+
+        case ORG:
+
+        case ORGA:
+
+        case DS:
+
+        case DSB:
+
+        case DSTRUCT:
+
+        case DSW:
+
+        case DB:
+        case BYT:
+        case BYTE:
+
+        case DBM:
+
+        case SYM:
+
+        case SYMBOL:
+
+        case BR:
+
+        case BREAKPOINT:
+
+        case ASCIITABLE:
+
+        case ENDA:
+
+        case ASCTABLE:
+
+        case ASC:
+
+        case DW:
+
+        case WORD:
+
+        case DWM:
+
+        case DEFINE:
+
+        case DEF:
+
+        case EQU:
+
+        case UNDEFINE:
+
+        case REPEAT:
+
+        case REPT:
+
+        case ENDR:
+
+        case ENDE:
+
+        case ENDST:
+
+        case MEMORYMAP:
+
+        case ENDME:
+
+        case ROMBANKMAP:
+
+        case ENDRO:
+
+        case SEED:
+
+        case SECTION_BANKSECTION:
+
+        case RAMSECTION:
+
+        case ENDS:
+
+        case EXPORT:
+
+        case PRINTT:
+
+        case PRINTV:
+
+        case OUTNAME:
+
+        case SNESHEADER:
+
+        case ENDSNES:
+
+        case SNESNATIVEVECTOR:
+
+        case ENDNATIVEVECTOR:
+
+        case SNESEMUVECTOR:
+
+        case ENDEMUVECTOR:
+
+        default:
+          node = new DirectiveNode(directive, directiveToken);
+      }
+
+      return node;
+    } catch (Exception ex) {
+      throw new ParseException("invalid directive " + directiveName, ex, directiveToken);
     }
-    AllDirectives directive = AllDirectives.valueOf(directiveName.replace(".", "").toUpperCase());
-    DirectiveNode node;
-    switch (directive) {
-      case BANK:
-        node = new BankNode(token);
-        break;
-      case ENUM:
-        node = new EnumNode(token);
-        break;
-
-      case STRUCT:
-        node = new StructNode(token);
-        break;
-      case SECTION:
-        node = new SectionNode(token);
-        break;
-      case MACRO:
-        node = new MacroNode(token);
-        break;
-      case INCBIN:
-
-      case IFDEFM:
-      case IFNDEFM:
-      case IF:
-
-      case IFDEF:
-
-      case IFEXISTS:
-
-      case IFNDEF:
-
-      case IFEQ:
-
-      case IFNEQ:
-
-      case IFLE:
-
-      case IFLEEQ:
-
-      case IFGR:
-
-      case IFGREQ:
-
-      case ELSE:
-
-      case ENDIF:
-
-      case UNDEF:
-
-      case EIGHT_BIT:
-
-      case SIXTEEN_BIT:
-
-      case TWENTYFOUR_BIT:
-
-      case ACCU:
-
-      case INDEX:
-
-      case ASM:
-
-      case ENDASM:
-
-      case DBRND:
-
-      case DWRND:
-
-      case DBCOS:
-
-      case DBSIN:
-
-      case DWCOS:
-
-      case DWSIN:
-
-      case ROMBANKS:
-
-      case EMPTYFILL:
-
-      case COMPUTESNESCHECKSUM:
-
-      case INCDIR:
-
-      case INCLUDE:
-
-      case INPUT:
-
-      case BACKGROUND:
-
-      case UNBACKGROUND:
-
-      case FAIL:
-
-      case FCLOSE:
-
-      case FOPEN:
-
-      case FREAD:
-
-      case FSIZE:
-      case ENDM:
-
-      case SHIFT:
-
-      case FASTROM:
-
-      case SLOWROM:
-
-      case SMC:
-
-      case HIROM:
-
-      case EXHIROM:
-
-      case LOROM:
-
-      case BASE:
-
-      case BLOCK:
-
-      case ENDB:
-
-      case SLOT:
-
-      case ROMBANKSIZE:
-
-      case ORG:
-
-      case ORGA:
-
-      case DS:
-
-      case DSB:
-
-      case DSTRUCT:
-
-      case DSW:
-
-      case DB:
-      case BYT:
-      case BYTE:
-
-      case DBM:
-
-      case SYM:
-
-      case SYMBOL:
-
-      case BR:
-
-      case BREAKPOINT:
-
-      case ASCIITABLE:
-
-      case ENDA:
-
-      case ASCTABLE:
-
-      case ASC:
-
-      case DW:
-
-      case WORD:
-
-      case DWM:
-
-      case DEFINE:
-
-      case DEF:
-
-      case EQU:
-
-      case UNDEFINE:
-
-      case REPEAT:
-
-      case REPT:
-
-      case ENDR:
-
-      case ENDE:
-
-      case ENDST:
-
-      case MEMORYMAP:
-
-      case ENDME:
-
-      case ROMBANKMAP:
-
-      case ENDRO:
-
-      case SEED:
-
-      case SECTION_BANKSECTION:
-
-      case RAMSECTION:
-
-      case ENDS:
-
-      case EXPORT:
-
-      case PRINTT:
-
-      case PRINTV:
-
-      case OUTNAME:
-
-      case SNESHEADER:
-
-      case ENDSNES:
-
-      case SNESNATIVEVECTOR:
-
-      case ENDNATIVEVECTOR:
-
-      case SNESEMUVECTOR:
-
-      case ENDEMUVECTOR:
-
-      default:
-        node = new DirectiveNode(directive, token);
-    }
-
-    return node;
   }
 
   public static NodeTypes getDirectiveNodeType(AllDirectives directive) {
