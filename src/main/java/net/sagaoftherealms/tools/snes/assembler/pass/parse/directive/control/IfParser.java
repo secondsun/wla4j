@@ -82,10 +82,17 @@ public class IfParser extends GenericDirectiveParser {
 
       node = parser.nextNode();
 
+      if (node == null) {
+        throw new ParseException(".endif not found", token);
+      }
+
       while (node.getType() != NodeTypes.DIRECTIVE
           || (((DirectiveNode) node).getDirectiveType() != AllDirectives.ENDIF)) {
         elseBody.addChild(node);
         node = parser.nextNode();
+        if (node == null) {
+          throw new ParseException(".endif not found", token);
+        }
       }
     } else if (node.getType() == NodeTypes.DIRECTIVE
         && ((DirectiveNode) node).getDirectiveType() != AllDirectives.ENDIF) {
