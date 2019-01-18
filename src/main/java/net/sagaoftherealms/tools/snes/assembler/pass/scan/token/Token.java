@@ -50,7 +50,10 @@ public class Token implements Serializable {
   }
 
   public static class Position implements Serializable {
-    public final int beginLine, beginOffset, endLine, endOffset;
+    public final int beginLine;
+    public final int beginOffset;
+    public int endLine;
+    public int endOffset;
 
     public Position(int beginLine, int beginPosition, int endLine, int endPosition) {
       this.beginLine = beginLine;

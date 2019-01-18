@@ -2,10 +2,11 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
-public class Node {
+public class Node implements Iterable<Node>{
 
   private final NodeTypes type;
   private final List<Node> children = new ArrayList<>();
@@ -31,5 +32,10 @@ public class Node {
 
   public Token getSourceToken() {
     return sourceToken;
+  }
+
+  @Override
+  public Iterator<Node> iterator() {
+    return new NodeIterator(this);
   }
 }

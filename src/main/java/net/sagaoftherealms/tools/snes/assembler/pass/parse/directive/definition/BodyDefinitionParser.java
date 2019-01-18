@@ -173,38 +173,45 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
       var currentBody = thenBody;
 
       token = parser.getCurrentToken();
+      var firstToken = token;
+      try {
+        while (token != null
+            && !token.getString().equalsIgnoreCase(".endif")
+            && token.getType() != TokenTypes.END_OF_INPUT) {
+          var tokenString = token.getString().toUpperCase().replace(".", "");
+          switch (tokenString) {
+            case "IF":
+            case "IFNEQ":
+            case "IFLE":
+            case "IFDEF":
+            case "IFDEFM":
+            case "IFEQ":
+            case "IFEXISTS":
+            case "IFGR":
+            case "IFGREQ":
+            case "IFLEEQ":
+            case "IFNDEF":
+            case "IFNDEFM":
+              currentBody.addChild(makeIfNode(parser, token));
+              break;
+            case "ELSE":
+              elseBody = new DirectiveBodyNode(token);
+              currentBody = elseBody;
+              parser.consumeAndClear(TokenTypes.DIRECTIVE);
+              break;
+            default:
+              currentBody.addChild(makeDefinitionNode(parser, token));
+              break;
+          }
 
-      while (token != null
-          && !token.getString().equalsIgnoreCase(".endif")
-          && token.getType() != TokenTypes.END_OF_INPUT) {
-        var tokenString = token.getString().toUpperCase().replace(".", "");
-        switch (tokenString) {
-          case "IF":
-          case "IFNEQ":
-          case "IFLE":
-          case "IFDEF":
-          case "IFDEFM":
-          case "IFEQ":
-          case "IFEXISTS":
-          case "IFGR":
-          case "IFGREQ":
-          case "IFLEEQ":
-          case "IFNDEF":
-          case "IFNDEFM":
-            currentBody.addChild(makeIfNode(parser, token));
-            break;
-          case "ELSE":
-            elseBody = new DirectiveBodyNode(token);
-            currentBody = elseBody;
-            parser.consumeAndClear(TokenTypes.DIRECTIVE);
-            break;
-          default:
-            currentBody.addChild(makeDefinitionNode(parser, token));
-            break;
+          token = parser.getCurrentToken();
         }
-
-        token = parser.getCurrentToken();
+      } catch (ParseException ex) {
+        firstToken.getPosition().endLine = token.getPosition().endLine;
+        firstToken.getPosition().endOffset = token.getPosition().endOffset;
+        throw new ParseException(ex.getMessage(), firstToken);
       }
+
       parser.consumeAndClear(TokenTypes.DIRECTIVE); // Consume endif
 
       return new IfBodyNode(thenBody, elseBody, thenBody.getSourceToken());
