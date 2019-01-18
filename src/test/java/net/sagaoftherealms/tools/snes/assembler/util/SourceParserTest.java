@@ -928,7 +928,7 @@ public class SourceParserTest {
         "writeobjectbyte",
         writeobjectwordMacro.getBody().getChildren().get(0).getSourceToken().getString());
 
-    //Check that all nodes are created
+    // Check that all nodes are created
     int writeobjectbyteMacronodeSize = 0;
 
     for (var node : writeobjectwordMacro) {
@@ -937,7 +937,6 @@ public class SourceParserTest {
     }
 
     assertEquals(21, writeobjectbyteMacronodeSize);
-
   }
 
   @Test
@@ -964,8 +963,6 @@ public class SourceParserTest {
     assertEquals(fileName, fileName2);
     assertEquals("constants/directions.s", fileName);
     assertEquals("constants/directions.s", fileName2);
-
-
   }
 
   @Test

@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
-public class Node implements Iterable<Node>{
+public class Node implements Iterable<Node> {
 
   private final NodeTypes type;
   private final List<Node> children = new ArrayList<>();

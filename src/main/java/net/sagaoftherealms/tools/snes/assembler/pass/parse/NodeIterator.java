@@ -8,7 +8,7 @@ public class NodeIterator implements Iterator<Node> {
   private Node node;
   private boolean returned = false;
 
-  private int childIndex = 0; //Index of child we are iterating
+  private int childIndex = 0; // Index of child we are iterating
   private Iterator<Node> childIterator;
 
   public NodeIterator(Node node) {
@@ -44,9 +44,9 @@ public class NodeIterator implements Iterator<Node> {
   }
 
   private Node returnNextChild() {
-    if (childIndex >= node.getChildren().size()) { //All children consumed, return this
+    if (childIndex >= node.getChildren().size()) { // All children consumed, return this
       return returnNode();
-    } else {//create next child iterator and return first item.
+    } else { // create next child iterator and return first item.
       childIterator = node.getChildren().get(childIndex++).iterator();
       return childIterator.next();
     }
