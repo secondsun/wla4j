@@ -15,31 +15,31 @@ public class RamsectionArgumentsNode extends DirectiveArgumentsNode {
 
   public RamsectionArgumentsNode(Token token) {
     super(token);
-    arguments.add(null);
-    arguments.add(null);
-    arguments.add(null);
-    arguments.add(null);
-    arguments.add(null);
+    addChild(null);
+    addChild(null);
+    addChild(null);
+    addChild(null);
+    addChild(null);
   }
 
   public void put(RamsectionArguments key, String value, Token token) {
     switch (key) {
       case NAME:
-        arguments.set(0, new StringExpressionNode(value, token));
+        setChild(0, new StringExpressionNode(value, token));
         break;
       case BANK:
-        arguments.set(1, new StringExpressionNode(value, token));
+        setChild(1, new StringExpressionNode(value, token));
         break;
       case SLOT:
-        arguments.set(2, new StringExpressionNode(value, token));
+        setChild(2, new StringExpressionNode(value, token));
         break;
 
       case ALIGN:
-        arguments.set(3, new StringExpressionNode(value, token));
+        setChild(3, new StringExpressionNode(value, token));
         break;
 
       case APPEND_TO:
-        arguments.set(4, new StringExpressionNode(value, token));
+        setChild(4, new StringExpressionNode(value, token));
         break;
     }
   }

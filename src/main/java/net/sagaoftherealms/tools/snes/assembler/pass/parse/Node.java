@@ -30,6 +30,15 @@ public class Node implements Iterable<Node> {
     return this;
   }
 
+  public final Node setChild(int index, Node childNode) {
+    children.set(index, childNode);
+    return this;
+  }
+
+  public Node getChildAt(int ordinal) {
+    return children.get(ordinal);
+  }
+
   public Token getSourceToken() {
     return sourceToken;
   }

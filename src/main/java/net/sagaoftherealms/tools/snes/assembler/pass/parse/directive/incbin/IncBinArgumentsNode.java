@@ -16,19 +16,19 @@ public class IncBinArgumentsNode extends DirectiveArgumentsNode {
 
   public IncBinArgumentsNode(Token token) {
     super(token);
-    arguments.add(null);
-    arguments.add(null);
-    arguments.add(null);
-    arguments.add(null);
-    arguments.add(null);
-    arguments.add(null);
+    addChild(null);
+    addChild(null);
+    addChild(null);
+    addChild(null);
+    addChild(null);
+    addChild(null);
   }
 
   public void put(Arguments key, ExpressionNode value) {
-    arguments.set(key.ordinal(), value);
+    setChild(key.ordinal(), value);
   }
 
   public ExpressionNode get(Arguments key) {
-    return arguments.get(key.ordinal());
+    return (ExpressionNode) getChildAt(key.ordinal());
   }
 }

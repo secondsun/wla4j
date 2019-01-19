@@ -8,42 +8,42 @@ public class SectionArgumentsNode extends DirectiveArgumentsNode {
 
   public SectionArgumentsNode(Token token) {
     super(token);
-    arguments.add(null);
-    arguments.add(null);
-    arguments.add(null);
-    arguments.add(null);
-    arguments.add(null);
-    arguments.add(null);
-    arguments.add(null);
-    arguments.add(null);
+    addChild(null);
+    addChild(null);
+    addChild(null);
+    addChild(null);
+    addChild(null);
+    addChild(null);
+    addChild(null);
+    addChild(null);
     // Add eight blank arguments
   }
 
   public void put(SectionParser.KEYS key, String value, Token token) {
     switch (key) {
       case NAME:
-        arguments.set(0, new StringExpressionNode(value, token));
+        setChild(0, new StringExpressionNode(value, token));
         break;
       case BANKHEADER:
-        arguments.set(1, new StringExpressionNode(value, token));
+        setChild(1, new StringExpressionNode(value, token));
         break;
       case NAMESPACE:
-        arguments.set(2, new StringExpressionNode(value, token));
+        setChild(2, new StringExpressionNode(value, token));
         break;
       case SIZE:
-        arguments.set(3, new StringExpressionNode(value, token));
+        setChild(3, new StringExpressionNode(value, token));
         break;
       case ALIGN:
-        arguments.set(4, new StringExpressionNode(value, token));
+        setChild(4, new StringExpressionNode(value, token));
         break;
       case STATUS:
-        arguments.set(5, new StringExpressionNode(value, token));
+        setChild(5, new StringExpressionNode(value, token));
         break;
       case APPEND_TO:
-        arguments.set(6, new StringExpressionNode(value, token));
+        setChild(6, new StringExpressionNode(value, token));
         break;
       case RETURNORG:
-        arguments.set(7, new StringExpressionNode(value, token));
+        setChild(7, new StringExpressionNode(value, token));
         break;
     }
   }

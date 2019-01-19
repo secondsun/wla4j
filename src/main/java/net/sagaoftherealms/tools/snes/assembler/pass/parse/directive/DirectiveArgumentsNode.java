@@ -1,8 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
@@ -11,32 +8,25 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 public class DirectiveArgumentsNode extends Node {
 
-  protected final List<ExpressionNode> arguments = new ArrayList<>();
-
   public DirectiveArgumentsNode(Token token) {
     super(NodeTypes.DIRECTIVE_ARGUMENTS, token);
   }
 
   public String getString(int index) {
-    return (arguments.get(index).evaluate()) + "";
+    return (((ExpressionNode) getChildren().get(index)).evaluate()) + "";
   }
 
   public DirectiveArgumentsNode add(ExpressionNode argumentValue) {
-    arguments.add(argumentValue);
+    addChild(argumentValue);
     return this;
   }
 
-  @Override
-  public List<Node> getChildren() {
-    return Collections.unmodifiableList(arguments);
-  }
-
   public int size() {
-    return arguments.size();
+    return getChildren().size();
   }
 
   protected String safeGet(int index) {
-    var argument = arguments.get(index);
+    var argument = (ExpressionNode) getChildren().get(index);
     if (argument == null) {
       return null;
     } else {
@@ -45,15 +35,20 @@ public class DirectiveArgumentsNode extends Node {
   }
 
   public int getInt(int index) {
-    return (int) arguments.get(index).evaluate();
+    var argument = (ExpressionNode) getChildren().get(index);
+    if (argument == null) {
+      throw new RuntimeException("No argument");
+    } else {
+      return (int) argument.evaluate();
+    }
   }
 
   @Override
   public String toString() {
-    if (arguments.isEmpty()) {
+    if (getChildren().isEmpty()) {
       return "";
     }
-    return arguments
+    return getChildren()
         .stream()
         .map(obj -> obj == null ? "" : obj.toString())
         .collect(Collectors.joining(", "));

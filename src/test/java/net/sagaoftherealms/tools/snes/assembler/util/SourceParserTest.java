@@ -6,7 +6,6 @@ import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.asParser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -28,7 +27,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.OpcodeArgumentNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.OpcodeNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.bank.BankNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
@@ -135,7 +133,7 @@ public class SourceParserTest {
   public void testParsingDirectivesFailWithTooFewArgumentsToken(String sourceLine) {
     var parser = asParser(sourceLine);
 
-    assertThrows(ParseException.class, () -> parser.nextNode());
+    assertEquals(NodeTypes.ERROR, parser.nextNode().getType());
   }
 
   @Test
@@ -149,11 +147,7 @@ public class SourceParserTest {
             + ".ENDS";
     var parser = asParser(enumSource);
 
-    assertThrows(
-        ParseException.class,
-        () -> {
-          parser.nextNode();
-        });
+    assertEquals(NodeTypes.ERROR, parser.nextNode().getType());
   }
 
   @Test
@@ -637,7 +631,7 @@ public class SourceParserTest {
 
     SourceParser parser = new SourceParser(scanner);
 
-    assertThrows((ParseException.class), () -> parser.nextNode());
+    assertEquals(NodeTypes.ERROR, parser.nextNode().getType());
   }
 
   @Test
@@ -654,7 +648,7 @@ public class SourceParserTest {
     var scanner = data.startRead(OpCode65816.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
-    Assertions.assertThrows(ParseException.class, () -> parser.nextNode());
+    Assertions.assertEquals(NodeTypes.ERROR, parser.nextNode().getType());
   }
 
   /**

@@ -8,22 +8,22 @@ public class EnumArgumentsNode extends DirectiveArgumentsNode {
 
   public EnumArgumentsNode(Token token) {
     super(token);
-    arguments.add(null);
-    arguments.add(null);
-    arguments.add(null);
+    addChild(null);
+    addChild(null);
+    addChild(null);
     // Add three blank arguments
   }
 
   public void put(EnumParser.KEYS key, String value, Token token) {
     switch (key) {
       case ORDINAL:
-        arguments.set(1, new StringExpressionNode(value, token));
+        setChild(1, new StringExpressionNode(value, token));
         break;
       case EXPORT:
-        arguments.set(2, new StringExpressionNode(value, token));
+        setChild(2, new StringExpressionNode(value, token));
         break;
       case ADDRESS:
-        arguments.set(0, new StringExpressionNode(value, token));
+        setChild(0, new StringExpressionNode(value, token));
         break;
     }
   }
