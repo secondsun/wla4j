@@ -47,7 +47,16 @@ public class NodeIterator implements Iterator<Node> {
     if (childIndex >= node.getChildren().size()) { // All children consumed, return this
       return returnNode();
     } else { // create next child iterator and return first item.
-      childIterator = node.getChildren().get(childIndex++).iterator();
+      var child = node.getChildren().get(childIndex++);
+      while (child
+          == null) { // Some children have holes in them. (ie children are abused for argumentNodes)
+        if (childIndex >= node.getChildren().size()) { // All children consumed, return this
+          return returnNode();
+        } else {
+          child = node.getChildren().get(childIndex++);
+        }
+      }
+      childIterator = child.iterator();
       return childIterator.next();
     }
   }
