@@ -207,8 +207,8 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
           token = parser.getCurrentToken();
         }
       } catch (ParseException ex) {
-        firstToken.getPosition().endLine = token.getPosition().endLine;
-        firstToken.getPosition().endOffset = token.getPosition().endOffset;
+        firstToken.getPosition().setEndLine(token.getPosition().getEndLine());
+        firstToken.getPosition().setEndOffset(token.getPosition().getEndOffset());
         throw new ParseException(ex.getMessage(), firstToken);
       }
 

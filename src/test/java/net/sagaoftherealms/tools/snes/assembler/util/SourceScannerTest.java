@@ -308,18 +308,18 @@ public class SourceScannerTest {
 
     assertEquals(TokenTypes.LABEL, token1.getType());
     assertEquals(beginLine1, token1.getPosition().beginLine);
-    assertEquals(endLine1, token1.getPosition().endLine);
+    assertEquals(endLine1, token1.getPosition().getEndLine());
 
     assertEquals(beginPosition1, token1.getPosition().beginOffset);
-    assertEquals(endPosition1, token1.getPosition().endOffset);
+    assertEquals(endPosition1, token1.getPosition().getEndOffset());
 
     assertEquals(TokenTypes.COMMENT, token2.getType());
     assertEquals("/* This is a \n multiline comment*/", token2.getString());
     assertEquals(beginLine2, token2.getPosition().beginLine);
-    assertEquals(endLine2, token2.getPosition().endLine);
+    assertEquals(endLine2, token2.getPosition().getEndLine());
 
     assertEquals(beginPosition2, token2.getPosition().beginOffset);
-    assertEquals(endPosition2, token2.getPosition().endOffset);
+    assertEquals(endPosition2, token2.getPosition().getEndOffset());
   }
 
   @Test()

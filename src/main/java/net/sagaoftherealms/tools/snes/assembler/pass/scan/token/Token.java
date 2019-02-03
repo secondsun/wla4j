@@ -52,14 +52,30 @@ public class Token implements Serializable {
   public static class Position implements Serializable {
     public final int beginLine;
     public final int beginOffset;
-    public int endLine;
-    public int endOffset;
+    private int endLine;
+    private int endOffset;
 
     public Position(int beginLine, int beginPosition, int endLine, int endPosition) {
       this.beginLine = beginLine;
       this.beginOffset = beginPosition;
+      this.setEndLine(endLine);
+      this.setEndOffset(endPosition);
+    }
+
+    public int getEndLine() {
+      return endLine;
+    }
+
+    public void setEndLine(int endLine) {
       this.endLine = endLine;
-      this.endOffset = endPosition;
+    }
+
+    public int getEndOffset() {
+      return endOffset;
+    }
+
+    public void setEndOffset(int endOffset) {
+      this.endOffset = endOffset;
     }
   }
 }
