@@ -845,7 +845,9 @@ public class SourceParserTest {
   @CsvSource({
     "parseLargeFiles/script_commands.s",
     "parseLargeFiles/main.s",
-    "ages-disasm/include/musicMacros.s"
+      "ages-disasm/include/musicMacros.s",
+      "ages-disasm/include/rominfo.s",
+      "ages-disasm/include/structs.s"
   })
   public void testLargeFile(String fileName) throws IOException {
 
