@@ -47,6 +47,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.Identifier
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
@@ -996,6 +997,7 @@ public class SourceParserTest {
   }
 
   @Test
+  @Disabled
   public void multiFileTest() throws IOException {
     var sourceDirectory = "ages-disasm";
     var sourceRoot = "main.s";
