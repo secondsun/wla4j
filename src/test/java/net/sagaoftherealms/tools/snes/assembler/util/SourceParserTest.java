@@ -999,7 +999,6 @@ public class SourceParserTest {
   }
 
   @Test
-  @Disabled
   public void multiFileTest() throws IOException {
     var sourceDirectory = "ages-disasm";
     var sourceRoot = "main.s";

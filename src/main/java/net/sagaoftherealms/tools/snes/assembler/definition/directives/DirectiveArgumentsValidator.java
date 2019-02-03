@@ -130,7 +130,7 @@ public final class DirectiveArgumentsValidator {
   }
 
   private void beginOneOf() {
-    this.specialMatcher = new OneOfMatcher(oneOfPattern());
+    throw new RuntimeException("Not used.");
   }
 
   private String oneOfPattern() {
@@ -285,96 +285,5 @@ public final class DirectiveArgumentsValidator {
     }
   }
 
-  private class OneOfMatcher implements Matcher {
-
-    private final String oneOfPattern;
-    private boolean hasMatched = false;
-    private boolean expressionComplete = false;
-
-    public OneOfMatcher(String oneOfPattern) {
-      // consolidate patterns
-      // IE if a Label or a Number or an Expression then you can match all of those as just an
-      // expression.
-      // Then we give priority to expressions in the matcher.  Should even things out.
-
-      if (oneOfPattern.contains("e")) {
-        oneOfPattern =
-            oneOfPattern.replace("l", "").replace("c", "").replace("f", "").replace("x", "");
-      }
-
-      this.oneOfPattern = oneOfPattern;
-    }
-
-    @Override
-    public boolean match(Token token) {
-
-      if (hasMatched
-          && !oneOfPattern.contains(
-              "e")) { // As one of implies, it can only match one.  However expressions are hard to
-        // do because they require multiple tokens to be matched possible.
-        return false;
-      }
-
-      switch (token.getType()) {
-        case STRING:
-          if (oneOfPattern.contains("s")) {
-            hasMatched = true;
-            expressionComplete = true;
-            return true;
-          }
-          break;
-        case NUMBER:
-          if (!token.getString().contains(".")) {
-            if (oneOfPattern.contains("x")) {
-              hasMatched = true;
-              expressionComplete = true;
-              return true;
-            }
-          } else {
-            if (oneOfPattern.contains("f")) {
-              hasMatched = true;
-              expressionComplete = true;
-              return true;
-            }
-          }
-
-          if (oneOfPattern.contains("e") && !expressionComplete) {
-            expressionComplete = true;
-            hasMatched = true;
-            return true;
-          }
-
-          break;
-        case LABEL:
-          if (oneOfPattern.contains("l")) {
-            hasMatched = true;
-            return true;
-          }
-          if (oneOfPattern.contains("e") && !expressionComplete) {
-            hasMatched = true;
-            expressionComplete = true;
-            return true;
-          }
-          break;
-        case MULTIPLY:
-        case AND:
-        case MINUS:
-        case PLUS:
-          if (expressionComplete) {
-            expressionComplete = false;
-            return true;
-          }
-          break;
-        default:
-          return false;
-      }
-
-      return false;
-    }
-
-    @Override
-    public boolean isSatisfied() {
-      return hasMatched;
-    }
-  }
+  
 }
