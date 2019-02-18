@@ -999,20 +999,6 @@ public class SourceParserTest {
   }
 
   @Test
-  @Disabled
-  public void multiFileTest() throws IOException {
-    var sourceDirectory = "ages-disasm";
-    var sourceRoot = "main.s";
-    var includedFile = "ages-disasm/objects/macros.s";
-    MultiFileParser multiParser = new MultiFileParser(OpCodeZ80.opcodes());
-    multiParser.parse(sourceDirectory, sourceRoot);
-    assertNotNull(multiParser.getNodes(includedFile));
-    assertEquals(
-        "obj_Conditional",
-        ((MacroNode) ((List<Node>) multiParser.getNodes(includedFile)).get(1)).getName());
-  }
-
-  @Test
   public void testParseErrors() {
     List<ErrorNode> errors = new ArrayList<>();
     var source = ".if 1\n .include \n .endif"; // If true  {errorNode} end;

@@ -18,6 +18,11 @@ import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 
+/**
+ *  This class was an old way to do quick and dirty parsing.  I'm replacing this with a version that is
+ *  much more thought out.
+ */
+@Deprecated
 public class MultiFileParser {
 
   private static final java.util.logging.Logger LOG =
