@@ -1,5 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.concurrent.CompletableFuture;
@@ -10,11 +11,12 @@ public class ProjectTest {
 
   @Test
   public void testParseGBCProject() {
-    Project gbcTestProject = new Project.Builder("projects/gbc").build();
+    Project gbcTestProject = new Project.Builder("src/test/resources/projects/gbc").build();
 
-    Object task = gbcTestProject.prepare();
+    assertEquals("gb", gbcTestProject.getMainArch());
+    assertEquals("main.s", gbcTestProject.getMain());
 
-    fail("Not implemented");
+//    fail("Not implemented");
 
     /*
     *

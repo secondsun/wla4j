@@ -1,9 +1,11 @@
 package net.sagaoftherealms.tools.snes.assembler.main;
 
 import io.reactivex.Observable;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import javax.json.Json;
+import javax.json.JsonObject;
 import javax.json.JsonReader;
 
 /**
@@ -13,14 +15,26 @@ import javax.json.JsonReader;
  */
 public class Project {
 
+  private final String main, mainArch;
+
   public Project(String projectRoot) {
     try {
-      JsonReader jsonReader = Json.createReader(new FileReader(projectRoot));
+      JsonReader jsonReader = Json.createReader(new FileReader(projectRoot + File.separatorChar + "retro.json"));
+      JsonObject retro = jsonReader.readObject();
+      main = retro.getString("main");
+      mainArch = retro.getString("main-arch");
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
     }
 
+  }
 
+  public String getMain() {
+    return main;
+  }
+
+  public String getMainArch() {
+    return mainArch;
   }
 
   /**
