@@ -15,26 +15,21 @@ import javax.json.JsonReader;
  */
 public class Project {
 
-  private final String main, mainArch;
+  private final Retro retro;
 
   public Project(String projectRoot) {
     try {
       JsonReader jsonReader = Json.createReader(new FileReader(projectRoot + File.separatorChar + "retro.json"));
-      JsonObject retro = jsonReader.readObject();
-      main = retro.getString("main");
-      mainArch = retro.getString("main-arch");
+      JsonObject retroObject = jsonReader.readObject();
+      this.retro = Retro.fromJson(retroObject);
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
     }
 
   }
 
-  public String getMain() {
-    return main;
-  }
-
-  public String getMainArch() {
-    return mainArch;
+  public Retro getRetro() {
+    return retro;
   }
 
   /**
@@ -46,6 +41,7 @@ public class Project {
   public Observable<Boolean> prepare() {
     return Observable.fromCallable(() -> true);
   }
+
 
   public static class Builder {
 
