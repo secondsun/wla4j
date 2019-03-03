@@ -47,7 +47,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.Identifier
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
@@ -106,6 +105,27 @@ public class SourceParserTest {
     assertEquals(1, jmp.getChildren().size()); // JMP has one argument
     assertEquals(sourceLine.split("\\s")[0], node.getLabelName());
     assertEquals(NodeTypes.OPCODE_ARGUMENT, jmp.getChildren().get(0).getType());
+  }
+
+
+  @Test
+  public void multiFileTest() throws IOException {
+    var sourceDirectory = "ages-disasm";
+    var sourceRoot = "main.s";
+    var includedFile = "ages-disasm/objects/macros.s";
+    long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+
+    MultiFileParser multiParser = new MultiFileParser(OpCodeZ80.opcodes());
+    multiParser.parse(sourceDirectory, sourceRoot);
+    //Runtime.getRuntime().gc();
+    long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+
+      System.out.println(afterUsedMem - beforeUsedMem);
+
+    assertNotNull(multiParser.getNodes(includedFile));
+    assertEquals(
+        "obj_Conditional",
+        ((MacroNode) ((List<Node>) multiParser.getNodes(includedFile)).get(1)).getName());
   }
 
   /**

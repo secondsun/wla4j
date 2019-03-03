@@ -2,9 +2,13 @@ package net.sagaoftherealms.tools.snes.assembler.util;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.main.ArchRoot;
 import net.sagaoftherealms.tools.snes.assembler.main.Project;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -36,9 +40,22 @@ public class ProjectTest {
     Assertions.assertTrue(snesTestProject.getRetro().getArchRoots().contains(new ArchRoot("gsu", "sfx")));
     
   }
-  
 
-    /*
+
+  /**
+   * Use retro.json to parse ages-disasm
+   */
+  public void parseAgesDisasmWithRetroJson() {
+    var includedFile = "ages-disasm/objects/macros.s";
+
+    Project agesProject = new Project.Builder("src/test/resources/ages-disasm").build();
+    assertNotNull(agesProject.getParseTree(includedFile));
+    assertEquals(
+        "obj_Conditional",
+        ((MacroNode) ((List<Node>) agesProject.getParseTree(includedFile)).get(1)).getName());
+  }
+
+  /*
     *
     * Things to test  :
     * Important items are stored in memory like definitions and their location
