@@ -10,7 +10,7 @@ import javax.json.JsonObject;
 public class Retro implements Serializable {
   private final String main, mainArch;
   private final Set<ArchRoot> archRoots = new HashSet<>();
-  
+
   public Retro(String main, String mainArch) {
     this.main = main;
     this.mainArch = mainArch;
@@ -29,9 +29,8 @@ public class Retro implements Serializable {
   }
 
   /**
-   * 
    * This is a factory method that creates a retro from a json file
-   * 
+   *
    * @param retro a json object that represents a retro.json file
    * @return a object of a retro.json file
    */
@@ -39,19 +38,18 @@ public class Retro implements Serializable {
     String main = retro.getString("main");
     String mainArch = retro.getString("main-arch");
     Retro retroObject = new Retro(main, mainArch);
-    
+
     if (retro.containsKey("arch-roots")) {
       JsonArray archRoots = retro.getJsonArray("arch-roots");
-      archRoots.forEach(root -> {
-        String path = root.asJsonObject().getString("path");
-        String arch = root.asJsonObject().getString("arch");
-        ArchRoot archRoot = new ArchRoot(path, arch);
-        retroObject.archRoots.add(archRoot);
-      });
-      
+      archRoots.forEach(
+          root -> {
+            String path = root.asJsonObject().getString("path");
+            String arch = root.asJsonObject().getString("arch");
+            ArchRoot archRoot = new ArchRoot(path, arch);
+            retroObject.archRoots.add(archRoot);
+          });
     }
-    
+
     return retroObject;
   }
-  
 }

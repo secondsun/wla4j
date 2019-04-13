@@ -26,9 +26,10 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNo
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 
 /**
- * A project contains all of the files, configurations, etc for a WLA project.  What is important is
- * that Project, as opposed to {@link net.sagaoftherealms.tools.snes.assembler.pass.parse.MultiFileParser},
- * reasons about projects and has more flexibility and configuration.
+ * A project contains all of the files, configurations, etc for a WLA project. What is important is
+ * that Project, as opposed to {@link
+ * net.sagaoftherealms.tools.snes.assembler.pass.parse.MultiFileParser}, reasons about projects and
+ * has more flexibility and configuration.
  */
 public class Project {
 
@@ -37,22 +38,19 @@ public class Project {
   private final Map<String, Optional<MacroNode>> macroNames = new HashMap<>();
   private final Map<String, List<ErrorNode>> errorNodes = new HashMap<>();
 
-
-  private static final java.util.logging.Logger LOG =
-      Logger.getLogger(Project.class.getName());
-
+  private static final java.util.logging.Logger LOG = Logger.getLogger(Project.class.getName());
 
   private final Retro retro;
 
   public Project(String projectRoot) {
     try {
-      JsonReader jsonReader = Json.createReader(new FileReader(projectRoot + File.separatorChar + "retro.json"));
+      JsonReader jsonReader =
+          Json.createReader(new FileReader(projectRoot + File.separatorChar + "retro.json"));
       JsonObject retroObject = jsonReader.readObject();
       this.retro = Retro.fromJson(retroObject);
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
     }
-
   }
 
   public Retro getRetro() {
@@ -62,18 +60,6 @@ public class Project {
   public List<Node> getParseTree(String includedFile) {
     return null;
   }
-
-
-
-
-
-
-
-
-
-
-
-
 
   public Set<String> getParsedFiles() {
     return parsedFiles.keySet();
@@ -155,7 +141,7 @@ public class Project {
 
     data.includeFile(stream, rootSourceFile, 0);
 
-    var scanner = data.startRead(opcodes);
+    var scanner = data.startRead(OpCode.from(this.retro.getMainArch()));
     var parser = new SourceParser(scanner, macroNames);
     return parser;
   }
@@ -177,18 +163,6 @@ public class Project {
     return errorNodes.getOrDefault(fileName, new ArrayList<>());
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
   public static class Builder {
 
     private final String projectRoot;
@@ -206,16 +180,4 @@ public class Project {
       return new Project(projectRoot);
     }
   }
-
-
-
-
-
-
-
-
-
-
-
-
 }

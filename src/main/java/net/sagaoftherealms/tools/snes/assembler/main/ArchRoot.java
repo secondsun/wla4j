@@ -29,8 +29,7 @@ public final class ArchRoot implements Serializable {
       return false;
     }
     ArchRoot archRoot = (ArchRoot) o;
-    return Objects.equals(path, archRoot.path) &&
-        Objects.equals(arch, archRoot.arch);
+    return Objects.equals(path, archRoot.path) && Objects.equals(arch, archRoot.arch);
   }
 
   @Override

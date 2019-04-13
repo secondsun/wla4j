@@ -107,20 +107,19 @@ public class SourceParserTest {
     assertEquals(NodeTypes.OPCODE_ARGUMENT, jmp.getChildren().get(0).getType());
   }
 
-
   @Test
   public void multiFileTest() throws IOException {
     var sourceDirectory = "ages-disasm";
     var sourceRoot = "main.s";
     var includedFile = "ages-disasm/objects/macros.s";
-    long beforeUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+    long beforeUsedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 
     MultiFileParser multiParser = new MultiFileParser(OpCodeZ80.opcodes());
     multiParser.parse(sourceDirectory, sourceRoot);
-    //Runtime.getRuntime().gc();
-    long afterUsedMem=Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory();
+    // Runtime.getRuntime().gc();
+    long afterUsedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 
-      System.out.println(afterUsedMem - beforeUsedMem);
+    System.out.println(afterUsedMem - beforeUsedMem);
 
     assertNotNull(multiParser.getNodes(includedFile));
     assertEquals(
@@ -865,9 +864,9 @@ public class SourceParserTest {
   @CsvSource({
     "parseLargeFiles/script_commands.s",
     "parseLargeFiles/main.s",
-      "ages-disasm/include/musicMacros.s",
-      "ages-disasm/include/rominfo.s",
-      "ages-disasm/include/structs.s"
+    "ages-disasm/include/musicMacros.s",
+    "ages-disasm/include/rominfo.s",
+    "ages-disasm/include/structs.s"
   })
   public void testLargeFile(String fileName) throws IOException {
 
