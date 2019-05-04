@@ -22,7 +22,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.Macro
  * This class was an old way to do quick and dirty parsing. I'm replacing this with a version that
  * is much more thought out.
  */
-@Deprecated
 public class MultiFileParser {
 
   private static final java.util.logging.Logger LOG =
@@ -116,9 +115,11 @@ public class MultiFileParser {
     final String outfile = "test.out";
 
     var data = new InputData();
-
+  try {
     data.includeFile(stream, rootSourceFile, 0);
-
+  } catch (Exception e) {
+    throw new RuntimeException("Could not include file "+ fileName + " with root "+rootSourceFile, e);
+  }
     var scanner = data.startRead(opcodes);
     var parser = new SourceParser(scanner, macroNames);
     return parser;

@@ -37,6 +37,7 @@ public class ProjectTest {
         snesTestProject.getRetro().getArchRoots().contains(new ArchRoot("gsu", "sfx")));
   }
 
+  @Test
   /** Use retro.json to parse ages-disasm */
   public void parseAgesDisasmWithRetroJson() {
     var includedFile = "ages-disasm/objects/macros.s";
@@ -47,6 +48,8 @@ public class ProjectTest {
         "obj_Conditional",
         ((MacroNode) ((List<Node>) agesProject.getParseTree(includedFile)).get(1)).getName());
   }
+
+
 
   /*
    *

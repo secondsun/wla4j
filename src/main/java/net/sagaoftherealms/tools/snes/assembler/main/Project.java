@@ -18,12 +18,10 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.ErrorNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.*;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
+import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
 
 /**
  * A project contains all of the files, configurations, etc for a WLA project. What is important is
@@ -41,8 +39,11 @@ public class Project {
   private static final java.util.logging.Logger LOG = Logger.getLogger(Project.class.getName());
 
   private final Retro retro;
+  private final String projectRoot;
+  private MultiFileParser parser;
 
   public Project(String projectRoot) {
+    this.projectRoot = projectRoot;
     try {
       JsonReader jsonReader =
           Json.createReader(new FileReader(projectRoot + File.separatorChar + "retro.json"));
@@ -58,7 +59,7 @@ public class Project {
   }
 
   public List<Node> getParseTree(String includedFile) {
-    return null;
+    return parser.getNodes(includedFile);
   }
 
   public Set<String> getParsedFiles() {
@@ -177,7 +178,20 @@ public class Project {
     }
 
     public Project build() {
-      return new Project(projectRoot);
+      var project = new Project(projectRoot);
+      project.launch();
+      return project;
     }
   }
+
+  /**
+   * This method starts parsing a project per rules in its retro.json file.  It is asynchronous.
+   */
+  private void launch() {
+    OpCode[] opcodes = OpCode.from(retro.getMainArch());
+    this.parser = new MultiFileParser(opcodes);
+    parser.parse(this.projectRoot, retro.getMain());
+
+  }
+
 }
