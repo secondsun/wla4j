@@ -1,14 +1,14 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sagaoftherealms.tools.snes.assembler.main.ArchRoot;
 import net.sagaoftherealms.tools.snes.assembler.main.Project;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class ProjectTest {
@@ -31,25 +31,30 @@ public class ProjectTest {
     assertEquals("main.s", snesTestProject.getRetro().getMain());
 
     assertEquals(2, snesTestProject.getRetro().getArchRoots().size());
-    Assertions.assertTrue(
-        snesTestProject.getRetro().getArchRoots().contains(new ArchRoot("spc", "spc700")));
-    Assertions.assertTrue(
-        snesTestProject.getRetro().getArchRoots().contains(new ArchRoot("gsu", "sfx")));
+    assertTrue(snesTestProject.getRetro().getArchRoots().contains(new ArchRoot("spc", "spc700")));
+    assertTrue(snesTestProject.getRetro().getArchRoots().contains(new ArchRoot("gsu", "sfx")));
   }
 
   @Test
   /** Use retro.json to parse ages-disasm */
-  public void parseAgesDisasmWithRetroJson() {
-    var includedFile = "ages-disasm/objects/macros.s";
+  public void parseAgesDisasmWithRetroJson() throws InterruptedException {
+    // Thread.sleep(10000);
+    var includedFile = "objects/macros.s";
 
     Project agesProject = new Project.Builder("src/test/resources/ages-disasm").build();
-    assertNotNull(agesProject.getParseTree(includedFile));
+
+    var response = agesProject.getParseTree(includedFile);
+
+    Logger.getAnonymousLogger().log(Level.INFO, "Safe to heapdump");
+
+    // Thread.sleep(10000);
+
+    assertNotNull(response);
+    assertTrue(agesProject.getFilesWithErrors().isEmpty());
     assertEquals(
         "obj_Conditional",
         ((MacroNode) ((List<Node>) agesProject.getParseTree(includedFile)).get(1)).getName());
   }
-
-
 
   /*
    *

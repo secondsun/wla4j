@@ -1,25 +1,15 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.COMMA;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveUtils;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.visitor.Visitor;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
@@ -33,47 +23,17 @@ public class SourceParser {
   private Map<String, Optional<MacroNode>> macroMap = new HashMap<>();
   private Set<String> includes = new HashSet<>();
   private List<ErrorNode> errors = new ArrayList<>();
+  private List<Visitor> visitors = new ArrayList<>();
 
   public SourceParser(SourceScanner scanner) {
     this.scanner = scanner;
     token = scanner.getNextToken();
-    scanMacos();
-    scanner.reset();
-    token = scanner.getNextToken();
   }
 
   public SourceParser(SourceScanner scanner, Map<String, Optional<MacroNode>> macroMap) {
-
     this.macroMap.putAll(macroMap);
-
     this.scanner = scanner;
     token = scanner.getNextToken();
-    scanMacos();
-    scanner.reset();
-    token = scanner.getNextToken();
-    scanIncludes();
-    scanner.reset();
-    token = scanner.getNextToken();
-  }
-
-  private void scanIncludes() {
-    while (!token.getType().equals(END_OF_INPUT)) {
-      if (token.getString().equalsIgnoreCase(".include")) {
-        token = scanner.getNextToken();
-        includes.add(token.getString());
-      }
-      token = scanner.getNextToken();
-    }
-  }
-
-  private void scanMacos() {
-    while (token != null && !token.getType().equals(END_OF_INPUT)) {
-      if (token.getString().equalsIgnoreCase(".macro")) {
-        token = scanner.getNextToken();
-        macroMap.put(token.getString(), Optional.empty());
-      }
-      token = scanner.getNextToken();
-    }
   }
 
   /**
@@ -84,58 +44,76 @@ public class SourceParser {
    */
   public Node nextNode() {
     try {
+      Node node = null;
       switch (token.getType()) {
         case STRING:
           var stringExpression = new StringExpressionNode(token.getString(), token);
           consume(TokenTypes.STRING);
-          return stringExpression;
+          node = stringExpression;
+          break;
         case DIRECTIVE:
           var directiveName = token.getString();
           var directiveNode = directive(directiveName);
           clearWhiteSpaceTokens();
-          return directiveNode;
+          node = directiveNode;
+          break;
         case NUMBER:
-          return ExpressionParser.expressionNode(this);
+          node = ExpressionParser.expressionNode(this);
+          break;
         case LABEL:
           if (macroMap.containsKey(token.getString())) {
             MacroCallNode macroCall = macroCall();
             clearWhiteSpaceTokens();
-            return macroCall;
+            node = macroCall;
           } else {
             var definition = new LabelDefinitionNode(token);
             consume(token.getType());
-            return definition;
+            node = definition;
           }
+          break;
         case MINUS:
         case PLUS:
           var definition = new LabelDefinitionNode(token);
           consume(token.getType());
-          return definition;
+          node = definition;
+          break;
         case LEFT_PAREN:
-          var node = ExpressionParser.expressionNode(this);
-          return node;
+          node = ExpressionParser.expressionNode(this);
+          break;
         case COMMA:
           consume(TokenTypes.COMMA);
-          return nextNode();
+          node = nextNode();
+          break;
         case OPCODE:
           OpcodeNode opcodeNode = opcode();
-          return opcodeNode;
+          node = opcodeNode;
+          break;
         case ERROR:
           var problemToken = token;
           consume(TokenTypes.ERROR);
           throw new ParseException("Invalid token", problemToken);
         case EOL:
           consume(TokenTypes.EOL);
-          return nextNode();
+          node = nextNode();
+          break;
         default:
-          return null;
+          node = null;
+          break;
       }
+      if (node != null) {
+        applyVisitors(node);
+      }
+      return node;
     } catch (ParseException e) {
       LOG.log(Level.SEVERE, e.getMessage(), e);
       var node = new ErrorNode(token, e);
       errors.add(node);
       return node;
     }
+  }
+
+  private void applyVisitors(Node node) {
+    visitors.forEach(node::accept);
   }
 
   private MacroCallNode macroCall() {
@@ -242,5 +220,9 @@ public class SourceParser {
 
   public List<ErrorNode> getErrors() {
     return Collections.unmodifiableList(errors);
+  }
+
+  public void addVisitor(Visitor visitor) {
+    this.visitors.add(visitor);
   }
 }

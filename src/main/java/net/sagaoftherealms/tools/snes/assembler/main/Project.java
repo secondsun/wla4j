@@ -4,13 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.json.Json;
@@ -21,7 +16,6 @@ import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.*;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
-import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
 
 /**
  * A project contains all of the files, configurations, etc for a WLA project. What is important is
@@ -59,7 +53,7 @@ public class Project {
   }
 
   public List<Node> getParseTree(String includedFile) {
-    return parser.getNodes(includedFile);
+    return parser.getNodes(projectRoot + File.separator + includedFile);
   }
 
   public Set<String> getParsedFiles() {
@@ -136,7 +130,6 @@ public class Project {
         LOG.severe(e.getMessage());
       }
     }
-    final String outfile = "test.out";
 
     var data = new InputData();
 
@@ -159,9 +152,13 @@ public class Project {
   }
 
   public List<ErrorNode> getErrors(String fileName) {
-    LOG.info("getErrors:" + fileName);
+    LOG.info("getFilesWithErrors:" + fileName);
     LOG.info(errorNodes.keySet().stream().collect(Collectors.joining("\n")));
     return errorNodes.getOrDefault(fileName, new ArrayList<>());
+  }
+
+  public List<String> getFilesWithErrors() {
+    return parser.getFilesWithErrors();
   }
 
   public static class Builder {
@@ -179,19 +176,23 @@ public class Project {
 
     public Project build() {
       var project = new Project(projectRoot);
-      project.launch();
+      try {
+        project.launch();
+      } catch (Exception e) {
+        Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage(), e);
+      }
       return project;
     }
   }
 
-  /**
-   * This method starts parsing a project per rules in its retro.json file.  It is asynchronous.
-   */
+  public MultiFileParser getParser() {
+    return parser;
+  }
+
+  /** This method starts parsing a project per rules in its retro.json file. It is asynchronous. */
   private void launch() {
     OpCode[] opcodes = OpCode.from(retro.getMainArch());
     this.parser = new MultiFileParser(opcodes);
     parser.parse(this.projectRoot, retro.getMain());
-
   }
-
 }
