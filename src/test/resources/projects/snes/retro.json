@@ -1,0 +1,12 @@
+{
+  "main": "main.s",
+  "main-arch": "65816",
+  "arch-roots": [
+    {"path":"spc",
+      "arch": "spc700"
+    },
+    {"path":"gsu",
+      "arch": "sfx"
+    }
+  ]
+}

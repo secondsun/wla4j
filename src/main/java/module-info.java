@@ -1,6 +1,9 @@
 open module wla_parser {
   requires java.logging;
+  requires io.reactivex.rxjava2;
+  requires java.json;
 
+  exports net.sagaoftherealms.tools.snes.assembler.main;
   exports net.sagaoftherealms.tools.snes.assembler.definition.directives;
   exports net.sagaoftherealms.tools.snes.assembler.definition.opcodes;
   exports net.sagaoftherealms.tools.snes.assembler.pass.parse.bank;

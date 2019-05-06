@@ -37,7 +37,7 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
         
       # run tests!
-      - run: mvn -Psonar verify sonar:sonar -Dsonar.login=$SONAR_LOGIN
-      - run: mvn integration-test
+      - run: mvn -Psonar test-compile verify sonar:sonar -Dsonar.login=$SONAR_LOGIN
+      - run: mvn  test-compile integration-test
 
 

@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.visitor.Visitor;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
-public class Node implements Iterable<Node> {
+public abstract class Node implements Iterable<Node> {
 
   private final NodeTypes type;
   private final List<Node> children = new ArrayList<>();
@@ -46,5 +47,9 @@ public class Node implements Iterable<Node> {
   @Override
   public Iterator<Node> iterator() {
     return new NodeIterator(this);
+  }
+
+  public final void accept(Visitor visitor) {
+    visitor.visit(this);
   }
 }

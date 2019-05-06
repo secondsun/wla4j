@@ -4,12 +4,10 @@ import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.sect
 import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.NAME;
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.asParser;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -19,15 +17,7 @@ import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirecti
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode65816;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeZ80;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.ErrorNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelDefinitionNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.MacroCallNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.MultiFileParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.OpcodeArgumentNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.OpcodeNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.*;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.bank.BankNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
@@ -45,9 +35,9 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.Expression
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.IdentifierNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.visitor.MacroDefinitionVisitor;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
@@ -108,6 +98,65 @@ public class SourceParserTest {
     assertEquals(NodeTypes.OPCODE_ARGUMENT, jmp.getChildren().get(0).getType());
   }
 
+  @Test
+  public void multiFileTest() throws IOException {
+    var sourceDirectory = "ages-disasm";
+    var sourceRoot = "main.s";
+    var includedFile = "ages-disasm/objects/macros.s";
+    long beforeUsedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+
+    MultiFileParser multiParser = new MultiFileParser(OpCodeZ80.opcodes());
+    multiParser.parse(sourceDirectory, sourceRoot);
+    // Runtime.getRuntime().gc();
+    long afterUsedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+
+    System.out.println(afterUsedMem - beforeUsedMem);
+
+    assertNotNull(multiParser.getNodes(includedFile));
+    assertEquals(
+        "obj_Conditional",
+        ((MacroNode) ((List<Node>) multiParser.getNodes(includedFile)).get(1)).getName());
+  }
+
+  /**
+   * When sourceparser is run on a file, it may encounter macros defined in other files that it
+   * hasn't found yet. This test tests that those trees get reparsed.
+   *
+   * @throws IOException
+   */
+  @Test
+  public void testMultiFileParserGeneratesCorrectParseTreeWithMacros() throws IOException {
+    var sourceDirectory = "parseMacro";
+    var sourceRoot = "define_macro_4.s";
+
+    MultiFileParser multiParser = new MultiFileParser(OpCodeZ80.opcodes());
+    multiParser.parse(sourceDirectory, sourceRoot);
+
+    var nodes = multiParser.getNodes(sourceDirectory + File.separator + sourceRoot);
+    assertEquals(MacroCallNode.class, nodes.get(0).getClass());
+  }
+  /**
+   * When sourceparser is run on a file, it may encounter macros defined in other files that it
+   * hasn't found yet. This test tests that those trees get reparsed.
+   *
+   * @throws IOException
+   */
+  @Test
+  public void testMultiFileParserGeneratesCorrectParseTreeWithMacros2() throws IOException {
+    var sourceDirectory = "parseMacro_2";
+    var sourceRoot = "define_macro_4.s";
+    var sourceInclude = "define_macro_3.s";
+
+    MultiFileParser multiParser = new MultiFileParser(OpCodeZ80.opcodes());
+    multiParser.parse(sourceDirectory, sourceRoot);
+
+    var nodes = multiParser.getNodes(sourceDirectory + File.separator + sourceInclude);
+    assertEquals(MacroNode.class, nodes.get(0).getClass());
+
+    nodes = multiParser.getNodes(sourceDirectory + File.separator + sourceRoot);
+    assertEquals(MacroCallNode.class, nodes.get(0).getClass());
+  }
+
   /**
    * This test tests single directive tokens and makes sure that we can consume them.
    *
@@ -166,7 +215,7 @@ public class SourceParserTest {
             + "\n"
             + "w2Filler7:\t\t\tdsb $80\n"
             + "\n"
-            + "; Tree refill data also used for child and an event in room $2f7\n"
+            + "; Tree refill data also used for child and an visitor in room $2f7\n"
             + "w2SeedTreeRefillData:\t\tdsb NUM_SEED_TREES*8 ; $d900/3:dfc0\n"
             + "\n"
             + ".ifdef ROM_SEASONS\n"
@@ -845,9 +894,9 @@ public class SourceParserTest {
   @CsvSource({
     "parseLargeFiles/script_commands.s",
     "parseLargeFiles/main.s",
-      "ages-disasm/include/musicMacros.s",
-      "ages-disasm/include/rominfo.s",
-      "ages-disasm/include/structs.s"
+    "ages-disasm/include/musicMacros.s",
+    "ages-disasm/include/rominfo.s",
+    "ages-disasm/include/structs.s"
   })
   public void testLargeFile(String fileName) throws IOException {
 
@@ -885,6 +934,39 @@ public class SourceParserTest {
         expression.getChildren().get(1).getChildren().get(1).getType());
     assertEquals(
         NodeTypes.NUMERIC_CONSTANT, expression.getChildren().get(0).getChildren().get(0).getType());
+  }
+
+  @Test
+  public void testMacroVisitorBuildsTableOfMacroNames() {
+    var program =
+        ";\nwriteobjectword 17 18\n"
+            + "writeobjectword 19, 512\n"
+            + ".MACRO writeobjectword\n"
+            + "writeobjectbyte \\1,   \\2&$ff\n"
+            + "\twriteobjectbyte \\1+1, \\2>>$8\n"
+            + ".ENDM\n";
+
+    final String inputFile = "parseLargeFiles/script_commandss.s";
+    final int lineNumber = 0;
+
+    var data = new InputData();
+    data.includeFile($(program), inputFile, lineNumber);
+
+    var scanner = data.startRead(OpCodeZ80.opcodes());
+    SourceParser parser = new SourceParser(scanner);
+    var visitor = new MacroDefinitionVisitor();
+    parser.addVisitor(visitor);
+
+    var writeobjectwordCall1 = (LabelDefinitionNode) parser.nextNode();
+    parser.nextNode();
+    parser.nextNode();
+    var writeobjectwordCall2 = (LabelDefinitionNode) parser.nextNode();
+    parser.nextNode();
+    parser.nextNode();
+    parser.nextNode();
+
+    assertTrue(visitor.getMacroNames().containsKey(writeobjectwordCall1.getLabelName()));
+    assertTrue(visitor.getMacroNames().containsKey(writeobjectwordCall2.getLabelName()));
   }
 
   @Test
@@ -998,18 +1080,6 @@ public class SourceParserTest {
     assertEquals(6, node.getArguments().getInt(1));
   }
 
-  @Test
-  public void multiFileTest() throws IOException {
-    var sourceDirectory = "ages-disasm";
-    var sourceRoot = "main.s";
-    var includedFile = "ages-disasm/objects/macros.s";
-    MultiFileParser multiParser = new MultiFileParser(OpCodeZ80.opcodes());
-    multiParser.parse(sourceDirectory, sourceRoot);
-    assertNotNull(multiParser.getNodes(includedFile));
-    assertEquals(
-        "obj_Conditional",
-        ((MacroNode) ((List<Node>) multiParser.getNodes(includedFile)).get(1)).getName());
-  }
 
   @Test
   public void testParseErrors() {
