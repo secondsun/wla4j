@@ -50,7 +50,7 @@ public class ProjectTest {
     // Thread.sleep(10000);
 
     assertNotNull(response);
-    assertTrue(agesProject.getFilesWithErrors().isEmpty());
+
     assertEquals(
         "obj_Conditional",
         ((MacroNode) ((List<Node>) agesProject.getParseTree(includedFile)).get(1)).getName());
