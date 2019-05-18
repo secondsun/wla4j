@@ -1,11 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.toScanner;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.DirectiveArgumentsValidator;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeZ80;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelDefinitionNode;
@@ -17,6 +11,9 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.toScanner;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * x = a whole number f = a number with a decimal part c = a character s = a String value (expands
@@ -139,83 +136,5 @@ public class DirectiveArgumentsValidatorTester {
     }
   }
 
-  @ParameterizedTest
-  @CsvSource({
-    "4 + 4 FLOUR, 'NUMBER, PLUS, NUMBER, LABEL'",
-    "8 * 4 + 2 6+3, 'NUMBER, MULTIPLY, NUMBER, PLUS, NUMBER, NUMBER, PLUS, NUMBER'",
-  })
-  public void validateComplexArguments(String sourceLine, String tokenTypes) {
-    DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("{elx} {elx}");
-    String[] typeArray = tokenTypes.split(",");
-    var scanner = toScanner(sourceLine);
-    for (String type : typeArray) {
-      var token = scanner.getNextToken();
-      System.out.println(type);
-      assertEquals(TokenTypes.valueOf(type.trim()), token.getType());
-      assertTrue(validator.accept(token, parser).isPresent());
-    }
-  }
-  /*
-  * // x = a whole number
-  // f = a number with a decimal part
-  // c = a character
-  // s = a String value (expands to "some text"
-  // l = a label (which will be a string)
 
-  // t = a boolean expression
-  // e = a integer expression*/
-
-  @Test
-  public void testOneOf() {
-    DirectiveArgumentsValidator validator = new DirectiveArgumentsValidator("{xc}");
-    assertTrue(
-        validator
-            .accept(new Token("4", TokenTypes.NUMBER, "", new Position(0, 0, 0, 0)), parser)
-            .isPresent());
-    validator = new DirectiveArgumentsValidator("{xc}");
-    assertTrue(
-        validator
-            .accept(new Token("c", TokenTypes.NUMBER, "", new Position(0, 0, 0, 0)), parser)
-            .isPresent());
-    validator = new DirectiveArgumentsValidator("{xc}");
-    assertFalse(
-        validator
-            .accept(new Token("4.5", TokenTypes.NUMBER, "", new Position(0, 0, 0, 0)), parser)
-            .isPresent());
-    validator = new DirectiveArgumentsValidator("{fc}");
-    assertTrue(
-        validator
-            .accept(new Token("4.5", TokenTypes.NUMBER, "", new Position(0, 0, 0, 0)), parser)
-            .isPresent());
-    validator = new DirectiveArgumentsValidator("{es}");
-    assertTrue(
-        validator
-            .accept(
-                new Token("\"Twelve\"", TokenTypes.STRING, "", new Position(0, 0, 0, 0)), parser)
-            .isPresent());
-    validator = new DirectiveArgumentsValidator("{es}");
-    assertTrue(
-        validator
-            .accept(new Token("4", TokenTypes.NUMBER, "", new Position(0, 0, 0, 0)), parser)
-            .isPresent());
-    assertTrue(
-        validator
-            .accept(new Token("+", TokenTypes.PLUS, "", new Position(0, 0, 0, 0)), parser)
-            .isPresent());
-    assertTrue(
-        validator
-            .accept(new Token("4", TokenTypes.NUMBER, "", new Position(0, 0, 0, 0)), parser)
-            .isPresent());
-    validator = new DirectiveArgumentsValidator("{sl}");
-    assertTrue(
-        validator
-            .accept(
-                new Token("\"Twelve\"", TokenTypes.STRING, "", new Position(0, 0, 0, 0)), parser)
-            .isPresent());
-    validator = new DirectiveArgumentsValidator("{sl}");
-    assertTrue(
-        validator
-            .accept(new Token("4", TokenTypes.LABEL, "", new Position(0, 0, 0, 0)), parser)
-            .isPresent());
-  }
 }
