@@ -1,15 +1,14 @@
 package net.sagaoftherealms.tools.snes.assembler.definition.directives;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.NUMBER;
+
+import java.util.Arrays;
+import java.util.Optional;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
-
-import java.util.Arrays;
-import java.util.Optional;
-
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.NUMBER;
 
 public final class DirectiveArgumentsValidator {
 
@@ -106,7 +105,8 @@ public final class DirectiveArgumentsValidator {
       case 's': // s = a String value (expands to "some text"
         return matchString(token);
       case '{':
-        throw new IllegalStateException("One of expressions should override DirectiveParser.arguments instead of using the GenericDirectiveValidator.");
+        throw new IllegalStateException(
+            "One of expressions should override DirectiveParser.arguments instead of using the GenericDirectiveValidator.");
       case '[':
         begingArray();
         return matches(token);
@@ -269,6 +269,4 @@ public final class DirectiveArgumentsValidator {
       return finished;
     }
   }
-
-  
 }

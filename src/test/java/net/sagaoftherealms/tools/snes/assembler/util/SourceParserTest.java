@@ -1,5 +1,18 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.BANK;
+import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.NAME;
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.asParser;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode65816;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeZ80;
@@ -29,20 +42,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.CsvSource;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.BANK;
-import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.NAME;
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.asParser;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class SourceParserTest {
 
@@ -1060,7 +1059,6 @@ public class SourceParserTest {
     assertEquals("a", (node.getArguments().getString(0)));
     assertEquals(6, node.getArguments().getInt(1));
   }
-
 
   @Test
   public void testParseErrors() {

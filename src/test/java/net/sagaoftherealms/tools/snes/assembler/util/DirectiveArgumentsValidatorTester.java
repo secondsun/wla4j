@@ -1,5 +1,8 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.toScanner;
+import static org.junit.jupiter.api.Assertions.*;
+
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.DirectiveArgumentsValidator;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeZ80;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelDefinitionNode;
@@ -11,9 +14,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.toScanner;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * x = a whole number f = a number with a decimal part c = a character s = a String value (expands
@@ -135,6 +135,4 @@ public class DirectiveArgumentsValidatorTester {
       assertTrue(validator.accept(token, parser).isPresent());
     }
   }
-
-
 }
