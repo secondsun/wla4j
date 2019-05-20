@@ -10,6 +10,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 public class NumericExpressionNode extends ExpressionNode<Integer> {
 
   private OperationType operation;
+  private Sizes size;
 
   public NumericExpressionNode(Token token) {
     super(NodeTypes.NUMERIC_EXPRESION, token);
@@ -55,4 +56,12 @@ public class NumericExpressionNode extends ExpressionNode<Integer> {
 
     return operation.evaluate(leftValue, rightValue);
   }
+
+    public void setSize(Sizes size) {
+        this.size = size;
+    }
+
+    public Sizes getSize() {
+        return size;
+    }
 }

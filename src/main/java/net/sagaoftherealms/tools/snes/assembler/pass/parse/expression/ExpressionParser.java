@@ -1,28 +1,16 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.expression;
 
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.AND;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.DIVIDE;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EQUAL;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.GT;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LEFT_PAREN;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LT;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.MINUS;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.MULTIPLY;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.NOT;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.NUMBER;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.OR;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.PLUS;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.RIGHT_PAREN;
-
-import java.util.Arrays;
-import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.OperationType;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.*;
 
 /** Parses expressions in the body definition. */
 public class ExpressionParser {
@@ -175,6 +163,25 @@ public class ExpressionParser {
   private static NumericExpressionNode termNode(SourceParser parser) {
     NumericExpressionNode leftNode = factorNode(parser);
     var token = parser.getCurrentToken();
+
+    if (TokenTypes.SIZE == token.getType()) {
+      var sizeString = token.getString().toLowerCase();
+      switch (sizeString) {
+        case ".b":
+          leftNode.setSize(Sizes.EIGHT_BIT);
+          break;
+        case ".w":
+          leftNode.setSize(Sizes.SIXTEEN_BIT);
+          break;
+        case ".l":
+          leftNode.setSize(Sizes.TWENTYFOUR_BIT);
+          break;
+      }
+      parser.consume(SIZE);
+      token = parser.getCurrentToken();
+    }
+
+
     if (termTokens.contains(token.getType())) {
       NumericExpressionNode toReturn = new NumericExpressionNode(token);
       toReturn.addChild(leftNode);
@@ -193,6 +200,7 @@ public class ExpressionParser {
       toReturn.addChild(termNode(parser));
       return toReturn;
     }
+
     return leftNode;
   }
 
@@ -262,6 +270,15 @@ public class ExpressionParser {
       }
       toReturn.addChild(factorNode(parser));
       return toReturn;
+    }
+
+    if (TokenTypes.SIZE == token.getType()) {
+      var sizeString = token.getString().toLowerCase();
+      switch (sizeString) {
+        case ".b":
+        case ".w":
+        case ".l":
+      }
     }
 
     if (leftNode == null) {

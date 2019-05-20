@@ -1,18 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
-import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.BANK;
-import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.NAME;
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.asParser;
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode65816;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeZ80;
@@ -31,10 +18,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.Macro
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode.SectionStatus;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.IdentifierNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.*;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.visitor.MacroDefinitionVisitor;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import org.junit.jupiter.api.Assertions;
@@ -42,6 +26,20 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.BANK;
+import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.NAME;
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.asParser;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SourceParserTest {
 
@@ -1058,6 +1056,17 @@ public class SourceParserTest {
     assertEquals(2, node.getChildren().size());
     assertEquals("a", (node.getArguments().getString(0)));
     assertEquals(6, node.getArguments().getInt(1));
+  }
+
+  @Test
+  public void testDefineWithNumberWordSize() {
+    var source = ".DEFINE random_seed\t\t$0001.w";
+    var parser = asParser(source, OpCodeZ80.opcodes());
+    var node = (DirectiveNode) parser.nextNode();
+    assertEquals(AllDirectives.DEFINE, node.getDirectiveType());
+    assertEquals("random_seed", (node.getArguments().getString(0)));
+    assertEquals(1, node.getArguments().getInt(1));
+    assertEquals(Sizes.SIXTEEN_BIT, ((NumericExpressionNode)node.getArguments().getChildren().get(1)).getSize());
   }
 
   @Test

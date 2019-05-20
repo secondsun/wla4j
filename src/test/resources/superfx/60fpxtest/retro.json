@@ -1,5 +1,5 @@
 {
-  "main": "FXTest1.asm",
+  "main": "FXtest1.asm",
   "main-arch": "65816",
   "arch-roots": [
     {
