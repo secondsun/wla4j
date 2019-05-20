@@ -57,11 +57,11 @@ public class NumericExpressionNode extends ExpressionNode<Integer> {
     return operation.evaluate(leftValue, rightValue);
   }
 
-    public void setSize(Sizes size) {
-        this.size = size;
-    }
+  public void setSize(Sizes size) {
+    this.size = size;
+  }
 
-    public Sizes getSize() {
-        return size;
-    }
+  public Sizes getSize() {
+    return size;
+  }
 }

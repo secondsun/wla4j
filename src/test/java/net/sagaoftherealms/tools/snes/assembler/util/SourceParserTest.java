@@ -1066,7 +1066,9 @@ public class SourceParserTest {
     assertEquals(AllDirectives.DEFINE, node.getDirectiveType());
     assertEquals("random_seed", (node.getArguments().getString(0)));
     assertEquals(1, node.getArguments().getInt(1));
-    assertEquals(Sizes.SIXTEEN_BIT, ((NumericExpressionNode)node.getArguments().getChildren().get(1)).getSize());
+    assertEquals(
+        Sizes.SIXTEEN_BIT,
+        ((NumericExpressionNode) node.getArguments().getChildren().get(1)).getSize());
   }
 
   @Test

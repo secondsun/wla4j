@@ -1,21 +1,21 @@
 package net.sagaoftherealms.tools.snes.assembler.main;
 
+import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.ErrorNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.MultiFileParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
+
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
-import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.*;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 
 /**
  * A project contains all of the files, configurations, etc for a WLA project. What is important is
@@ -60,93 +60,6 @@ public class Project {
     return parsedFiles.keySet();
   }
 
-  public void parse(final String sourceDirectory, final String rootSourceFile) {
-    preParse(sourceDirectory, rootSourceFile, new HashSet<>());
-    reparseFile(sourceDirectory, rootSourceFile);
-    while (!filesToParse.isEmpty()) {
-      List<String> filesList = new ArrayList<>(filesToParse);
-      filesToParse.clear();
-      for (String fileToParse : filesList) {
-        reparseFile(sourceDirectory, fileToParse);
-      }
-    }
-    parsedFiles.keySet().stream().forEach(key -> LOG.info(key));
-  }
-
-  /**
-   * Scans the entire source path and sets maco names for lookup during parsing.
-   *
-   * @param sourceDirectory directory relative to pwd
-   * @param rootSourceFile the filename
-   */
-  private void preParse(
-      String sourceDirectory, String rootSourceFile, HashSet<String> scannedIncludes) {
-    var parser = makeParser(sourceDirectory, rootSourceFile);
-
-    var includesToScan = parser.getIncludes();
-    macroNames.putAll(parser.getMacroMap());
-
-    includesToScan.forEach(
-        fileName -> {
-          if (!scannedIncludes.contains(fileName)) {
-            preParse(sourceDirectory, fileName, scannedIncludes);
-            scannedIncludes.add(fileName);
-          }
-        });
-  }
-
-  public void reparseFile(String sourceDirectory, String rootSourceFile) {
-
-    var fileName = sourceDirectory + File.separator + rootSourceFile;
-
-    var parser = makeParser(sourceDirectory, rootSourceFile);
-
-    List<Node> newList = new ArrayList<>();
-    Node node = parser.nextNode();
-
-    while (node != null) {
-      if (node.getType().equals(NodeTypes.DIRECTIVE)
-          && ((DirectiveNode) node).getDirectiveType().equals(AllDirectives.INCLUDE)) {
-        scheduleParse((DirectiveNode) node);
-      }
-      newList.add(node);
-      node = parser.nextNode();
-    }
-    errorNodes.put(fileName, parser.getErrors());
-    parsedFiles.put(fileName, newList);
-  }
-
-  private SourceParser makeParser(String sourceDirectory, String rootSourceFile) {
-    LOG.info(sourceDirectory);
-
-    var fileName = sourceDirectory + File.separator + rootSourceFile;
-    LOG.info(fileName);
-
-    var stream = getClass().getClassLoader().getResourceAsStream(fileName);
-    if (stream == null) {
-      try {
-        stream = new FileInputStream(fileName);
-      } catch (FileNotFoundException e) {
-        LOG.severe(e.getMessage());
-      }
-    }
-
-    var data = new InputData();
-
-    data.includeFile(stream, rootSourceFile, 0);
-
-    var scanner = data.startRead(OpCode.from(this.retro.getMainArch()));
-    var parser = new SourceParser(scanner, macroNames);
-    return parser;
-  }
-
-  private void scheduleParse(DirectiveNode includeDirectiveNode) {
-    String filename = includeDirectiveNode.getArguments().getString(0);
-    if (parsedFiles.get(includeDirectiveNode) == null) {
-      filesToParse.add(filename);
-    }
-  }
-
   public List<Node> getNodes(String includedFile) {
     return parsedFiles.get(includedFile);
   }
@@ -185,8 +98,14 @@ public class Project {
     }
   }
 
-  public MultiFileParser getParser() {
-    return parser;
+  /**
+   * This parses a file.
+   *
+   * @param sourceDirectory
+   * @param rootSourceFile
+   */
+  public void parseFile(String sourceDirectory, String rootSourceFile) {
+    parser.parse(sourceDirectory, rootSourceFile);
   }
 
   /** This method starts parsing a project per rules in its retro.json file. It is asynchronous. */

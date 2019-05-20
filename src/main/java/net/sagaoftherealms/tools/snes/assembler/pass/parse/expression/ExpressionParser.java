@@ -1,16 +1,15 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.expression;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.*;
+
+import java.util.Arrays;
+import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.OperationType;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.*;
 
 /** Parses expressions in the body definition. */
 public class ExpressionParser {
@@ -180,7 +179,6 @@ public class ExpressionParser {
       parser.consume(SIZE);
       token = parser.getCurrentToken();
     }
-
 
     if (termTokens.contains(token.getType())) {
       NumericExpressionNode toReturn = new NumericExpressionNode(token);
