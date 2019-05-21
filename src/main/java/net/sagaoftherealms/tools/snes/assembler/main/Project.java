@@ -1,14 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.main;
 
-import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.ErrorNode;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.MultiFileParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -16,6 +7,13 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.ErrorNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.MultiFileParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 
 /**
  * A project contains all of the files, configurations, etc for a WLA project. What is important is
@@ -25,9 +23,6 @@ import java.util.stream.Collectors;
  */
 public class Project {
 
-  private final Map<String, List<Node>> parsedFiles = new HashMap<>();
-  private final Set<String> filesToParse = new HashSet<>();
-  private final Map<String, Optional<MacroNode>> macroNames = new HashMap<>();
   private final Map<String, List<ErrorNode>> errorNodes = new HashMap<>();
 
   private static final java.util.logging.Logger LOG = Logger.getLogger(Project.class.getName());
@@ -57,11 +52,11 @@ public class Project {
   }
 
   public Set<String> getParsedFiles() {
-    return parsedFiles.keySet();
+    return parser.getParsedFiles();
   }
 
   public List<Node> getNodes(String includedFile) {
-    return parsedFiles.get(includedFile);
+    return parser.getNodes(includedFile);
   }
 
   public List<ErrorNode> getErrors(String fileName) {
