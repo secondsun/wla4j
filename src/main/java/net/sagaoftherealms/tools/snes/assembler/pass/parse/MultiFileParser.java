@@ -12,6 +12,7 @@ import net.sagaoftherealms.tools.snes.assembler.main.InputData;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.visitor.MacroDefinitionVisitor;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.visitor.Visitor;
 
 /**
  * This class was an old way to do quick and dirty parsing. I'm replacing this with a version that
@@ -24,6 +25,7 @@ public class MultiFileParser {
 
   private final OpCode[] opcodes;
 
+  private final Set<Visitor> visitors = new HashSet<>();
   private final Map<String, List<Node>> parsedFiles = new HashMap<>();
   private final Set<String> filesToParse = new HashSet<>();
   private final Map<String, Optional<MacroNode>> macroNames = new HashMap<>();
@@ -131,6 +133,7 @@ public class MultiFileParser {
     }
     var scanner = data.startRead(opcodes);
     var parser = new SourceParser(scanner, macroNames);
+    visitors.forEach(parser::addVisitor);
     return parser;
   }
 
@@ -153,5 +156,9 @@ public class MultiFileParser {
 
     LOG.info(errorNodes.keySet().stream().collect(Collectors.joining("\n")));
     return new ArrayList<String>(errorNodes.keySet());
+  }
+
+  public void addVisitor(Set<Visitor> visitors) {
+    this.visitors.addAll(visitors);
   }
 }

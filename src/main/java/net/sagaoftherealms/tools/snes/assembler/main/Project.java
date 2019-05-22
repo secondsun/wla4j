@@ -14,6 +14,7 @@ import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ErrorNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.MultiFileParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.visitor.Visitor;
 
 /**
  * A project contains all of the files, configurations, etc for a WLA project. What is important is
@@ -82,14 +83,21 @@ public class Project {
       this.projectRoot = projectRoot;
     }
 
+    private final Set<Visitor> visitors = new HashSet<>();
+
     public Project build() {
       var project = new Project(projectRoot);
       try {
-        project.launch();
+        project.launch(visitors);
       } catch (Exception e) {
         Logger.getAnonymousLogger().log(Level.SEVERE, e.getMessage(), e);
       }
       return project;
+    }
+
+    public Builder addVisitor(Visitor visitor) {
+      visitors.add(visitor);
+      return this;
     }
   }
 
@@ -104,9 +112,10 @@ public class Project {
   }
 
   /** This method starts parsing a project per rules in its retro.json file. It is asynchronous. */
-  private void launch() {
+  private void launch(Set<Visitor> visitors) {
     OpCode[] opcodes = OpCode.from(retro.getMainArch());
     this.parser = new MultiFileParser(opcodes);
+    parser.addVisitor(visitors);
     parser.parse(this.projectRoot, retro.getMain());
   }
 }
