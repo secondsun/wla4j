@@ -1,11 +1,9 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.visitor.Visitor;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
+
+import java.util.*;
 
 public abstract class Node implements Iterable<Node> {
 
@@ -47,6 +45,21 @@ public abstract class Node implements Iterable<Node> {
   @Override
   public Iterator<Node> iterator() {
     return new NodeIterator(this);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Node)) return false;
+    Node node = (Node) o;
+    return type == node.type
+        && Objects.equals(children, node.children)
+        && Objects.equals(sourceToken, node.sourceToken);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(type, children, sourceToken);
   }
 
   public final void accept(Visitor visitor) {

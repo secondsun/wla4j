@@ -728,6 +728,33 @@ public class SourceParserTest {
     assertNotNull(eightBit);
   }
 
+  @Test
+  public void testSectionBasic2() {
+    final String enumSource =
+        ".SECTION \"EmptyVectors\" SEMIFREE "
+            + "\n"
+            + "\n"
+            + "EmptyHandler:\n"
+            + "       rti\n"
+            + "\n"
+            + ".ENDS\n";
+
+    final String inputFile = "test.s";
+    final int lineNumber = 0;
+
+    var data = new InputData();
+    data.includeFile($(enumSource), inputFile, lineNumber);
+
+    var scanner = data.startRead(OpCode65816.opcodes());
+
+    SourceParser parser = new SourceParser(scanner);
+
+    SectionNode node = (SectionNode) parser.nextNode();
+    assertEquals(NodeTypes.DIRECTIVE, node.getType());
+    assertEquals(AllDirectives.SECTION, node.getDirectiveType());
+    assertEquals("EmptyVectors", node.getName());
+  }
+
   /** macro_1 is a basic macro with no variables or lookups or anything. */
   @Test
   public void testDefineMacro1BasicMacro() throws IOException {
