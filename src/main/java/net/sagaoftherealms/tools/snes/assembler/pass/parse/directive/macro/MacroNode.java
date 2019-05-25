@@ -10,7 +10,7 @@ public class MacroNode extends DirectiveNode {
   private final Token startToken;
 
   public MacroNode(Token startToken) {
-    super(AllDirectives.MACRO, startToken);
+    super(AllDirectives.MACRO, startToken, true);
     this.startToken = startToken;
   }
 

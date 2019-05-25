@@ -7,11 +7,13 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 public class DirectiveNode extends Node {
 
   private final AllDirectives directive;
+  private final boolean hasBody;
 
-  public DirectiveNode(AllDirectives directive, Token token) {
+  public DirectiveNode(AllDirectives directive, Token token, boolean hasBody) {
 
     super(DirectiveUtils.getDirectiveNodeType(directive), token);
     this.directive = directive;
+    this.hasBody = hasBody;
   }
 
   public DirectiveArgumentsNode getArguments() {
@@ -47,6 +49,10 @@ public class DirectiveNode extends Node {
 
   public AllDirectives getDirectiveType() {
     return directive;
+  }
+
+  public boolean hasBody() {
+    return hasBody;
   }
 
   @Override

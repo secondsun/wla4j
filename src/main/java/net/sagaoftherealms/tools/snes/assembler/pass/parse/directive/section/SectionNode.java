@@ -13,7 +13,7 @@ public class SectionNode extends DirectiveNode {
   }
 
   public SectionNode(Token token) {
-    super(AllDirectives.SECTION, token);
+    super(AllDirectives.SECTION, token, true);
   }
 
   public String getName() {

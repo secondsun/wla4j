@@ -7,6 +7,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 public class BankNode extends DirectiveNode {
 
   public BankNode(Token token) {
-    super(AllDirectives.BANK, token);
+    super(AllDirectives.BANK, token, false);
   }
 }

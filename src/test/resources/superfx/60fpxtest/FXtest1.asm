@@ -652,7 +652,7 @@ free_bullet:
 		.db $1E			; to R14						; and use as index into sine wave (ie: as an angle)
 		.db $50			; add R0						; (left shift without carry, balancing LSR)
 		
-		Bullet_Aim										; get 8.7 fixed point x and y velocity components in R3 and R4 (30 bytes)
+	    Bullet_Aim										; get 8.7 fixed point x and y velocity components in R3 and R4 (30 bytes)
 		
 		Bullet_Shoot									; add bullet to list and populate its parameters (36 bytes)
 		

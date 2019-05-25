@@ -8,7 +8,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 public class StructNode extends DirectiveNode {
 
   public StructNode(Token token) {
-    super(AllDirectives.STRUCT, token);
+    super(AllDirectives.STRUCT, token, true);
   }
 
   public String getName() {
