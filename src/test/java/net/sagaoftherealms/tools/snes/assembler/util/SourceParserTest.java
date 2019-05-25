@@ -133,6 +133,7 @@ public class SourceParserTest {
     var nodes = multiParser.getNodes(sourceDirectory + File.separator + sourceRoot);
     assertEquals(MacroCallNode.class, nodes.get(0).getClass());
   }
+
   /**
    * When sourceparser is run on a file, it may encounter macros defined in other files that it
    * hasn't found yet. This test tests that those trees get reparsed.

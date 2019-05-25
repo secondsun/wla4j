@@ -1,10 +1,6 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section;
 
-import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.ALIGN;
-import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.APPEND_TO;
-import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.BANK;
-import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.NAME;
-import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.SLOT;
+import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.*;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
 
@@ -35,7 +31,7 @@ public class RamSectionParser extends BodyDefinitionParser {
 
     while (token != null && token.getType() != EOL) {
 
-      var argument = token.getString();
+      var argument = token.getString().toUpperCase();
 
       switch (argument) {
         case "BANK":
