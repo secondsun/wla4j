@@ -7,7 +7,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 public class EnumNode extends DirectiveNode {
 
   public EnumNode(Token token) {
-    super(AllDirectives.ENUM, token,true);
+    super(AllDirectives.ENUM, token, true);
   }
 
   public String getAddress() {

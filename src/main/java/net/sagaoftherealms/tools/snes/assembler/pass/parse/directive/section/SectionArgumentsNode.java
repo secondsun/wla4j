@@ -22,28 +22,28 @@ public class SectionArgumentsNode extends DirectiveArgumentsNode {
   public void put(SectionParser.KEYS key, String value, Token token) {
     switch (key) {
       case NAME:
-        setChild(0, new StringExpressionNode(value, token));
+        setChildAt(0, new StringExpressionNode(value, token));
         break;
       case BANKHEADER:
-        setChild(1, new StringExpressionNode(value, token));
+        setChildAt(1, new StringExpressionNode(value, token));
         break;
       case NAMESPACE:
-        setChild(2, new StringExpressionNode(value, token));
+        setChildAt(2, new StringExpressionNode(value, token));
         break;
       case SIZE:
-        setChild(3, new StringExpressionNode(value, token));
+        setChildAt(3, new StringExpressionNode(value, token));
         break;
       case ALIGN:
-        setChild(4, new StringExpressionNode(value, token));
+        setChildAt(4, new StringExpressionNode(value, token));
         break;
       case STATUS:
-        setChild(5, new StringExpressionNode(value, token));
+        setChildAt(5, new StringExpressionNode(value, token));
         break;
       case APPEND_TO:
-        setChild(6, new StringExpressionNode(value, token));
+        setChildAt(6, new StringExpressionNode(value, token));
         break;
       case RETURNORG:
-        setChild(7, new StringExpressionNode(value, token));
+        setChildAt(7, new StringExpressionNode(value, token));
         break;
     }
   }

@@ -1,14 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.asParser;
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.toScanner;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
-import java.util.Arrays;
-import java.util.Random;
-import java.util.stream.Stream;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode65816;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeSpc700;
@@ -23,6 +14,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.Arrays;
+import java.util.Random;
+import java.util.stream.Stream;
+
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class SourceScannerTest {
 
@@ -116,6 +115,21 @@ public class SourceScannerTest {
 
     assertEquals(TokenTypes.valueOf(tokenType), token.getType());
     assertEquals(sourceLine.trim(), token.getString());
+  }
+
+  @Test
+  public void simpleScan() {
+    var line = "\t    Bullet_Aim\n";
+    final String inputFile = "test.s";
+    final int lineNumber = 0;
+
+    var data = new InputData();
+    data.includeFile($(line), inputFile, lineNumber);
+
+    var scanner = data.startRead(OpCode65816.opcodes());
+
+    var token = scanner.getNextToken();
+    assertEquals("Bullet_Aim", token.getString());
   }
 
   // Multiply gets a special test because it begins a comment

@@ -25,7 +25,7 @@ public class IncBinArgumentsNode extends DirectiveArgumentsNode {
   }
 
   public void put(Arguments key, ExpressionNode value) {
-    setChild(key.ordinal(), value);
+    setChildAt(key.ordinal(), value);
   }
 
   public ExpressionNode get(Arguments key) {

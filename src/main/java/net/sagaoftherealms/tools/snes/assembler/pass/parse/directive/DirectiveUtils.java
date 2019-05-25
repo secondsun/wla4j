@@ -108,7 +108,7 @@ public final class DirectiveUtils {
       case IFNDEFM:
         return new IfDefForMacrosParser(type);
 
-        case IF:
+      case IF:
 
       case IFDEF:
 

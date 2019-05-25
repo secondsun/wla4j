@@ -25,21 +25,21 @@ public class RamsectionArgumentsNode extends DirectiveArgumentsNode {
   public void put(RamsectionArguments key, String value, Token token) {
     switch (key) {
       case NAME:
-        setChild(0, new StringExpressionNode(value, token));
+        setChildAt(0, new StringExpressionNode(value, token));
         break;
       case BANK:
-        setChild(1, new StringExpressionNode(value, token));
+        setChildAt(1, new StringExpressionNode(value, token));
         break;
       case SLOT:
-        setChild(2, new StringExpressionNode(value, token));
+        setChildAt(2, new StringExpressionNode(value, token));
         break;
 
       case ALIGN:
-        setChild(3, new StringExpressionNode(value, token));
+        setChildAt(3, new StringExpressionNode(value, token));
         break;
 
       case APPEND_TO:
-        setChild(4, new StringExpressionNode(value, token));
+        setChildAt(4, new StringExpressionNode(value, token));
         break;
     }
   }

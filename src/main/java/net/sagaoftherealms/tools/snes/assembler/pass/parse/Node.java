@@ -29,7 +29,7 @@ public abstract class Node implements Iterable<Node> {
     return this;
   }
 
-  public final Node setChild(int index, Node childNode) {
+  public final Node setChildAt(int index, Node childNode) {
     children.set(index, childNode);
     return this;
   }
