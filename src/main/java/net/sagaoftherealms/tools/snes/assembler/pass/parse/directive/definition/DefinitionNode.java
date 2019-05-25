@@ -1,11 +1,13 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
 
-import java.util.Optional;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ConstantNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
+
+import java.util.Optional;
 
 /**
  * This class represents a label definition.
@@ -15,7 +17,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 public class DefinitionNode extends Node {
 
   private final String label;
-  private String structName;
+  private StringExpressionNode structName;
   private NumericExpressionNode size;
 
   public DefinitionNode(String label, Token token) {
@@ -39,6 +41,7 @@ public class DefinitionNode extends Node {
   public void setSize(int size, Token token) {
     NumericExpressionNode node = new NumericExpressionNode(token);
     node.addChild(new ConstantNode(size, token));
+    this.addChild(node);
     this.size = node;
   }
 
@@ -47,10 +50,16 @@ public class DefinitionNode extends Node {
   }
 
   public Optional<String> getStructName() {
-    return Optional.ofNullable(structName);
+    if (structName == null) {
+      return Optional.empty();
+    } else {
+      return Optional.ofNullable(structName.evaluate());
+    }
   }
 
-  public void setStructName(String structName) {
-    this.structName = structName;
+  public void setStructName(String structName, Token token) {
+    StringExpressionNode node = new StringExpressionNode(structName, token);
+    this.addChild(node);
+    this.structName = node;
   }
 }

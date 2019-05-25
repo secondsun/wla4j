@@ -1,18 +1,17 @@
 package net.sagaoftherealms.tools.snes.assembler.util;
 
-import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
-import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
-import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token.Position;
-import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
-import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
+import static java.lang.Math.min;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import static java.lang.Math.min;
+import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token.Position;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
 /** A stateful object that is used to read data from a {@link SourceFileDataMap} */
 public class SourceScanner {

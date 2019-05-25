@@ -1,10 +1,7 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
 
 import static net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser.expressionNode;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.DIRECTIVE;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.NUMBER;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.*;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
@@ -142,7 +139,7 @@ public abstract class BodyDefinitionParser extends GenericDirectiveParser {
         token = parser.getCurrentToken();
         parser.consumeAndClear(TokenTypes.LABEL);
 
-        bodyNode.setStructName(TokenUtil.getLabelName(token));
+        bodyNode.setStructName(TokenUtil.getLabelName(token), token);
         bodyNode.setSize((new ConstantNode(1, token)));
         token = parser.getCurrentToken();
 

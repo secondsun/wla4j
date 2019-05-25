@@ -228,6 +228,6 @@ public final class DirectiveUtils {
   }
 
   public static NodeTypes getDirectiveNodeType(AllDirectives directive) {
-    return directive == AllDirectives.ENUM ? NodeTypes.ENUM : NodeTypes.DIRECTIVE;
+    return NodeTypes.DIRECTIVE;
   }
 }

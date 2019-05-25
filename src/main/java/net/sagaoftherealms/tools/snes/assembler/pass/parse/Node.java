@@ -1,9 +1,8 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
+import java.util.*;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.visitor.Visitor;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
-
-import java.util.*;
 
 public abstract class Node implements Iterable<Node> {
 

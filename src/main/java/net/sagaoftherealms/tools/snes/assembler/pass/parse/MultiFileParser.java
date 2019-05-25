@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
@@ -110,11 +109,7 @@ public class MultiFileParser {
   }
 
   private SourceParser makeParser(String sourceDirectory, String rootSourceFile) {
-    LOG.info(sourceDirectory);
-
     var fileName = sourceDirectory + File.separator + rootSourceFile;
-    LOG.info(fileName);
-
     var stream = getClass().getClassLoader().getResourceAsStream(fileName);
     if (stream == null) {
       try {
@@ -154,7 +149,6 @@ public class MultiFileParser {
 
   public List<String> getFilesWithErrors() {
 
-    LOG.info(errorNodes.keySet().stream().collect(Collectors.joining("\n")));
     return new ArrayList<String>(errorNodes.keySet());
   }
 

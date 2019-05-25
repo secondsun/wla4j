@@ -1,5 +1,10 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.*;
+
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveUtils;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
@@ -8,12 +13,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.visitor.Visitor;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.util.SourceScanner;
-
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.*;
 
 public class SourceParser {
 

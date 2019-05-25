@@ -296,14 +296,14 @@ public class SourceParserTest {
     var parser = asParser(enumSource);
     EnumNode enumNode = (EnumNode) parser.nextNode();
 
-    assertEquals(NodeTypes.ENUM, enumNode.getType());
+    assertEquals(NodeTypes.DIRECTIVE, enumNode.getType());
     assertEquals("49152", enumNode.getAddress());
   }
 
   @Test
   public void parseBasicEnumBody() {
     final String enumSource =
-        ".ENUM $C000\n"
+        ".enum $ff80\n"
             + " SEASON_SPRING db\n"
             + "SEASON_SUMMER BYTE\n"
             + "SEASON_SUMMER_2 dw\n"
@@ -735,7 +735,6 @@ public class SourceParserTest {
   public void testSectionBasic2() {
     final String sectionSource = superFXSource();
 
-
     final String inputFile = "test.s";
     final int lineNumber = 0;
 
@@ -755,441 +754,440 @@ public class SourceParserTest {
     System.out.println(gson.toJson(node));
 
     assertEquals(429, node.getBody().getChildren().size());
-
   }
 
   private String superFXSource() {
-    return ".SECTION \"GSUcode\" FORCE\n" +
-            "SuperFX:\n" +
-            "\t.db $A0, $00\n" +
-            "\t.db $3D, $4E\n" +
-            "\t.db $FB\n" +
-            "\t.dw bullet_head_ptr\n" +
-            "\t.db $1A\n" +
-            "\t.db $4B\n" +
-            "\t.db $FB\n" +
-            "\t.dw bullet_free_ptr\n" +
-            "\t.db $19\n" +
-            "\t.db $4B\n" +
-            "\t.db $FB\n" +
-            "\t.dw frame_count_ptr\n" +
-            "\t.db $4B\n" +
-            "\t.db $3E, $73\n" +
-            "\t.db $09\n" +
-            "\t.db $07\n" +
-            "\t.db $D0\n" +
-            "\t.db $3D, $3B\n" +
-            "\t.db $FF\n" +
-            "\t.dw done_shooting\n" +
-            "\t.db $01\n" +
-            "shooting:\n" +
-            "\t.db $3D, $3B\n" +
-            "\t.db $A0, sineb\n" +
-            "\t.db $3F, $DF\n" +
-            "\t.db $F2\n" +
-            "\t.dw random\n" +
-            "\t.db $11\n" +
-            "\t.db $42\n" +
-            "\t.db $F5\n" +
-            "\t.dw U_basic\n" +
-            "\t.db $AC, $0B\n" +
-            "\t.db $FD\n" +
-            "\t.dw shooting_loop\n" +
-            "\t.db $02\n" +
-            "shooting_loop:\n" +
-            "\t\t.db $20, $B9\n" +
-            "\t\t.db $08\n" +
-            "\t\t.db $05\n" +
-            "\t\t.db $01\n" +
-            "\t\t.db $FF\n" +
-            "\t\t.dw done_shooting\n" +
-            "\t\t.db $01\n" +
-            "free_bullet:\n" +
-            "\t\tRandom_Number_R1\n" +
-            "\t\t.db $03\n" +
-            "\t\t.db $25, $16\n" +
-            "\t\t.db $9F\n" +
-            "\t\t.db $3D, $50\n" +
-            "\t\t.db $F6\n" +
-            "\t\t.dw U_basic\n" +
-            "\t\t.db $16\n" +
-            "\t\t.db $56\n" +
-            "\t\tRandom_Number_R1\n" +
-            "\t\t.db $03\n" +
-            "\t\t.db $1E\n" +
-            "\t\t.db $50\n" +
-            "\t    Bullet_Aim\n" +
-            "\t\tBullet_Shoot\n" +
-            "\t\t.db $3C\n" +
-            "\t\t.db $01\n" +
-            "\t.db $F0\n" +
-            "\t.dw U_basic\n" +
-            "\t.db $65\n" +
-            "\t.db $08\n" +
-            "\t.db $08\n" +
-            "\t.db $01\n" +
-            "\t.db $F5\n" +
-            "\t.dw U_extra\n" +
-            "\t.db $AC, $0A\n" +
-            "\t.db $3C\n" +
-            "\t.db $01\n" +
-            "done_shooting:\n" +
-            "\t.db $B1\n" +
-            "\t.db $32\n" +
-            "\t.db $FC\n" +
-            "\t.dw buffer_wordsize\n" +
-            "\t.db $FD\n" +
-            "\t.dw clear_framebuffer\n" +
-            "\t.db $A0, $00\n" +
-            "\t.db $FB\n" +
-            "\t.dw screen_base\n" +
-            "clear_framebuffer:\n" +
-            "\t\t.db $3B\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $3C\n" +
-            "\t\t.db $DB\n" +
-            "\t.db $FB\n" +
-            "\t.dw bullet_head_ptr\n" +
-            "\t.db $BA\n" +
-            "\t.db $3B\n" +
-            "\t.db $FB\n" +
-            "\t.dw bullet_free_ptr\n" +
-            "\t.db $B9\n" +
-            "\t.db $3B\n" +
-            "\t.db $2A, $1B\n" +
-            "\t.db $F5\n" +
-            "\t.dw left_boundary\n" +
-            "\t.db $F6\n" +
-            "\t.dw right_boundary\n" +
-            "\t.db $F9\n" +
-            "\t.dw top_boundary\n" +
-            "\t.db $FA\n" +
-            "\t.dw bottom_boundary\n" +
-            "\t.db $A4, $03\n" +
-            "\t.db $AC, $01\n" +
-            "\t.db $AE, $02\n" +
-            "\t.db $AD, $06\n" +
-            "\t.db $A8, $05\n" +
-            "\t\t.db $13\n" +
-            "move_and_draw:\n" +
-            "\t\t.db $4B\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $4B\n" +
-            "\t\t.db $53\n" +
-            "\t\t.db $3B\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $C0\n" +
-            "\t\t.db $20, $11\n" +
-            "\t\t.db $66\n" +
-            "\t\t.db $13\n" +
-            "\t\t.db $4B\n" +
-            "\t\t.db $0A\n" +
-            "\t\t.db $7E\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $DB\n" +
-            "in_range_x:\n" +
-            "\t\t.db $4B\n" +
-            "\t\t.db $53\n" +
-            "\t\t.db $3B\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $C0\n" +
-            "\t\t.db $20, $12\n" +
-            "\t\t.db $6A\n" +
-            "\t\t.db $0A\n" +
-            "\t\t.db $7A\n" +
-            "\t\t\t.db $BC\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $A0, $02\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $21\n" +
-            "\t\t\t.db $64\n" +
-            "second_line:\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $21\n" +
-            "\t\t\t.db $68\n" +
-            "third_line:\n" +
-            "\t\t\t.db $BC\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $B4\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $BC\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $21\n" +
-            "\t\t\t.db $6D\n" +
-            "fourth_line:\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $B4\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $BC\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $21\n" +
-            "\t\t\t.db $6D\n" +
-            "fifth_line:\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $B4\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $BC\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $21\n" +
-            "\t\t\t.db $68\n" +
-            "sixth_line:\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $21\n" +
-            "\t\t\t.db $64\n" +
-            "\t\t\t.db $BC\n" +
-            "\t\t\t.db $4E\n" +
-            "last_line:\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "finished_bullet:\n" +
-            "\t\t.db $1B\n" +
-            "\t\t.db $4B\n" +
-            "\t\t.db $20, $BB\n" +
-            "\t\t.db $08\n" +
-            "\t\t.db $93\n" +
-            "\t\t.db $13\n" +
-            "\t.db $3D, $4C\n" +
-            "\t.db $00\n" +
-            "off_top:\n" +
-            "\t\t\t.db $22\n" +
-            "\t\t\t.db $95\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $09, $B0\n" +
-            "\t\t\t.db $E1\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $09, $B4\n" +
-            "\t\t\t.db $E1\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $BC\n" +
-            "\t\t\t.db $09, $C0\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $09, $C9\n" +
-            "\t\t\t.db $01\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $09, $D4\n" +
-            "\t\t\t.db $D1\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $09, $DA\n" +
-            "\t\t\t.db $D1\n" +
-            "\t\t\t.db $05\n" +
-            "\t\t\t.db $D9\n" +
-            "offside_x:\n" +
-            "\t\t.db $B1\n" +
-            "\t\t.db $65\n" +
-            "\t\t.db $0A\n" +
-            "\t\t.db $80\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $05\n" +
-            "\t\t.db $77\n" +
-            "offside_y:\n" +
-            "\t\t.db $B2\n" +
-            "\t\t.db $69\n" +
-            "\t\t.db $A0, $02\n" +
-            "\t\t.db $0A\n" +
-            "\t\t.db $D4\n" +
-            "\t\t.db $B2\n" +
-            "\t\t.db $6A\n" +
-            "\t\t.db $3E, $66\n" +
-            "\t\t.db $0A\n" +
-            "\t\t.db $6B\n" +
-            "\t\t\t.db $BC\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $F0, $C0, $00\n" +
-            "\t\t\t.db $3F, $62\n" +
-            "\t\t\t.db $09, $5C\n" +
-            "\t\t\t.db $21\n" +
-            "\t\t\t.db $64\n" +
-            "\t\t\t.db $BE\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $3F, $62\n" +
-            "\t\t\t.db $09, $4F\n" +
-            "\t\t\t.db $21\n" +
-            "\t\t\t.db $68\n" +
-            "\t\t\t.db $BC\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $BE\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $B4\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $BE\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $BC\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $3F, $62\n" +
-            "\t\t\t.db $09, $38\n" +
-            "\t\t\t.db $21\n" +
-            "\t\t\t.db $6D\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $B4\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $BC\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $3F, $62\n" +
-            "\t\t\t.db $09, $27\n" +
-            "\t\t\t.db $21\n" +
-            "\t\t\t.db $6D\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $BE\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $B4\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $BE\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $BC\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $3F, $62\n" +
-            "\t\t\t.db $09, $12\n" +
-            "\t\t\t.db $21\n" +
-            "\t\t\t.db $68\n" +
-            "\t\t\t.db $BE\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $D2\n" +
-            "\t\t\t.db $62\n" +
-            "\t\t\t.db $09, $06\n" +
-            "\t\t\t.db $21\n" +
-            "\t\t\t.db $64\n" +
-            "\t\t\t.db $BC\n" +
-            "\t\t\t.db $4E\n" +
-            "\t\t\t.db $4C\n" +
-            "\t\t\t.db $4C\n" +
-            "finished_bullet_edge:\n" +
-            "\t\t.db $FF\n" +
-            "\t\t.dw finished_bullet\n" +
-            "bullet_delete:\n" +
-            "\t\t.db $11\n" +
-            "\t\t.db $4B\n" +
-            "\t\t.db $F2\n" +
-            "\t\t.dw bullet_head_ptr\n" +
-            "\t\t.db $42\n" +
-            "\t\t.db $3E, $58\n" +
-            "\t\t.db $6B\n" +
-            "\t\t.db $08\n" +
-            "\t\t.db $07\n" +
-            "\t\t.db $B1\n" +
-            "\t\t.db $32\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $05\n" +
-            "\t\t.db $08\n" +
-            "\t\t.db $01\n" +
-            "not_head:\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $DB\n" +
-            "\t\t.db $4B\n" +
-            "\t\t.db $3E, $58\n" +
-            "\t\t.db $B1\n" +
-            "\t\t.db $30\n" +
-            "done_not_head:\n" +
-            "\t\t.db $20, $B1\n" +
-            "\t\t.db $09\n" +
-            "\t\t.db $1B\n" +
-            "\t\t.db $01\n" +
-            "\t\t.db $4B\n" +
-            "\t\t.db $21\n" +
-            "\t\t.db $3E, $5A\n" +
-            "\t\t.db $31\n" +
-            "\t\t.db $EB\n" +
-            "\t\t.db $EB\n" +
-            "\t\t.db $F2\n" +
-            "\t\t.dw bullet_free_ptr\n" +
-            "\t\t.db $42\n" +
-            "\t\t.db $3B\n" +
-            "\t\t.db $2B\n" +
-            "\t\t.db $3E, $68\n" +
-            "\t\t.db $BB\n" +
-            "\t\t.db $32\n" +
-            "\t\t.db $21\n" +
-            "\t\t.db $3E, $6A\n" +
-            "\t\t.db $21, $1B\n" +
-            "\t\t.db $FF\n" +
-            "\t\t.dw move_and_draw\n" +
-            "\t\t.db $13\n" +
-            "finish_frame:\n" +
-            "\t.db $EB\n" +
-            "\t.db $EB\n" +
-            "\t.db $F2\n" +
-            "\t.dw bullet_free_ptr\n" +
-            "\t.db $42\n" +
-            "\t.db $3B\n" +
-            "\t.db $2B\n" +
-            "\t.db $3E, $68\n" +
-            "\t.db $BB\n" +
-            "\t.db $32\n" +
-            "\t.db $3D, $4C\n" +
-            "\t.db $00\n" +
-            ".ENDS";
+    return ".SECTION \"GSUcode\" FORCE\n"
+        + "SuperFX:\n"
+        + "\t.db $A0, $00\n"
+        + "\t.db $3D, $4E\n"
+        + "\t.db $FB\n"
+        + "\t.dw bullet_head_ptr\n"
+        + "\t.db $1A\n"
+        + "\t.db $4B\n"
+        + "\t.db $FB\n"
+        + "\t.dw bullet_free_ptr\n"
+        + "\t.db $19\n"
+        + "\t.db $4B\n"
+        + "\t.db $FB\n"
+        + "\t.dw frame_count_ptr\n"
+        + "\t.db $4B\n"
+        + "\t.db $3E, $73\n"
+        + "\t.db $09\n"
+        + "\t.db $07\n"
+        + "\t.db $D0\n"
+        + "\t.db $3D, $3B\n"
+        + "\t.db $FF\n"
+        + "\t.dw done_shooting\n"
+        + "\t.db $01\n"
+        + "shooting:\n"
+        + "\t.db $3D, $3B\n"
+        + "\t.db $A0, sineb\n"
+        + "\t.db $3F, $DF\n"
+        + "\t.db $F2\n"
+        + "\t.dw random\n"
+        + "\t.db $11\n"
+        + "\t.db $42\n"
+        + "\t.db $F5\n"
+        + "\t.dw U_basic\n"
+        + "\t.db $AC, $0B\n"
+        + "\t.db $FD\n"
+        + "\t.dw shooting_loop\n"
+        + "\t.db $02\n"
+        + "shooting_loop:\n"
+        + "\t\t.db $20, $B9\n"
+        + "\t\t.db $08\n"
+        + "\t\t.db $05\n"
+        + "\t\t.db $01\n"
+        + "\t\t.db $FF\n"
+        + "\t\t.dw done_shooting\n"
+        + "\t\t.db $01\n"
+        + "free_bullet:\n"
+        + "\t\tRandom_Number_R1\n"
+        + "\t\t.db $03\n"
+        + "\t\t.db $25, $16\n"
+        + "\t\t.db $9F\n"
+        + "\t\t.db $3D, $50\n"
+        + "\t\t.db $F6\n"
+        + "\t\t.dw U_basic\n"
+        + "\t\t.db $16\n"
+        + "\t\t.db $56\n"
+        + "\t\tRandom_Number_R1\n"
+        + "\t\t.db $03\n"
+        + "\t\t.db $1E\n"
+        + "\t\t.db $50\n"
+        + "\t    Bullet_Aim\n"
+        + "\t\tBullet_Shoot\n"
+        + "\t\t.db $3C\n"
+        + "\t\t.db $01\n"
+        + "\t.db $F0\n"
+        + "\t.dw U_basic\n"
+        + "\t.db $65\n"
+        + "\t.db $08\n"
+        + "\t.db $08\n"
+        + "\t.db $01\n"
+        + "\t.db $F5\n"
+        + "\t.dw U_extra\n"
+        + "\t.db $AC, $0A\n"
+        + "\t.db $3C\n"
+        + "\t.db $01\n"
+        + "done_shooting:\n"
+        + "\t.db $B1\n"
+        + "\t.db $32\n"
+        + "\t.db $FC\n"
+        + "\t.dw buffer_wordsize\n"
+        + "\t.db $FD\n"
+        + "\t.dw clear_framebuffer\n"
+        + "\t.db $A0, $00\n"
+        + "\t.db $FB\n"
+        + "\t.dw screen_base\n"
+        + "clear_framebuffer:\n"
+        + "\t\t.db $3B\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $3C\n"
+        + "\t\t.db $DB\n"
+        + "\t.db $FB\n"
+        + "\t.dw bullet_head_ptr\n"
+        + "\t.db $BA\n"
+        + "\t.db $3B\n"
+        + "\t.db $FB\n"
+        + "\t.dw bullet_free_ptr\n"
+        + "\t.db $B9\n"
+        + "\t.db $3B\n"
+        + "\t.db $2A, $1B\n"
+        + "\t.db $F5\n"
+        + "\t.dw left_boundary\n"
+        + "\t.db $F6\n"
+        + "\t.dw right_boundary\n"
+        + "\t.db $F9\n"
+        + "\t.dw top_boundary\n"
+        + "\t.db $FA\n"
+        + "\t.dw bottom_boundary\n"
+        + "\t.db $A4, $03\n"
+        + "\t.db $AC, $01\n"
+        + "\t.db $AE, $02\n"
+        + "\t.db $AD, $06\n"
+        + "\t.db $A8, $05\n"
+        + "\t\t.db $13\n"
+        + "move_and_draw:\n"
+        + "\t\t.db $4B\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $4B\n"
+        + "\t\t.db $53\n"
+        + "\t\t.db $3B\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $C0\n"
+        + "\t\t.db $20, $11\n"
+        + "\t\t.db $66\n"
+        + "\t\t.db $13\n"
+        + "\t\t.db $4B\n"
+        + "\t\t.db $0A\n"
+        + "\t\t.db $7E\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $DB\n"
+        + "in_range_x:\n"
+        + "\t\t.db $4B\n"
+        + "\t\t.db $53\n"
+        + "\t\t.db $3B\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $C0\n"
+        + "\t\t.db $20, $12\n"
+        + "\t\t.db $6A\n"
+        + "\t\t.db $0A\n"
+        + "\t\t.db $7A\n"
+        + "\t\t\t.db $BC\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $A0, $02\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $21\n"
+        + "\t\t\t.db $64\n"
+        + "second_line:\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $21\n"
+        + "\t\t\t.db $68\n"
+        + "third_line:\n"
+        + "\t\t\t.db $BC\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $B4\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $BC\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $21\n"
+        + "\t\t\t.db $6D\n"
+        + "fourth_line:\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $B4\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $BC\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $21\n"
+        + "\t\t\t.db $6D\n"
+        + "fifth_line:\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $B4\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $BC\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $21\n"
+        + "\t\t\t.db $68\n"
+        + "sixth_line:\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $21\n"
+        + "\t\t\t.db $64\n"
+        + "\t\t\t.db $BC\n"
+        + "\t\t\t.db $4E\n"
+        + "last_line:\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "finished_bullet:\n"
+        + "\t\t.db $1B\n"
+        + "\t\t.db $4B\n"
+        + "\t\t.db $20, $BB\n"
+        + "\t\t.db $08\n"
+        + "\t\t.db $93\n"
+        + "\t\t.db $13\n"
+        + "\t.db $3D, $4C\n"
+        + "\t.db $00\n"
+        + "off_top:\n"
+        + "\t\t\t.db $22\n"
+        + "\t\t\t.db $95\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $09, $B0\n"
+        + "\t\t\t.db $E1\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $09, $B4\n"
+        + "\t\t\t.db $E1\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $BC\n"
+        + "\t\t\t.db $09, $C0\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $09, $C9\n"
+        + "\t\t\t.db $01\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $09, $D4\n"
+        + "\t\t\t.db $D1\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $09, $DA\n"
+        + "\t\t\t.db $D1\n"
+        + "\t\t\t.db $05\n"
+        + "\t\t\t.db $D9\n"
+        + "offside_x:\n"
+        + "\t\t.db $B1\n"
+        + "\t\t.db $65\n"
+        + "\t\t.db $0A\n"
+        + "\t\t.db $80\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $05\n"
+        + "\t\t.db $77\n"
+        + "offside_y:\n"
+        + "\t\t.db $B2\n"
+        + "\t\t.db $69\n"
+        + "\t\t.db $A0, $02\n"
+        + "\t\t.db $0A\n"
+        + "\t\t.db $D4\n"
+        + "\t\t.db $B2\n"
+        + "\t\t.db $6A\n"
+        + "\t\t.db $3E, $66\n"
+        + "\t\t.db $0A\n"
+        + "\t\t.db $6B\n"
+        + "\t\t\t.db $BC\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $F0, $C0, $00\n"
+        + "\t\t\t.db $3F, $62\n"
+        + "\t\t\t.db $09, $5C\n"
+        + "\t\t\t.db $21\n"
+        + "\t\t\t.db $64\n"
+        + "\t\t\t.db $BE\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $3F, $62\n"
+        + "\t\t\t.db $09, $4F\n"
+        + "\t\t\t.db $21\n"
+        + "\t\t\t.db $68\n"
+        + "\t\t\t.db $BC\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $BE\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $B4\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $BE\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $BC\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $3F, $62\n"
+        + "\t\t\t.db $09, $38\n"
+        + "\t\t\t.db $21\n"
+        + "\t\t\t.db $6D\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $B4\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $BC\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $3F, $62\n"
+        + "\t\t\t.db $09, $27\n"
+        + "\t\t\t.db $21\n"
+        + "\t\t\t.db $6D\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $BE\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $B4\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $BE\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $BC\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $3F, $62\n"
+        + "\t\t\t.db $09, $12\n"
+        + "\t\t\t.db $21\n"
+        + "\t\t\t.db $68\n"
+        + "\t\t\t.db $BE\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $D2\n"
+        + "\t\t\t.db $62\n"
+        + "\t\t\t.db $09, $06\n"
+        + "\t\t\t.db $21\n"
+        + "\t\t\t.db $64\n"
+        + "\t\t\t.db $BC\n"
+        + "\t\t\t.db $4E\n"
+        + "\t\t\t.db $4C\n"
+        + "\t\t\t.db $4C\n"
+        + "finished_bullet_edge:\n"
+        + "\t\t.db $FF\n"
+        + "\t\t.dw finished_bullet\n"
+        + "bullet_delete:\n"
+        + "\t\t.db $11\n"
+        + "\t\t.db $4B\n"
+        + "\t\t.db $F2\n"
+        + "\t\t.dw bullet_head_ptr\n"
+        + "\t\t.db $42\n"
+        + "\t\t.db $3E, $58\n"
+        + "\t\t.db $6B\n"
+        + "\t\t.db $08\n"
+        + "\t\t.db $07\n"
+        + "\t\t.db $B1\n"
+        + "\t\t.db $32\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $05\n"
+        + "\t\t.db $08\n"
+        + "\t\t.db $01\n"
+        + "not_head:\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $DB\n"
+        + "\t\t.db $4B\n"
+        + "\t\t.db $3E, $58\n"
+        + "\t\t.db $B1\n"
+        + "\t\t.db $30\n"
+        + "done_not_head:\n"
+        + "\t\t.db $20, $B1\n"
+        + "\t\t.db $09\n"
+        + "\t\t.db $1B\n"
+        + "\t\t.db $01\n"
+        + "\t\t.db $4B\n"
+        + "\t\t.db $21\n"
+        + "\t\t.db $3E, $5A\n"
+        + "\t\t.db $31\n"
+        + "\t\t.db $EB\n"
+        + "\t\t.db $EB\n"
+        + "\t\t.db $F2\n"
+        + "\t\t.dw bullet_free_ptr\n"
+        + "\t\t.db $42\n"
+        + "\t\t.db $3B\n"
+        + "\t\t.db $2B\n"
+        + "\t\t.db $3E, $68\n"
+        + "\t\t.db $BB\n"
+        + "\t\t.db $32\n"
+        + "\t\t.db $21\n"
+        + "\t\t.db $3E, $6A\n"
+        + "\t\t.db $21, $1B\n"
+        + "\t\t.db $FF\n"
+        + "\t\t.dw move_and_draw\n"
+        + "\t\t.db $13\n"
+        + "finish_frame:\n"
+        + "\t.db $EB\n"
+        + "\t.db $EB\n"
+        + "\t.db $F2\n"
+        + "\t.dw bullet_free_ptr\n"
+        + "\t.db $42\n"
+        + "\t.db $3B\n"
+        + "\t.db $2B\n"
+        + "\t.db $3E, $68\n"
+        + "\t.db $BB\n"
+        + "\t.db $32\n"
+        + "\t.db $3D, $4C\n"
+        + "\t.db $00\n"
+        + ".ENDS";
   }
 
   /** macro_1 is a basic macro with no variables or lookups or anything. */
