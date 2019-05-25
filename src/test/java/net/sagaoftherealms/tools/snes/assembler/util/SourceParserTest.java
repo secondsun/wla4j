@@ -203,7 +203,13 @@ public class SourceParserTest {
   public void testParseRamSectionToken() {
     // Source for source : ages-disasm wram.s#2548
     var source =
-        ".RAMSECTION \"RAM 2\" BANK 2 SLOT 3\n"
+        ";nope, no includes inside macros for you, sir!\n"
+            + // A small "hack" I found a bug where multi line comments would consume all input.
+            // THis tests for that as well even though it should be in sourcescannertest
+            "/* .macro INHERIT_DEFAULT_OBJECT_METHODS\n"
+            + "  .include \"src/object/default.inheritance\"\n"
+            + ".endm */\n"
+            + ".RAMSECTION \"RAM 2\" BANK 2 SLOT 3\n"
             + "\n"
             + "; $d000 used as part of the routine for redrawing the collapsed d2 cave in the present\n"
             + "w2Filler1:\t\t\tdsb $0800\n"

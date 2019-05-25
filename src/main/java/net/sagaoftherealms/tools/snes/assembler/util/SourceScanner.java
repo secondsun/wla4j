@@ -282,7 +282,9 @@ public class SourceScanner {
 
       linePosition++;
       if (linePosition >= sourceString.length() && (lineNumber + 1) <= source.lineCount()) {
-        builder.append("\n");
+        if (!builder.toString().endsWith("*/")) {
+          builder.append("\n");
+        }
         sourceString = getNextLine().getDataLine();
       }
 
