@@ -48,7 +48,7 @@ public enum AllDirectives {
   HIROM(new AllDirective(".HIROM")),
   EXHIROM(new AllDirective(".EXHIROM")),
   LOROM(new AllDirective(".LOROM")),
-  BASE(new AllDirective(".BASE x")),
+  BASE(new AllDirective(".BASE e")),
   BLOCK(new AllDirective(".BLOCK s")),
   ENDB(new AllDirective(".ENDB")),
   BANK(new AllDirective(".BANK x SLOT x")),

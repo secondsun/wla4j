@@ -1,5 +1,7 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.*;
+
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
@@ -17,8 +19,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.Sec
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
-
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.*;
 
 public final class DirectiveUtils {
 
@@ -134,6 +134,8 @@ public final class DirectiveUtils {
         return new RamSectionParser();
       case MACRO:
         return new MacroParser();
+      case BASE:
+        return new BaseParser();
       case DB:
       case BYT:
       case ASC:
