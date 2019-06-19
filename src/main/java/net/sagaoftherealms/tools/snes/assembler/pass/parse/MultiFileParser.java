@@ -39,11 +39,14 @@ public class MultiFileParser {
   }
 
   public void parse(final String sourceDirectory, final String rootSourceFile) {
+    LOG.info("MultiFileParser.parse " + sourceDirectory + " " + rootSourceFile);
     parseFile(sourceDirectory, rootSourceFile);
     while (!filesToParse.isEmpty()) {
       List<String> filesList = new ArrayList<>(filesToParse);
       filesToParse.clear();
       for (String fileToParse : filesList) {
+        LOG.info("MultiFileParser.parse fileToParse " + sourceDirectory + " " + fileToParse);
+
         parseFile(sourceDirectory, fileToParse);
       }
     }
@@ -52,7 +55,14 @@ public class MultiFileParser {
         .forEach(
             key -> {
               if (needsReparse(getNodes(key))) {
-                parseFile(sourceDirectory, key.replace(sourceDirectory + "/", ""));
+                LOG.info(
+                    "MultiFileParser.parse needs reparse "
+                        + sourceDirectory
+                        + " "
+                        + key
+                        + " but is actually "
+                        + key.replace(sourceDirectory + File.separator, ""));
+                parseFile(sourceDirectory, key.replace(sourceDirectory + File.separator, ""));
               }
             });
   }
@@ -80,6 +90,7 @@ public class MultiFileParser {
 
     macroNames.putAll(macroDefinitionVisitor.getMacroNames());
     if (needsReparse(fileNodes)) {
+      LOG.info("MultiFileParser.parseFile needs reparse " + sourceDirectory + " " + rootSourceFile);
       parseFile(sourceDirectory, rootSourceFile);
     } else {
       errorNodes.put(fileName, parser.getErrors());
