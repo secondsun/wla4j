@@ -3,6 +3,7 @@ package net.sagaoftherealms.tools.snes.assembler.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.File;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,7 +21,8 @@ public class SuperFxChipTest {
   @Test
   public void loadSuperFxTestProject() {
     var includedFile = "InitSNES.asm";
-    Project superfxProject = new Project.Builder("src/test/resources/superfx/60fpxtest").build();
+    Project superfxProject =
+        new Project.Builder(new File("src/test/resources/superfx/60fpxtest").toURI()).build();
 
     var response = superfxProject.getParseTree(includedFile);
 

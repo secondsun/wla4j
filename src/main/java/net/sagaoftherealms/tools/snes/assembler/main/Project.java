@@ -3,6 +3,7 @@ package net.sagaoftherealms.tools.snes.assembler.main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.net.URI;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,11 +33,12 @@ public class Project {
   private final String projectRoot;
   private MultiFileParser parser;
 
-  public Project(String projectRoot) {
-    this.projectRoot = projectRoot;
+  public Project(URI projectRootUri) {
+    this.projectRoot = new File(projectRootUri).getAbsolutePath();
     try {
+
       JsonReader jsonReader =
-          Json.createReader(new FileReader(projectRoot + File.separatorChar + "retro.json"));
+          Json.createReader(new FileReader(this.projectRoot + File.separatorChar + "retro.json"));
       JsonObject retroObject = jsonReader.readObject();
       this.retro = Retro.fromJson(retroObject);
     } catch (FileNotFoundException e) {
@@ -72,14 +74,14 @@ public class Project {
 
   public static class Builder {
 
-    private final String projectRoot;
+    private final URI projectRoot;
 
     /**
      * Project builder
      *
      * @param projectRoot a relative directory path which contains a retro.json file
      */
-    public Builder(String projectRoot) {
+    public Builder(URI projectRoot) {
       this.projectRoot = projectRoot;
     }
 
