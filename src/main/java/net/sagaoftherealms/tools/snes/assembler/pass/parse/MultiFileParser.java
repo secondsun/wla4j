@@ -69,7 +69,7 @@ public class MultiFileParser {
 
   private void parseFile(String sourceDirectory, String rootSourceFile) {
 
-    var fileName = sourceDirectory + File.separator + rootSourceFile;
+    var fileName = rootSourceFile;
 
     var parser = makeParser(sourceDirectory, rootSourceFile);
     var macroDefinitionVisitor = new MacroDefinitionVisitor();
