@@ -30,15 +30,18 @@ public class Project {
   private static final java.util.logging.Logger LOG = Logger.getLogger(Project.class.getName());
 
   private final Retro retro;
-  private final String projectRoot;
+
   private MultiFileParser parser;
 
+  private URI projectRootUri;
+
   public Project(URI projectRootUri) {
-    this.projectRoot = new File(projectRootUri).getAbsolutePath();
+    this.projectRootUri = projectRootUri;
+    String projectRoot = new File(projectRootUri).getAbsolutePath();
     try {
 
       JsonReader jsonReader =
-          Json.createReader(new FileReader(this.projectRoot + File.separatorChar + "retro.json"));
+          Json.createReader(new FileReader(projectRoot + File.separatorChar + "retro.json"));
       JsonObject retroObject = jsonReader.readObject();
       this.retro = Retro.fromJson(retroObject);
     } catch (FileNotFoundException e) {
@@ -51,7 +54,7 @@ public class Project {
   }
 
   public List<Node> getParseTree(String includedFile) {
-    return parser.getNodes(projectRoot + File.separator + includedFile);
+    return parser.getNodes(includedFile);
   }
 
   public Set<String> getParsedFiles() {
@@ -109,7 +112,7 @@ public class Project {
    * @param sourceDirectory
    * @param rootSourceFile
    */
-  public void parseFile(String sourceDirectory, String rootSourceFile) {
+  public void parseFile(URI sourceDirectory, String rootSourceFile) {
     parser.parse(sourceDirectory, rootSourceFile);
   }
 
@@ -118,6 +121,6 @@ public class Project {
     OpCode[] opcodes = OpCode.from(retro.getMainArch());
     this.parser = new MultiFileParser(opcodes);
     parser.addVisitor(visitors);
-    parser.parse(this.projectRoot, retro.getMain());
+    parser.parse(this.projectRootUri, retro.getMain());
   }
 }

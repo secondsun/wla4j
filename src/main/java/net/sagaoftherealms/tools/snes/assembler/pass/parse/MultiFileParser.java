@@ -3,6 +3,8 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.URI;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
@@ -38,7 +40,7 @@ public class MultiFileParser {
     return parsedFiles.keySet();
   }
 
-  public void parse(final String sourceDirectory, final String rootSourceFile) {
+  public void parse(final URI sourceDirectory, final String rootSourceFile) {
     LOG.info("MultiFileParser.parse " + sourceDirectory + " " + rootSourceFile);
     parseFile(sourceDirectory, rootSourceFile);
     while (!filesToParse.isEmpty()) {
@@ -67,9 +69,7 @@ public class MultiFileParser {
             });
   }
 
-  private void parseFile(String sourceDirectory, String rootSourceFile) {
-
-    var fileName = rootSourceFile;
+  private void parseFile(URI sourceDirectory, String rootSourceFile) {
 
     var parser = makeParser(sourceDirectory, rootSourceFile);
     var macroDefinitionVisitor = new MacroDefinitionVisitor();
@@ -93,8 +93,8 @@ public class MultiFileParser {
       LOG.info("MultiFileParser.parseFile needs reparse " + sourceDirectory + " " + rootSourceFile);
       parseFile(sourceDirectory, rootSourceFile);
     } else {
-      errorNodes.put(fileName, parser.getErrors());
-      parsedFiles.put(fileName, fileNodes);
+      errorNodes.put(rootSourceFile, parser.getErrors());
+      parsedFiles.put(rootSourceFile, fileNodes);
     }
   }
 
@@ -119,8 +119,8 @@ public class MultiFileParser {
     return false;
   }
 
-  private SourceParser makeParser(String sourceDirectory, String rootSourceFile) {
-    var fileName = sourceDirectory + File.separator + rootSourceFile;
+  private SourceParser makeParser(URI sourceDirectory, String rootSourceFile) {
+    var fileName = Paths.get(sourceDirectory).resolve(rootSourceFile).toString();
     var stream = getClass().getClassLoader().getResourceAsStream(fileName);
     if (stream == null) {
       try {
@@ -150,6 +150,10 @@ public class MultiFileParser {
     }
   }
 
+  /**
+   * @param includedFile the included file relative to the project working directory.
+   * @return
+   */
   public List<Node> getNodes(String includedFile) {
     return parsedFiles.get(includedFile);
   }

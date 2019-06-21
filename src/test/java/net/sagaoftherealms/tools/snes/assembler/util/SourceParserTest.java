@@ -8,9 +8,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.Gson;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -97,8 +97,8 @@ public class SourceParserTest {
   }
 
   @Test
-  public void multiFileTest() throws IOException {
-    var sourceDirectory = "ages-disasm";
+  public void multiFileTest() throws IOException, URISyntaxException {
+    var sourceDirectory = getClass().getClassLoader().getResource("ages-disasm").toURI();
     var sourceRoot = "main.s";
     var includedFile = "ages-disasm/objects/macros.s";
     long beforeUsedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
@@ -123,14 +123,16 @@ public class SourceParserTest {
    * @throws IOException
    */
   @Test
-  public void testMultiFileParserGeneratesCorrectParseTreeWithMacros() throws IOException {
-    var sourceDirectory = "parseMacro";
+  public void testMultiFileParserGeneratesCorrectParseTreeWithMacros()
+      throws IOException, URISyntaxException {
+    var sourceDirectory = getClass().getClassLoader().getResource("parseMacro").toURI();
+
     var sourceRoot = "define_macro_4.s";
 
     MultiFileParser multiParser = new MultiFileParser(OpCodeZ80.opcodes());
     multiParser.parse(sourceDirectory, sourceRoot);
 
-    var nodes = multiParser.getNodes(sourceDirectory + File.separator + sourceRoot);
+    var nodes = multiParser.getNodes(sourceRoot);
     assertEquals(MacroCallNode.class, nodes.get(0).getClass());
   }
 
@@ -141,18 +143,19 @@ public class SourceParserTest {
    * @throws IOException
    */
   @Test
-  public void testMultiFileParserGeneratesCorrectParseTreeWithMacros2() throws IOException {
-    var sourceDirectory = "parseMacro_2";
+  public void testMultiFileParserGeneratesCorrectParseTreeWithMacros2()
+      throws IOException, URISyntaxException {
+    var sourceDirectory = getClass().getClassLoader().getResource("parseMacro_2").toURI();
     var sourceRoot = "define_macro_4.s";
     var sourceInclude = "define_macro_3.s";
 
     MultiFileParser multiParser = new MultiFileParser(OpCodeZ80.opcodes());
     multiParser.parse(sourceDirectory, sourceRoot);
 
-    var nodes = multiParser.getNodes(sourceDirectory + File.separator + sourceInclude);
+    var nodes = multiParser.getNodes(sourceInclude);
     assertEquals(MacroNode.class, nodes.get(0).getClass());
 
-    nodes = multiParser.getNodes(sourceDirectory + File.separator + sourceRoot);
+    nodes = multiParser.getNodes(sourceRoot);
     assertEquals(MacroCallNode.class, nodes.get(0).getClass());
   }
 

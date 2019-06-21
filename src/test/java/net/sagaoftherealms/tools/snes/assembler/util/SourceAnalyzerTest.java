@@ -10,8 +10,10 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+@Disabled("Implement this after wla-language-server is done.")
 public class SourceAnalyzerTest {
 
   @Test
