@@ -211,7 +211,7 @@ ClearVRAM:
 
    REP #$30		; mem/A = 8 bit, X/Y = 16 bit
    SEP #$20
-
+.vdfdf
    LDA #$80
    STA $2115         ;Set VRAM port to word access
    LDX #$1809
