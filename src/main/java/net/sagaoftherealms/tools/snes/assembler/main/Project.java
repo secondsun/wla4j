@@ -7,7 +7,6 @@ import java.net.URI;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
@@ -67,8 +66,7 @@ public class Project {
 
   public List<ErrorNode> getErrors(String fileName) {
     LOG.info("getFilesWithErrors:" + fileName);
-    LOG.info(errorNodes.keySet().stream().collect(Collectors.joining("\n")));
-    return errorNodes.getOrDefault(fileName, new ArrayList<>());
+    return parser.getErrors(fileName);
   }
 
   public List<String> getFilesWithErrors() {

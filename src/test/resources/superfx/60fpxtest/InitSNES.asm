@@ -90,7 +90,7 @@ _Loop03:		;regs $2123-$2133
   INX			;fixed color = $00, no super-impose (external synchronization),
   CPX #$2134	;no interlaced mode, normal resolution
   BNE _Loop03
-
+ 
 			;regs $2134-$2136  - multiplication result, no initialization needed
 			;reg $2137 - software H/V latch, no initialization needed
 			;reg $2138 - Sprite data read, no initialization needed
@@ -211,7 +211,7 @@ ClearVRAM:
 
    REP #$30		; mem/A = 8 bit, X/Y = 16 bit
    SEP #$20
-.vdfdf
+
    LDA #$80
    STA $2115         ;Set VRAM port to word access
    LDX #$1809
