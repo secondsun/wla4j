@@ -111,7 +111,11 @@ public class Project {
    * @param rootSourceFile
    */
   public void parseFile(URI sourceDirectory, String rootSourceFile) {
-    parser.parse(sourceDirectory, rootSourceFile);
+    try {
+      parser.parse(sourceDirectory, rootSourceFile);
+    } catch (Exception ex) {
+      LOG.log(Level.SEVERE, "Error parsing", ex);
+    }
   }
 
   /** This method starts parsing a project per rules in its retro.json file. It is asynchronous. */
@@ -119,6 +123,10 @@ public class Project {
     OpCode[] opcodes = OpCode.from(retro.getMainArch());
     this.parser = new MultiFileParser(opcodes);
     parser.addVisitor(visitors);
-    parser.parse(this.projectRootUri, retro.getMain());
+    try {
+      parser.parse(this.projectRootUri, retro.getMain());
+    } catch (Exception ex) {
+      LOG.log(Level.SEVERE, "Error parsing", ex);
+    }
   }
 }

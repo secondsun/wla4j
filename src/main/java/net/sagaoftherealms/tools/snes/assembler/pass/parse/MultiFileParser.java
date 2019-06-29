@@ -5,7 +5,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode;
@@ -43,6 +49,7 @@ public class MultiFileParser {
   public void parse(final URI sourceDirectory, final String rootSourceFile) {
     LOG.info("MultiFileParser.parse " + sourceDirectory + " " + rootSourceFile);
     parseFile(sourceDirectory, rootSourceFile);
+
     while (!filesToParse.isEmpty()) {
       List<String> filesList = new ArrayList<>(filesToParse);
       filesToParse.clear();
