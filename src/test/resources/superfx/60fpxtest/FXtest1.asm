@@ -53,7 +53,6 @@ SLOT 0 $8000            ;       may have more slots per bank.
 .DW    $036C                  ; Checksum
 
 
-
 .BANK 0 SLOT 0
 ; === Interrupt Vector Table ====================
 .ORG    $7FE4 + HEADER_OFF   ; === Native Mode ===
