@@ -1,11 +1,12 @@
 ; For some reason this code shifts places between Ages and Seasons.
 
 ;;
+; @param	hl
 ; @addr{3035}
-objectFunc_3035:
+objectLoadMovementScript:
 	ldh a,(<hRomBank)	; $3035
 	push af			; $3037
-	callfrombank0 bank0e.objectfunc_6b2d		; $3038
+	callfrombank0 bank0e.objectLoadMovementScript_body		; $3038
 	pop af			; $3042
 	ldh (<hRomBank),a	; $3043
 	ld ($2222),a		; $3045
@@ -13,10 +14,10 @@ objectFunc_3035:
 
 ;;
 ; @addr{3049}
-objectFunc_3049:
+objectRunMovementScript:
 	ldh a,(<hRomBank)	; $3049
 	push af			; $304b
-	callfrombank0 bank0e.objectFunc_6b4c		; $304c
+	callfrombank0 bank0e.objectRunMovementScript_body		; $304c
 	pop af			; $3056
 	setrombank		; $3057
 	ret			; $305c
@@ -45,10 +46,10 @@ incCbc2:
 ;;
 ; @param	e
 ; @addr{306c}
-func_306c:
+endgameCutsceneHandler:
 	ldh a,(<hRomBank)	; $306c
 	push af			; $306e
-	callfrombank0 func_03_5414		; $306f
+	callfrombank0 endgameCutsceneHandler_body		; $306f
 	pop af			; $3079
 	setrombank		; $307a
 	ret			; $307f
@@ -107,19 +108,13 @@ disableLcdAndLoadRoom:
 ;
 ; @param	hl
 ; @addr{30c4}
-func_30c4:
+playWaveSoundAtRandomIntervals:
 	ldh a,(<hRomBank)	; $30c4
 	push af			; $30c6
-	callfrombank0 func_10_7328		; $30c7
+	callfrombank0 playWaveSoundAtRandomIntervals_body		; $30c7
 	pop af			; $30d1
 	setrombank		; $30d2
 	ret			; $30d7
-
-.else ; ROM_SEASONS
-
-; Placeholder labels
-disableLcdAndLoadRoom:
-func_30c4:
 
 .endif
 

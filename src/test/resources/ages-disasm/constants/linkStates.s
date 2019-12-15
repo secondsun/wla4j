@@ -20,7 +20,7 @@
 	; Link stays in this state as long as [wDisabledObjects] is nonzero.
 	LINK_STATE_08				db ; $08
 
-	; State for the cutscene where Ambi is unposessed, Link moves back, then jumps to
+	; State for the cutscene where Ambi is unpossessed, Link moves back, then jumps to
 	; avoid Veran.
 	LINK_STATE_AMBI_UNPOSSESSED_CUTSCENE	db ; $09
 
@@ -35,7 +35,7 @@
 	; Plays the boss death sound effect?
 	LINK_STATE_GRABBED_BY_WALLMASTER	db ; $0c
 
-	; Grabbed by Gohma (seasons), Veran spider form (ages)?
+	; Grabbed by Likelike, Gohma (seasons), Veran spider form (ages)
 	LINK_STATE_GRABBED			db ; $0d
 
 	; This state might be used in Seasons when opening d4?
@@ -53,6 +53,8 @@
 	; Link is a stone until counter1 reaches 0
 	LINK_STATE_STONE			db ; $13
 
-	; Link is in his "defeated" pose until counter1 reaches 0
+	; Link is in his "defeated" pose until counter1 reaches 0.
+	; If $cc50 is nonzero, he does his "walk" animation instead (ie. when trapped by
+	; octogon's bubble underwater).
 	LINK_STATE_COLLAPSED			db ; $14
 .ENDE

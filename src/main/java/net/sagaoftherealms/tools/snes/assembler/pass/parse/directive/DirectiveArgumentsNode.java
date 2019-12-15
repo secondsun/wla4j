@@ -30,7 +30,7 @@ public class DirectiveArgumentsNode extends Node {
     if (argument == null) {
       return null;
     } else {
-      return (String) argument.evaluate();
+      return String.valueOf(argument.evaluate());
     }
   }
 

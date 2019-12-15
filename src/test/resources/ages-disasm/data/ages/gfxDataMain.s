@@ -194,7 +194,7 @@
 	m_GfxData gfx_plasmarine_3 ; $0b33b5
 	m_GfxData gfx_ramrock_1 ; $0b3462
 	m_GfxData gfx_ramrock_2 ; $0b3551
-	m_GfxData gfx_nayru_ambi_posessed ; $0b3720
+	m_GfxData gfx_nayru_ambi_possessed ; $0b3720
 	m_GfxData gfx_veran_human ; $0b38c8
 	m_GfxData gfx_wtf_darklink ; $0b3a2b
 	m_GfxData gfx_veranbeetleandwing ; $0b3bc3
@@ -203,11 +203,11 @@
 	m_GfxData gfx_spiderveran_1 ; $0b3f3d
 	m_GfxData gfx_spiderbeeveran ; $0b40f0
 	m_GfxData gfx_spiderbeeveran_2 ; $0b42c7
-	m_GfxData gfx_kingmoblinsad ; $0b43db
+	m_GfxData gfx_kingmoblin_1 ; $0b43db
 	m_GfxData gfx_kingmoblin_2 ; $0b4548
 	m_GfxData gfx_kingmoblin_3 ; $0b4735
 	m_GfxData gfx_kingmoblin_4 ; $0b48fb
-	m_GfxData gfx_kingmoblin_1 ; $0b4a9a
+	m_GfxData gfx_kingmoblin_5 ; $0b4a9a
 	m_GfxData gfx_twinrovamerged ; $0b4c14
 	m_GfxData gfx_twinrova ; $0b4d14
 	m_GfxData gfx_twinrova_2 ; $0b4e4f

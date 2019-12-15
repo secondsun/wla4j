@@ -145,6 +145,9 @@ public enum AllDirectives {
   ROMGBC(new AllDirective(".ROMGBC")),
   ROMGBCONLY(new AllDirective(".ROMGBCONLY")),
   ROMSGB(new AllDirective(".ROMSGB")),
+  UNION(new AllDirective(".UNION")),
+  NEXTU(new AllDirective(".NEXTU")),ENDU(new AllDirective(".ENDU")),
+
   ;
 
   private final String name;

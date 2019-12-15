@@ -82,15 +82,16 @@ public final class TokenUtil {
       throw new IllegalArgumentException("Token argument was not a label type");
     }
     String labelString = token.getString();
-
-    if (labelString.matches("__+") || labelString.matches("_+f") || labelString.matches("_+b")) {
-      // __+ is an anonymous label and _+f/_+b are special commands.
-    } else {
-
-      while (labelString.startsWith("@") || labelString.startsWith("_")) {
-        labelString = labelString.substring(1);
-      }
-    }
+//I'm leaving this in, @ are child labels and _ are local labels.  I don't think it should be part of their name,
+    // but it makes parsing easier
+//    if (labelString.matches("__+") || labelString.matches("_+f") || labelString.matches("_+b")) {
+//      // __+ is an anonymous label and _+f/_+b are special commands.
+//    } else {
+//
+////      while (labelString.startsWith("@") || labelString.startsWith("_")) {
+////        labelString = labelString.substring(1);
+////      }
+//    }
 
     return labelString.replace(":", "");
   }

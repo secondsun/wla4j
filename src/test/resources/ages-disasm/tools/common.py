@@ -63,9 +63,9 @@ def wlahexSigned(val, length):
     else:
         return '$'+myhex(val, length)
 
-def wlabin(val, length=1):
+def wlabin(val, length=8):
     out = bin(val)[2:]
-    while len(out) < length*8:
+    while len(out) < length:
         out = '0' + out
     return '%' + out
 
@@ -119,7 +119,7 @@ def compressData_commonByte(data, numBytes):
     res = bytearray()
     multiple = 8*numBytes
     if len(data)%multiple != 0:
-        print 'compressData_commonByte error: not a multiple of ' + str(multiple)
+        print('compressData_commonByte error: not a multiple of ' + str(multiple))
         exit(1)
     for row in xrange(0, len(data)/multiple):
         mostCommonByteScore = 0

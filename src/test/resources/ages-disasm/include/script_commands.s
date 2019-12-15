@@ -1,3 +1,7 @@
+; Naming convention: any script command that starts with the word "check" will hold script
+; execution until a particular condition becomes true, ie. "checknoenemies" holds
+; execution until there are no enemies.
+
 .MACRO scriptend
 	.db $00
 .ENDM
@@ -10,6 +14,11 @@
 ; Set the value of the Interaction.state variable.
 .MACRO setstate
 	.db $80 \1
+.ENDM
+
+; Increment the Interaction.state variable.
+.MACRO incstate
+	.db $80 $ff
 .ENDM
 
 ; Set the value of the Interaction.state2 variable.
@@ -63,30 +72,18 @@
 	.endif
 .ENDM
 
-; Asks for a 5-letter secret.
+; Does one of two things, depending on which game this is, and whether the secret is to be
+; told in this game, or received from this game.
 ;
-; param1:	The index of the secret to ask for (see wShortSecretIndex).
-;		If $ff, it accepts any secret (used with farore).
-.MACRO askforsecret
-	.if \1 >= $10
-	.if \1 < $ff
-		.PRINTT "SCRIPT ERROR: argument to 'askforsecret' out of range.\n"
-		.FAIL
-	.endif
-	.endif
+; A: Asks for a specific 5-letter secret.
+;
+; B: Generates a 5-letter secret, which can later be printed through a textbox. (The text
+; can use the "\secret1" command to print it.)
+;
+; param1:	The index of the secret (see wShortSecretIndex).
+;		If $ff, it asks for and accepts any valid secret (used with farore).
+.MACRO generateoraskforsecret
 	.db $86 \1
-.ENDM
-
-; Generates a 5-letter secret, which can later be printed through a textbox. (The text can
-; use the "\secret1" command to print it.)
-;
-; param1:	The index of the secret to generate (see wShortSecretIndex).
-.MACRO generatesecret
-	.if \1 >= $10
-		.PRINTT "SCRIPT ERROR: argument to 'generatesecret' out of range.\n"
-		.FAIL
-	.endif
-	.db $86 (\1|$10)
 .ENDM
 
 ; Uses the given memory address as an index for a jump table immediately after the
@@ -436,7 +433,7 @@
 .ENDM
 
 ; Set the variable wDisabledObjects to $00, re-enabling all objects.
-.MACRO setdisabledobjectsto00
+.MACRO enableallobjects
 	.db $b9
 .ENDM
 
@@ -489,14 +486,19 @@
 	.dw \2
 .ENDM
 
-; Jump to the specified address unconditionally.
-; The only advantage of this over jump2byte is it can jump to ram, but that's dubious...
-; The actual game doesn't use it.
+; Takes two addresses, and randomly chooses one to jump to.
+; DOESN'T WORK IN AGES. Rather, it just jumps to the first address, but is never used
+; anyway?
 ;
-; param1:	Address to jump to.
-.MACRO jumpalways
+; param1:	First choice of address to jump to.
+; param2:	Second choice.
+.MACRO jumprandom
+	.ifdef ROM_AGES
+		.PRINTT "Can't use 'jumprandom' script opcode in ages."
+		.FAIL
+	.endif
 	.db $c4
-	.dw \1
+	.dw \1 \2
 .ENDM
 
 ; $C5: no command
@@ -525,11 +527,12 @@
 
 ; Jump somewhere if the trade item equals a certain value.
 ;
-; param1:	Value to check for the trade item. (This is subtracted by one before the
-;		comparison?)
+; param1:	Value to check for the trade item. (For some reason this is subtracted by
+;               one... but that's adjusted for here, so one can use defines from
+;               "constants/tradeitems.s" just fine.)
 ; param2[16]:	Destination to jump to
 .MACRO jumpiftradeitemeq
-	.db $c8 \1
+	.db $c8 (\1+1)
 	.dw \2
 .ENDM
 
@@ -993,9 +996,11 @@
 .ENDM
 
 
-; Helper macro for validating arguments that take an interaction byte
+; Helper macro for validating arguments that take an interaction byte.
+; (Currently commented out, because it produces cryptic error messages.)
 .MACRO m_verify_object_byte
-	.redefine M_TMP 0
+	/*
+	.define M_TMP 0
 
 	.if \1 < $40
 		.redefine M_TMP 1
@@ -1014,4 +1019,5 @@
 	.endif
 
 	.undefine M_TMP
+	*/
 .ENDM

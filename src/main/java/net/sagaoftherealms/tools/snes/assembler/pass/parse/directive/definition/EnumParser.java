@@ -6,6 +6,7 @@ import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirecti
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
@@ -21,8 +22,9 @@ public class EnumParser extends BodyDefinitionParser {
     var token = parser.getCurrentToken();
     var arguments = new EnumArgumentsNode(token);
 
-    parser.consume(TokenTypes.NUMBER);
-    arguments.put(KEYS.ADDRESS, "" + TokenUtil.getInt(token), token);
+    var expression = ExpressionParser.expressionNode(parser);
+
+    arguments.put(KEYS.ADDRESS, expression);
 
     token = parser.getCurrentToken();
 

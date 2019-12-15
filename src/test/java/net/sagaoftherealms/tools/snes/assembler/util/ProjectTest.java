@@ -49,7 +49,6 @@ public class ProjectTest {
 
     var response = agesProject.getParseTree(includedFile);
 
-    Logger.getAnonymousLogger().log(Level.INFO, "Safe to heapdump");
 
     // Thread.sleep(10000);
 

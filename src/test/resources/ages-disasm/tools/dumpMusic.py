@@ -19,10 +19,12 @@ if romIsSeasons(rom):
     soundBaseBank = 0x39
     soundPointerTable = 0xe57cf
     numSoundIndices = 0xdf
+    outputDir = 'audio/seasons/'
 else:
     soundBaseBank = 0x39
     soundPointerTable = 0xe5748
     numSoundIndices = 0xdf
+    outputDir = 'audio/ages/'
 
 class SoundPointer:
     def __init__(self, index, address, bank, label):
@@ -40,6 +42,16 @@ class ChannelPointer:
         self.channel = channel
 	self.channelValue = channel>>4
         self.labels = labels
+
+
+noteTable = [ 'c', 'cs', 'd', 'ds', 'e', 'f', 'fs', 'g', 'gs', 'a', 'as', 'b', ]
+
+def byteToNote(b):
+    octave = b // len(noteTable) + 1
+    s = noteTable[b % len(noteTable)] + str(octave)
+    if len(s) < 3:
+        s += ' '
+    return s
 
 soundPointers = []
 channelPointers = []
@@ -68,9 +80,11 @@ for i in range(numSoundIndices):
     pointerOutput.write(' ; ' + wlahex(address))
     pointerOutput.write('\n')
 
+# Hardcoded address for unreferenced sound data
 if romIsAges(rom):
-    # Hardcoded address for unreferenced sound data
     soundPointers.append(SoundPointer(-1, 0xe59f2, 0x3b, 'soundUnref'))
+else: # Seasons
+    soundPointers.append(SoundPointer(-1, 0xe5a79, 0x3b, 'soundUnref'))
 
 soundPointers = sorted(soundPointers, key=lambda x:x.address)
 
@@ -213,7 +227,7 @@ def parseChannelData(address, channel, chanOut):
         elif b >= 0 and b <= 0x58: # and b >= 0xc
             l = rom[address]
             address+=1
-            chanOut.write('\tnote ' + wlahex(b, 2) + ' ' + wlahex(l,2) + '\n')
+            chanOut.write('\tnote ' + byteToNote(b) + ' ' + wlahex(l,2) + '\n')
         else:
             chanOut.write('\t.db ' + wlahex(b,2) + ' ; ???\n')
     return address
@@ -250,16 +264,16 @@ for ptr in channelPointers:
     lastAddress = address
 
 pointerOutput.seek(0)
-outFile = open('audio/soundPointers.s', 'w')
+outFile = open(outputDir + 'soundPointers.s', 'w')
 outFile.write(pointerOutput.read())
 outFile.close()
 
 dataOutput.seek(0)
-outFile = open('audio/soundChannelPointers.s', 'w')
+outFile = open(outputDir + 'soundChannelPointers.s', 'w')
 outFile.write(dataOutput.read())
 outFile.close()
 
 chanOut.seek(0)
-outFile = open('audio/soundChannelData.s', 'w')
+outFile = open(outputDir + 'soundChannelData.s', 'w')
 outFile.write(chanOut.read())
 outFile.close()

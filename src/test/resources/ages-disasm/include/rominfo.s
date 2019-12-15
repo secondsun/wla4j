@@ -11,26 +11,12 @@
 
 .banksize $4000
 .rombanks 64
-
-
-; In Seasons, the "empty" byte is the bank number, while in ages, it's 0.
-.ifdef ROM_AGES
-	.emptyfill $00
-.else
-; My custom mod of wla will see this define and use the bank number as "emptyfill" when it
-; exists. If stock WLA is being used, it should still build without issues, but the
-; checksum will be incorrect.
-;
-; WLA mod is located here: https://github.com/Drenn1/wla-dx/tree/emptyfill-banknumber
-	.define _WLA_EMPTYFILL_BANKNUMBER
-	.export _WLA_EMPTYFILL_BANKNUMBER
-.endif
+.ramsize $02 ; 1 RAM bank
 
 .nintendologo
 .romgbconly
 .licenseecodenew "01"
 .cartridgetype $1b
-.ramsize $02
 .countrycode 1
 .computegbcomplementcheck
 .computegbchecksum

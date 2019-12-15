@@ -2,6 +2,8 @@ package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition
 
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 public class EnumArgumentsNode extends DirectiveArgumentsNode {
@@ -14,6 +16,21 @@ public class EnumArgumentsNode extends DirectiveArgumentsNode {
     // Add three blank arguments
   }
 
+  public void put(EnumParser.KEYS key, ExpressionNode expression) {
+    switch (key) {
+      case ORDINAL:
+        setChildAt(1, expression);
+        break;
+      case EXPORT:
+        setChildAt(2, expression);
+        break;
+      case ADDRESS:
+
+        setChildAt(0, expression);
+        break;
+    }
+  }
+
   public void put(EnumParser.KEYS key, String value, Token token) {
     switch (key) {
       case ORDINAL:
@@ -23,6 +40,7 @@ public class EnumArgumentsNode extends DirectiveArgumentsNode {
         setChildAt(2, new StringExpressionNode(value, token));
         break;
       case ADDRESS:
+
         setChildAt(0, new StringExpressionNode(value, token));
         break;
     }

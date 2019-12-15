@@ -32,7 +32,7 @@
 .else
 	MUS_HORON_VILLAGE         db ; $0a
 	MUS_HIDE_AND_SEEK         db ; $0b
-	MUS_SUNKEN_CITY           db ; $0b
+	MUS_SUNKEN_CITY           db ; $0c
 .endif
 
 	MUS_ESSENCE_ROOM          db ; $0d
@@ -181,7 +181,7 @@
 	SND_TEXT                db ; $66
 	SND_BOSS_DEAD           db ; $67
 	SND_UNKNOWN3            db ; $68 ; I can't remember what this is but it sounds familiar
-	SND_UNKNOWN4            db ; $69
+	SND_UNKNOWN4            db ; $69 ; Veran turtle form jumping?
 	SND_SLASH               db ; $6a ; Not a sword slash, idk really
 	SND_SWORDSPIN           db ; $6b
 	SND_OPENCHEST           db ; $6c
@@ -193,7 +193,7 @@
 	SND_LIGHTTORCH          db ; $72
 	SND_KILLENEMY           db ; $73
 	SND_SWORDSLASH          db ; $74
-	SND_UNKNOWN5            db ; $75 ; A type of sword slash
+	SND_UNKNOWN5            db ; $75 ; A type of sword slash, blade trap, ricky punch
 	SND_SWITCHHOOK          db ; $76 ; Also played when using shield
 	SND_DROPESSENCE         db ; $77
 	SND_BOOMERANG           db ; $78
@@ -332,7 +332,7 @@
 	SND_bd                  db ; $bd ; A single sound slowly lowering in pitch
 .endif
 
-	SND_VERAN_PROJECTILE    db ; $be ; Used for Veran's projectile attack in her posessed forms
+	SND_VERAN_PROJECTILE    db ; $be ; Used for Veran's projectile attack in her possessed forms
 	SND_CHARGE              db ; $bf ; Might be unused; sounds similar to SND_TINGLE
 	SND_TRANSFORM           db ; $c0 ; LADX sound where nightmare transforms into Dethyl
 	SND_RESTORE             db ; $c1 ; Used in ie. the ending Seasons cutscene when seasons are restored
@@ -343,7 +343,7 @@
 	SND_DEKU_SCRUB          db ; $c6
 	SND_GORON               db ; $c7
 	SND_DING                db ; $c8 ; Used as the bell in matches with Blaino
-	SND_CIRCLING            db ; $c9 ; Used in the cutscene where Veran posesses Ambi (veran is circling around)
+	SND_CIRCLING            db ; $c9 ; Used in the cutscene where Veran possesses Ambi (veran is circling around)
 
 .ifdef ROM_AGES
 	SND_CA                  db ; $ca (blank)

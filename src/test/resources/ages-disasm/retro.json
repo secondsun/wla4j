@@ -1,4 +1,5 @@
 {
-  "main": "main.s",
-  "main-arch": "gb"
+"main":"ages.s",
+"main-arch":"gb",
+"arch-roots":[{"arch":"spc700", "path":"test.s"}]
 }

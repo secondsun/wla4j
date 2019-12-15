@@ -47,13 +47,13 @@
 .ENDM
 
 .MACRO ldbc
-	ld bc, (\1<<8) | \2
+	ld bc, ((\1&$ff)<<8) | (\2&$ff)
 .endm
 .MACRO ldde
-	ld de, (\1<<8) | \2
+	ld de, ((\1&$ff)<<8) | (\2&$ff)
 .endm
 .MACRO ldhl
-	ld hl, (\1<<8) | \2
+	ld hl, ((\1&$ff)<<8) | (\2&$ff)
 .endm
 
 .MACRO setrombank
@@ -419,25 +419,27 @@
 	.dw \3
 .endm
 
-.macro m_WarpSourcesEnd
+.macro m_WarpSourcesEnd ; Does nothing in seasons
+.ifdef ROM_AGES
 	.db $ff $00 $00 $00
+.endif
 .endm
 
 ; Args:
 ; 1 - Byte: map
 ; 2 - Byte: YX
-; 3 - Byte: unknown
+; 3 - 4bit: parameter
+; 4 - 4bit: param
 .macro m_WarpDest
-	.db \1 \2 \3
+	.db \1 \2
+	.db (\3<<4) | (\4)
 .endm
 
 
 ; Used in interactionAnimations.s, partAnimations, etc.
 .macro m_AnimationLoop
-
-animationLoopLabel\@:
-	dwbe \1-animationLoopLabel\@-1
-
+	.db (\1-CADDR)>>8
+	.db (\1-CADDR)&$ff
 .endm
 
 

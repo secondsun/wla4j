@@ -19,6 +19,7 @@
 	rememberedCompanionGroup	db
 	rememberedCompanionRoom		db
 	linkObjectIndex			db
+	c635				db ; TODO: what is this?
 	rememberedCompanionY		db
 	rememberedCompanionX		db
 .ENDST
@@ -81,42 +82,6 @@
 		dsb 8
 .endst
 
-.struct ShootingGalleryStruct ; Variables used while playing the shooting gallery game
-
-	gameStatus: ; $cfc0
-	; Set to 0 while game is running, 1 when it's finished
-		db
-	cfc1:
-		dsb $15
-	isStrike: ; $cfd6
-	; Set if the current shot was a strike
-		db
-	savedBItem: ; $cfd7
-	; Saves Link's B button item
-		db
-	savedAItem: ; $cfd8
-	; Saves Link's A button item
-		db
-	cfd9: ; $cfd9
-		db
-	cfda: ; $cfda
-		db
-	cfdb: ; $cfdb
-		db
-	disableGoronNpcs: ; $cfdc
-	; Affects the goron npc? Set when doing the biggoron's sword version of the game?
-		db
-	useTileIndexData: ; $cfdd
-	; Used as a parameter for a function.
-		db
-	remainingRounds: ; $cfde
-	; The number of rounds remaining in the game.
-		db
-	targetLayoutIndex: ; $cfdf
-	; The index of the layout to use for the targets (value from 0-9)
-		db
-
-.endst
 
 
 ; ========================================================================================
@@ -137,8 +102,7 @@
 	subid			db ; $02
 	var03			db ; $03
 
-	; Enemy states below $08 behave differently?
-	;  State 3: being latched by switch hook?
+	; Enemy states below $08 behave differently? (See constants/enemyStates.s)
 	state			db ; $04
 
 	state2			db ; $05
@@ -146,6 +110,8 @@
 	counter2		db ; $07
 
 	; A value from 0-3. See constants/directions.s.
+	; This is sometimes treated as an animation index which could go beyond those
+	; values? (Particularly for enemies?)
 	direction		db ; $08
 
 	; An angle is a value from $00-$1f. Determines which way the object moves.
@@ -170,10 +136,13 @@
 	; use the "objectApplyComponentSpeed" function. This allows the two speed
 	; components to be controlled separately.
 	; Note that they use the same memory, so only one of these systems can be used.
-	speedY			.dw ; $10
-	speed			db ; $10
-	speedTmp		db ; $11
-	speedX			dw ; $12
+	.union
+		speedY		dw ; $10
+		speedX		dw ; $12
+	.nextu
+		speed		db ; $10
+		speedTmp	db ; $11
+	.endu
 
 	speedZ			dw ; $14
 	relatedObj1		dw ; $16
@@ -195,13 +164,16 @@
 	animParameter		db ; $21
 	animPointer		dw ; $22
 	collisionType		db ; $24: bit 7: set to enable collisions (for Enemies, Parts)
-	collisionReactionSet	db ; $25
+	enemyCollisionMode	db ; $25
 	collisionRadiusY	db ; $26
 	collisionRadiusX	db ; $27
 	damage			db ; $28
 	health			db ; $29
 
-	; Enemy/part: on collision with an item, this is set to the "collisionType" value
+	; Enemy/part: on collision with an item, this is set to the "collisionType" value.
+	; Bit 7 is set if the collision "just occurred"? All enemies have code that resets
+	; bit 7 just after their main code is called, meaning it will happen at most once
+	; per collision.
 	var2a			db ; $2a
 
 	; When this is $00-$7f, this counts down and the object flashes red.
@@ -209,7 +181,10 @@
 	invincibilityCounter	db ; $2b
 
 	knockbackAngle		db ; $2c
+
+	; Enemies: if bit 7 is set, "dust" is created as they get knocked back?
 	knockbackCounter	db ; $2d
+
 	stunCounter		db ; $2e: if nonzero, enemies / parts don't damage link
 
 	; This seems to frequently be used for "communication" between different objects?
@@ -217,7 +192,10 @@
 	var2f			db ; $2f
 
 	var30			db ; $30
+
+	pressedAButton		.db ; $31
 	var31			db ; $31
+
 	var32			db ; $32
 	var33			db ; $33
 	var34			db ; $34
@@ -230,18 +208,30 @@
 	var3b			db ; $3b
 
 	var3c			db ; $3c
+
+	; Enemy: Counter used when scent seeds are active?
 	var3d			db ; $3d
 
 	; Enemy/part: on collision with Link/item, var3e is written to collidee's var2a
 	var3e			db ; $3e
 
-	; When bit 7 is set on an enemy, it disappears instantly when killed instead of
-	; dying in a puff of smoke?
-	; Bit 1 affects how an enemy behaves when it has no health?
+	; Enemies:
+	;   Bit 7: if set, it disappears instantly when killed instead of dying in a puff
+	;          of smoke?
+	;   Bit 5: ? (Used by buzzblobs, podoboo towers, cuccos, color changing gels,
+	;             veran possession boss?)
+	;   Bit 4: if set, the enemy moves toward scent seeds?
+	;   Bit 1: affects how an enemy behaves when it has no health?
+	;   Bits 0-3: Nonzero when the enemy has touched a hazard. Corresponds to entries
+	;             in hazardCollisionTable:
+	;             Bit 3: Unused?
+	;             Bit 2: Lava
+	;             Bit 1: Hole
+	;             Bit 0: Water
 	var3f			db ; $3f
 .ENDST
 
-; Special objects like link, companions
+; Special objects like link, companions (and sometimes "parent items").
 .STRUCT SpecialObjectStruct
 	start			.db
 
@@ -325,6 +315,7 @@
 	animMode		db ; $30
 
 	; "Base" for frame index, not accounting for direction. Also used by parent items.
+	; This value comes directly from the animation (specialObjectAnimationData.s).
 	var31			db ; $31
 
 	; Frame index, accounting for direction.
@@ -473,7 +464,7 @@
 	; Bombs:
 	;  Bit 7: Resets animation? (used by maple)
 	;  Bit 6: Set while being held, thrown, or exploding?
-	;  Bit 5: Deletes the bomb? (used by maple)
+	;  Bit 5: Deletes the bomb? (used by maple, head thwomp)
 	;  Bit 4: Triggers explosion?
 	;
 	; ITEMID_18:
@@ -505,7 +496,6 @@
 
 	; Bombchus: set to 1 when hanging upside-down on a ceiling
 	; Boomerang: the angle which the boomerang is adjusting toward.
-	;            (Leftover magical boomerang code?)
 	; Seeds: bounce counter (seed effect triggers when it reaches 0)
 	var34			db ; $34
 
@@ -606,7 +596,7 @@
 	animParameter		db ; $21
 	animPointer		dw ; $22
 	collisionType		db ; $24
-	collisionReactionSet	db ; $25
+	enemyCollisionMode	db ; $25
 	collisionRadiusY	db ; $26
 	collisionRadiusX	db ; $27
 	damage			db ; $28

@@ -57,7 +57,7 @@
 	RUPEE_RING		db ; $35
 	VICTORY_RING		db ; $36
 	SIGN_RING		db ; $37
-	100TH_RING		db ; $38
+	HUNDREDTH_RING		db ; $38: Constant name can't start with "100"
 	WHISP_RING		db ; $39
 	GASHA_RING		db ; $3a
 	PEACE_RING		db ; $3b
@@ -65,4 +65,14 @@
 	FIST_RING		db ; $3d
 	WHIMSICAL_RING		db ; $3e
 	PROTECTION_RING		db ; $3f
+.ende
+
+
+; Rings are categorized into tiers when random rings are given.
+.enum 0
+	RING_TIER_0 db ; Class 4 (TourianTourist's naming convention)
+	RING_TIER_1 db ; Class 3
+	RING_TIER_2 db ; Class 2
+	RING_TIER_3 db ; Class 1
+	RING_TIER_4 db ; Class 5
 .ende

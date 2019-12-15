@@ -100,15 +100,10 @@ public class SourceParserTest {
   public void multiFileTest() throws IOException, URISyntaxException {
     var sourceDirectory = getClass().getClassLoader().getResource("ages-disasm").toURI();
     var sourceRoot = "main.s";
-    var includedFile = "ages-disasm/objects/macros.s";
-    long beforeUsedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+    var includedFile = "objects/macros.s";
 
     MultiFileParser multiParser = new MultiFileParser(OpCodeZ80.opcodes());
     multiParser.parse(sourceDirectory, sourceRoot);
-    // Runtime.getRuntime().gc();
-    long afterUsedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-
-    System.out.println(afterUsedMem - beforeUsedMem);
 
     assertNotNull(multiParser.getNodes(includedFile));
     assertEquals(

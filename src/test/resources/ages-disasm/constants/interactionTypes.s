@@ -52,17 +52,23 @@
 .define INTERACID_KILLENEMYPUFF		$08
 .define INTERACID_SNOWDEBRIS		$09
 .define INTERACID_SHOVELDEBRIS		$0a
+
+;;
+; Blue oval thing used by ENEMYID_EYESOAR_CHILD when spawning
 .define INTERACID_0b			$0b
+
 .define INTERACID_ROCKDEBRIS2		$0c
 
 .define INTERACID_STUB_0d		$0d
 .define INTERACID_STUB_0e		$0e
 
-; SubID:
-;  0: fall down hole effect
-;  1: pegasus seed "dust" effect?
-; Var03:
-;  Bit 7 - disable sound effect
+;;
+; When this is spawned, counter2 sometimes contains the ID of the object that fell in the
+; hole? This is then used with "fall down hole events" (in patch's and toilet rooms).
+;
+; @subid_00{fall down hole effect}
+; @subid_01{pegasus seed or knockback "dust" effect?}
+; @var03{Bit 7: disable sound effect}
 .define INTERACID_FALLDOWNHOLE		$0f
 
 ;;
@@ -185,7 +191,7 @@
 .define INTERACID_DUNGEON_SCRIPT	$20
 
 ;;
-; Runs assembly code for specific dungeon events.
+; Runs assembly code for specific dungeon events. Similar in purpose to INTERACID_MISC_PUZZLES?
 ; @subid{
 ;   [$00|Nothing]
 ;   [$01|d2: verify a 2x2 floor pattern, drop a key.]
@@ -340,7 +346,7 @@
 .define INTERACID_CHILD			$35
 
 ; Subid:
-;   00: Cutscene at the beginning of game (talking to Link, then gets posessed)
+;   00: Cutscene at the beginning of game (talking to Link, then gets possessed)
 ;   01: Cutscene in Ambi's palace after getting bombs
 ;   02: Cutscene on maku tree screen after being saved
 ;   03: Cutscene with Nayru and Ralph when Link exits the black tower
@@ -363,9 +369,9 @@
 .define INTERACID_NAYRU			$36
 
 ; Subid:
-;   00: Cutscene where Nayru gets posessed
+;   00: Cutscene where Nayru gets possessed
 ;   01: Cutscene outside Ambi's palace before getting mystery seeds
-;   02: Cutscene after Nayru is posessed
+;   02: Cutscene after Nayru is possessed
 ;   03: Cutscene after talking to Rafton
 ;   04: Cutscene on maku tree screen after saving Nayru
 ;   05: Cutscene in black tower where Nayru/Ralph meet you to try to escape
@@ -467,9 +473,9 @@
 .define INTERACID_OLD_LADY		$3d
 
 ; Subid:
-;   00: Cutscene at start of game (unposessing Impa)
-;   01: Cutscene just before fighting posessed Ambi
-;   02: Cutscene just after fighting posessed Ambi
+;   00: Cutscene at start of game (unpossessing Impa)
+;   01: Cutscene just before fighting possessed Ambi
+;   02: Cutscene just after fighting possessed Ambi
 .define INTERACID_GHOST_VERAN		$3e
 
 ; Boy with sort of hostile-looking eyes?
@@ -590,12 +596,13 @@
 .define INTERACID_TOKAY			$48
 
 ; Subid:
-;   00:
+;   00: Fairy just discovered in their hiding place?
 ;   01: Discovered fairy who's now hanging out in "main" forest screen, until you finish
 ;       the game.
 ;   02: Unused?
-;   03:
-;   04:
+;   03: Fairy that leads you to the animal companion in the forest (used on at least 3-4
+;       screens, with var03 determining their exact behaviour)
+;   04: Fairies surrounding the companion after being rescued from the forest
 ;   05-07: Generic NPC (between completing the maze and entering jabu)
 ;   08-0a: Generic NPC (between jabu and finishing the game)
 ;   0b: NPC in unlinked game who takes a secret
@@ -642,7 +649,7 @@
 ;   03: Cutscene where Ambi does evil stuff atop black tower (after d7)
 ;   04: Same cutscene as subid $03 (black tower after d7), but second part
 ;   05: Cutscene where Ralph confronts Ambi
-;   06: Cutscene just before fighting posessed Ambi
+;   06: Cutscene just before fighting possessed Ambi
 ;   07: Cutscene where Ambi regains control of herself
 ;   08: Cutscene after d3 where you're told Ambi's tower will soon be complete
 ;   09: Does nothing?
@@ -697,7 +704,11 @@
 ;;
 ; Explosion animation; no collisions.
 ;
-; var03: if set, it has a higher draw priority?
+; This object's animParameter is set to certain values during the animation:\n
+;   $01: When the explosion's radius increases\n
+;   $ff: When the explosion is over
+;
+; var03: if set, it has a higher draw priority? (set in patch's minigame)
 .define INTERACID_EXPLOSION		$56
 
 
@@ -808,8 +819,15 @@
 .define INTERACID_ACCESSORY		$63
 
 ;;
-; Storm cutscene where lightning strikes raft?
-.define INTERACID_64			$64
+; Components of the raftwreck cutscene (used by INTERACID_RAFTWRECK_CUTSCENE).
+;
+; @subid_00{A leaf being blown}
+; @subid_01{A rock being blown}
+; @subid_02{A monkey being blown}
+; @subid_03{Gentle wind with leaves and rocks}
+; @subid_04{Harsher wind including a monkey}
+; @subid_05{Final 3 lightning strikes}
+.define INTERACID_RAFTWRECK_CUTSCENE_HELPER	$64
 
 ;;
 ; Gives you the funny joke for the cheesy mustache
@@ -817,8 +835,9 @@
 
 ;;
 ; @subid_00{Graceful goron?}
-; @subid_01{Generic npc, whose text differs if in the past between linked/unlinked. Var03
-;           ranges from 0-6.}
+; @subid_01{Goron support dancer; text differs if in the past between linked/unlinked.
+;           Var03 ranges from 0-6.}
+; @subid_02{A "fake" goron object that manages jumping in the dancing minigame?}
 ; @subid_03{Cutscene where goron appears after beating d5; the guy who digs a new tunnel.}
 ; @subid_04{Goron pacing back and forth, worried about elder}
 ; @subid_05{An NPC in the past cave near the elder? var03 ranges from 0-5.}
@@ -826,68 +845,151 @@
 ;           var03 is $00 for the goron on the left, $01 for the one on the right.}
 ; @subid_07{Goron trying to break wall down to get at treasure}
 ; @subid_08{Goron guarding the staircase until you get brother's emblem (both eras)}
-; @subid_09{Target carts guy?}
+; @subid_09{Target carts gorons; var03 = 0 or 1 for gorons on left and right.}
+; @subid_0a{Goron who gives you letter of introduction}
+; @subid_0b{Goron running the big bang game}
+; @subid_0c{Generic npc; text changes based on game state.}
+; @subid_0d{Generic npc like subid $0c, but moving left and right.}
+; @subid_0e{Generic npc like subid $0c, but naps when Link isn't near.}
+; @subid_0f{Linked NPC telling you the biggoron secret.}
+; @subid_10{Clairvoyant goron who gives you tips.}
 .define INTERACID_GORON			$66
 
-; When subid=$80, this spawns in your animal companion (used after playing the flute)
+
+.ifdef ROM_AGES
+;;
+; Spawns companions in various situations.
+; For subids other than $80, this is accompanied by an instance of INTERACID_COMPANION_SCRIPTS?
+;
+; @subid_00{Moosh being attacked by ghosts}
+; @subid_01{Moosh saying goodbye after getting cheval rope}
+; @subid_02{Ricky looking for gloves}
+; @subid_03{Dimitri being attacked by hungry tokays}
+; @subid_04{Companion lost in forest}
+; @subid_05{Cutscene outside forest where you get the flute}
+; @subid_80{Flute call for companion}
 .define INTERACID_COMPANION_SPAWNER	$67
 
+.else; ROM_SEASONS
+
+.define INTERACID_COMPANION_SPAWNER	$5f
+.endif
+
+
+.ifdef ROM_AGES
 ;;
+; @subid_00{Gives you the shovel on tokay island, linked only}
+; @subid_01{Rosa at goron dance, linked only}
 .define INTERACID_ROSA			$68
 
+.else; ROM_SEASONS
+
+.define INTERACID_ROSA			$31
+.endif
+
 ;;
+; @subid_00{Rafton in left part of house}
+; @subid_01{Rafton in right part of house}
 .define INTERACID_RAFTON		$69
 
 ;;
+; @subid_00{Cheval; only valid subid}
 .define INTERACID_CHEVAL		$6a
 
 ;;
-; Various things, including troupe from seasons? Subid goes up to $16.
-; @subid_10{Unfinished stone statue of Link}
-; @subid_15{Stone statue of Link}
-.define INTERACID_6b			$6b
+; Many miscellaneous things here, categorized by subid.
+;
+; @subid_00{Handles showing Impa's "Help" text when Link's about to screen transition}
+; @subid_01{Spawns nayru, ralph, animals before she's possessed}
+; @subid_02{Script for cutscene with Ralph outside Ambi's palace, before getting mystery seeds}
+; @subid_03{Seasons troupe member with guitar?}
+; @subid_04{Script for cutscene where moblins attack maku sapling}
+; @subid_05{Cutscene in intro where lightning strikes a guy}
+; @subid_06{Manages cutscene after beating d3}
+; @subid_07{A seed satchel that slowly falls toward Link. Unused?}
+; @subid_08{Part of the cutscene where tokays steal your stuff?}
+; @subid_09{Shovel that Rosa gives to you in linked game}
+; @subid_0a{Flippers treasure (in cheval's grave)}
+; @subid_0b{Cheval rope treasure}
+; @subid_0c{Bomb treasure (in tokay hut)}
+; @subid_0d{Blocks that move over when pulling lever to get flippers}
+; @subid_0e{Stone statue of Link that appears unconditionally}
+; @subid_0f{Switch that opens path to Nuun Highlands}
+; @subid_10{Unfinished stone statue of Link in credits cutscene}
+; @subid_11{Triggers cutscene after beating Jabu-Jabu}
+; @subid_12{Seasons troupe member with tambourine?}
+; @subid_13{Goron bomb statue (left)}
+; @subid_14{Goron bomb statue (right)}
+; @subid_15{Stone statue of Link that appears only after finishing game}
+; @subid_16{A flame that appears for [counter1] frames.}
+.define INTERACID_MISCELLANEOUS		$6b
 
 ;;
-; Relates to fairy-hiding midigame? Subid ranges from $00-$02.
-.define INTERACID_6c			$6c
+; Spots where fairies are hiding in the hide-and-seek minigame.
+; @subid_00{Begins fairy-hiding minigame}
+; @subid_01{Hiding spot for fairy}
+; @subid_02{Checks for Link leaving hide-and-seek the area}
+.define INTERACID_FAIRY_HIDING_MINIGAME	$6c
 
 ;;
-; Posessed version of Nayru/Ambi, or veran's ghost. When is this used?
-; @subid_00{Posessed Nayru}
-; @subid_01{Posessed Ambi}
-; @subid_02{Ghost Veran?}
+; Possessed version of Nayru/Ambi, or veran's ghost.
+;
+; @subid_00{Possessed Nayru in ambi's palace, starts boss fight}
+; @subid_01{Possessed Ambi? (No code defined for this?)}
+; @subid_02{Ghost Veran}
 ; @palette{PALH_85}
-.define INTERACID_6d			$6d
+.define INTERACID_POSSESSED_NAYRU	$6d
 
 ;;
-; Similar to above, but subids range a bit higher.
-; @subid_00{Posessed Nayru}
-; @subid_01{Posessed Ambi}
-; @subid_02{Ghost Veran?}
-; @subid_03{Ralph?}
-; @subid_04{Red guard?}
+; NPCs for the cutscene where Nayru is freed from her possession.
+;
+; @subid_00{Nayru waking up after being freed from possession}
+; @subid_01{Queen Ambi}
+; @subid_02{Ghost Veran}
+; @subid_03{Ralph}
+; @subid_04{Guards that run into the room (var03 is index of guard)}
 ; @palette{PALH_85}
-.define INTERACID_6e			$6e
+.define INTERACID_NAYRU_SAVED_CUTSCENE	$6e
 
 ;;
 .define INTERACID_STUB_6f		$6f
 
 ;;
-; Meat used in "wild tokay" game?
-.define INTERACID_70			$70
+; Meat used in "wild tokay" game.
+.define INTERACID_WILD_TOKAY_CONTROLLER	$70
 
 ;;
-.define INTERACID_71			$71
+; Animal companion-related cutscenes?
+;
+; @subid_00{Moosh script while being attacked by ghosts}
+; @subid_01{Stop companion from moving above this X-position, unless you have their flute}
+; @subid_02{Stop companion from moving below this Y-position, unless you have their flute}
+; @subid_03{Ricky script when he loses his gloves}
+; @subid_04{Stop companion from moving above this Y-position, unless you have their flute}
+; @subid_05{Stop companion from moving below this X-position, unless you have their flute}
+; @subid_06{Dimitri script where he leaves Link after bringing him to the mainland}
+; @subid_07{Dimitri script where he's harrassed by tokays}
+; @subid_08{A fairy appears to tell you about the animal companion in the forest}
+; @subid_09{Companion script where they're found in the fairy forest}
+; @subid_0a{Script just outside the forest, where you get the flute}
+; @subid_0b{Script in first screen of forest, where fairy leads you to the companion}
+; @subid_0c{Sets bit 6 of wDimitriState so he disappears from Tokay Island}
+; @subid_0d{Companion barrier to Symmetry City, until the tuni nut is restored}
+.define INTERACID_COMPANION_SCRIPTS			$71
 
 ;;
-.define INTERACID_KING_MOBLIN		$72
+; @subid_00{King moblin / "parent" object for the cutscene}
+; @subid_01{Normal moblin}
+; @subid_02{Gorons who approach after he leaves (var03 = index)}
+.define INTERACID_KING_MOBLIN_DEFEATED	$72
 
 ;;
-; Non-hostile ghini; from seasons?
-.define INTERACID_GHINI			$73
+; Ghinis harassing Moosh
+; @subid_00-02{The 3 ghinis in the cutscene}
+.define INTERACID_GHINI_HARASSING_MOOSH	$73
 
 ;;
-; Ricky's glove appears at this position when you dig here?
+; Conditionally creates a treasure object if Ricky's gloves should be available.
 .define INTERACID_RICKYS_GLOVE_SPAWNER	$74
 
 ; Subid:
@@ -900,30 +1002,49 @@
 .define INTERACID_INTRO_SPRITE		$75
 
 ;;
-; When spawned, this opens the gate for the maku sprout? (just a guess)
-.define INTERACID_76			$76
+; When spawned, this opens the gate for the maku sprout.
+; @subid_00{?}
+; @subid_01{Opening the gates}
+.define INTERACID_MAKU_GATE_OPENING	$76
 
 ;;
-; Small key for a dungeon (how does this behave exactly?)
-.define INTERACID_SMALL_KEY		$77
+; A small key attached to an enemy. Due to a bug, this only works if the enemy to be
+; attached to is in the first enemy slot.
+; @subid{The enemy ID to attach the small key to}
+.define INTERACID_SMALL_KEY_ON_ENEMY	$77
 
 ;;
-; This causes a tile  at a given position to change between 2 values depending on whether
-; a certain switch is activated or not.
-;   Subid:  Bitmask to check on wSwitchState (if nonzero, "active" tile is placed)
-;   X:      "index" of tile replacement (defines what tiles are placed for on/off)
-;   Y:      Position of tile that should change when wSwitchState changes
+; This causes a tile at a given position to change between 2 values depending on
+; whether a certain switch is activated or not.
+;
+; @subid{Bitmask to check on wSwitchState (if nonzero, "active" tile is placed)}
+; @X{"index" of tile replacement (defines what tiles are placed for on/off)}
+; @Y{Position of tile that should change when wSwitchState changes}
 .define INTERACID_SWITCH_TILE_TOGGLER	$78
 
 ;;
+; @Subid{\n
+;   Bits 3-7: Script index (dungeon-dependent)\n
+;   Bits 0-2:\n
+;     0: 1x1 platform\n
+;     1: 1x2 platform\n
+;     2: 1x3 platform\n
+;     3: 2x1 platform\n
+;     4: 3x1 platform\n
+;     5: 2x2 platform\n
+; }
 .define INTERACID_MOVING_PLATFORM	$79
 
 ;;
 ; Roller from seasons.
+; @Subid{Value from 0-2 indicating height of roller}
 .define INTERACID_ROLLER		$7a
 
 ;;
-; Stone panels on the top floor of the ancient tomb
+; Stone panels on the top floor of the ancient tomb. Opens when bit 7 of wActiveTriggers
+; is set. Bit 6 of the room flags indicates they've been opened upon entering the room.
+; @subid_00{Left panel}
+; @subid_01{Right panel}
 ; @palette{PALH_7e}
 .define INTERACID_STONE_PANEL		$7b
 
@@ -933,14 +1054,30 @@
 .define INTERACID_SCREEN_DISTORTION	$7c
 
 ;;
+; Spinny thing that forces you to move in a clockwise or counterclockwise direction.
+; The direction of the spinner is actually determined by wSpinnerState. This is
+; initialized when entering a dungeon; search for the "@initialSpinnerValues" label.
+; @subid_00-01{Red or blue spinner}
+; @subid_02{Arrow indicating spinner direction}
+; @X{Bitmask for wSpinnerState; each spinner in a dungeon should use a unique bit.}
 ; @postype{short}
 .define INTERACID_SPINNER		$7d
 
 ;;
+; @subid_00{Miniboss portal; always in center of room}
+; @subid_01{Portal in hero's cave; position can be set in Y. Enabled if ROOMFLAG_ITEM
+;           (bit 5) in that room is set.
+;           @postype{short}}
+; @X{For subid 1 only, bits 0-3 are the index for the warp data. If bit 7 is set,
+;    ROOMFLAG_ITEM must be set in that room for it to be enabled; otherwise it's always
+;    enabled.}
 .define INTERACID_MINIBOSS_PORTAL	$7e
 
 ;;
 ; Essence on a pedestal? (Can also be the pedestal itself?)
+; @subid_00{The essence itself (spawns subids $01 and $02}
+; @subid_01{Pedestal}
+; @subid_02{The glow behind the essence}
 .define INTERACID_ESSENCE		$7f
 
 ;;
@@ -948,76 +1085,186 @@
 ; looks like.
 ;
 ; @subid_00{Portal from ganon's lair back to maku tree.}
-; @subid_04{Scent seedling}
+; @subid_01{King Moblin's flag}
+; @subid_02{Gasha sprout}
+; @subid_03{Red ball?}
+; @subid_04{Scent seedling (planted)}
+; @subid_05{Tokay eyeball (always visible)}
+; @subid_06{Tokay eyeball (deletes self if room flag bit 7 not set)}
+; @subid_07{Fairy powder in a bottle}
+; @subid_08{Green book}
 ; @subid_09{Fountain.
 ;           @palette{PALH_7d}}
 ; @subid_0a{"Stream" coming from a fountain.
 ;           @palette{PALH_7d}}
-.define INTERACID_SCENT_SEEDLING	$80
+.define INTERACID_DECORATION	$80
 
 ;;
+; @subid_00{Feather (automatically adjusted to shovel if needed)}
+; @subid_01{Bracelet (automatically adjusted to shovel if needed)}
+; @subid_02{Shovel (replacing feather)}
+; @subid_03{Shovel (replacing bracelet))}
+; @subid_04{(L1) Shield (level adjusted automatically)}
+; @subid_05{L2 Shield}
+; @subid_06{L3 Shield}
 .define INTERACID_TOKAY_SHOP_ITEM	$81
 
 ;;
 ; Heavy sarcophagus that can be lifted with power gloves
+; @subid{If bit 7 is set, it automatically breaks. Otherwise, if subid is nonzero, this
+;        gets tied to bit 6 of the room flags (it sets that bit when lifted, and it no
+;        longer appears when reentering the room.))}
 .define INTERACID_SARCOPHAGUS		$82
 
 ;;
 ; Fairy that upgrades your bomb capacity
+; @subid_00{"Parent" interaction and the fairy itself}
+; @subid_01{Bombs that surround Link (depending on his answer)}
+; @subid_02{Gold/silver bombs (depends on var03)}
 .define INTERACID_BOMB_UPGRADE_FAIRY	$83
 
-; subid: 0: A tiny sparkle that disappears in an instant.
-;        2: Used by INTERACID_MAKUCONFETTI?
-;        4: A big, red-and-blue orb that's probably used with the maku seed or something?
-;        7: ?
-;        8: ?
+;; TODO: Label these subids
+; @subid_00{A tiny sparkle that disappears in an instant.}
+; @subid_01{}
+; @subid_02{Used by INTERACID_MAKUCONFETTI?}
+; @subid_03{}
+; @subid_04{A big, red-and-blue orb that's probably used with the maku seed or something?}
+; @subid_05{}
+; @subid_06{Glowing orb behind Link in the intro cutscene, on the triforce screen}
+; @subid_07{?}
+; @subid_08{?}
+; @subid_09{}
+; @subid_0a{}
+; @subid_0b{}
+; @subid_0c{}
+; @subid_0d{}
+; @subid_0e{Used by bomb upgrade fairy}
+; @subid_0f{}
 .define INTERACID_SPARKLE		$84
 
 ;;
 .define INTERACID_STUB_85		$85
 
 ;;
-; Flower for the maku tree. (Subid 1 also does something?)
+; Flower for the maku tree. RelatedObj1 should be something an instance of
+; INTERACID_MAKU_TREE.
+; @subid_00{Present flower}
+; @subid_01{Something unused?}
 .define INTERACID_MAKU_FLOWER		$86
 
 ;;
-; The maku tree's face.
-.define INTERACID_MAKU_FACE		$87
+; Maku tree in the present.
+; @subid_00{Main object, converts itself to one of the subids when necessary}
+; @subid_01{Cutscene where maku tree disappears}
+; @subid_02{Maku tree just after being saved (present)}
+; @subid_03{Cutscene after saving Nayru where Twinrova reveals themselves}
+; @subid_04{Some cutscene?}
+; @subid_05{Credits cutscene?}
+; @subid_06{Cutscene where Link gets the maku seed, then Twinrova appears}
+.define INTERACID_MAKU_TREE		$87
 
 ;;
 ; Maku tree as a sprout in the past.
+; @subid_00{Main object, converts itself to one of the subids when necessary}
+; @subid_01{Script where moblins are attacking Maku Sprout}
+; @subid_02{Used in credits cutscene?}
 .define INTERACID_MAKU_SPROUT		$88
 
 ;;
-; Vasu and his snakes
+; @subid_00{Vasu}
+; @subid_01{Blue snake}
+; @subid_06{Red snake}
 .define INTERACID_VASU			$89
 
 ;;
-; Subid can be 0 or 1
-.define INTERACID_8a			$8a
+; Triggers maku tree cutscenes; condition for trigger and text depends on var03.
+; @subid_00{Present version of cutscene}
+; @subid_01{Past version of cutscene}
+; @var03_00{After D1}
+; @var03_01{After present D2 collapses}
+; @var03_02{After getting harp}
+; @var03_03{After D2}
+; @var03_04{After D3. Sets some flags (black tower growth and flute available).}
+; @var03_05{After D4}
+; @var03_06{After Moblin's Keep destroyed}
+; @var03_07{After D5. Also spawns the goron at the end of the cutscene.}
+; @var03_08{After D6}
+; @var03_09{After D7}
+; @var03_0a{After D8}
+; @var03_0b{After D8, except there's no conditions for the trigger?}
+.define INTERACID_REMOTE_MAKU_CUTSCENE			$8a
 
 ;;
+; @subid_00{Cutscene where goron elder is saved / NPC in that room after that}
+; @subid_01{NPC hanging out in rolling ridge}
+; @subid_02{NPC for biggoron's sword minigame; postgame only}
 .define INTERACID_GORON_ELDER		$8b
 
 ;;
-; Tokay meat?
-.define INTERACID_8c			$8c
+; Tokay meat object used in the wild tokay game. When spawned, it sets its position to be
+; above screen and starts falling.
+.define INTERACID_TOKAY_MEAT		$8c
 
 ;;
 ; Twinrova in their "mysterious cloaked figure" form
+; @subid_00{Cutscene at maku tree screen after saving Nayru}
+; @subid_01{Cutscene after d7; black tower is complete}
+; @subid_02{Cutscene after getting maku seed}
 .define INTERACID_CLOAKED_TWINROVA	$8d
 
-.define INTERACID_8e			$8e
+;;
+; A splash animation (used by ENEMYID_OCTOGON)
+.define INTERACID_OCTOGON_SPLASH			$8e
 
 ;;
 ; An ember seed that goes up for a bit, then disappears after falling a bit. Only used in
 ; the cutscene where you give ember seeds to Tokays.
 .define INTERACID_TOKAY_CUTSCENE_EMBER_SEED	$8f
 
-.define INTERACID_90			$90
+;;
+; Miscellaneous stuff, mostly puzzle solutions. Similar in purpose to
+; INTERACID_DUNGEON_EVENTS?
+;
+; @subid_00{Boss key puzzle in D6}
+; @subid_01{Underwater switch hook puzzle in past d6}
+; @subid_02{Spot to put a rolling colored block on in present d6}
+; @subid_03{Chest from solving colored cube puzzle in d6 (related to subid $02)}
+; @subid_04{Floor changer in present D6, triggered by orb}
+; @subid_05{Helper for floor changer (subid $04)}
+; @subid_06{Helper for floor changer (subid $04)}
+; @subid_07{Wall retraction event after lighting torches in past d6}
+; @subid_08{Checks to set the "bombable wall open" bit in d6 (north)}
+; @subid_09{Checks to set the "bombable wall open" bit in d6 (east)}
+; @subid_0a{Jabu-jabu water level controller script, in the room with the 3 buttons}
+; @subid_0b{Ladder spawner in d7 miniboss room}
+; @subid_0c{Switch hook puzzle early in d7 for a small key}
+; @subid_0d{Staircase spawner after moving first set of stone panels in d8}
+; @subid_0e{Staircase spawner after putting in slates in d8}
+; @subid_0f{Octogon boss initialization (in the room just before the boss)}
+; @subid_10{Something at the top of Talus Peaks?}
+; @subid_11{D5 keyhole opening}
+; @subid_12{D6 present/past keyhole opening}
+; @subid_13{Eyeglass library keyhole opening}
+; @subid_14{Spot to put a rolling colored block on in Hero's Cave}
+; @subid_15{Stairs from solving colored cube puzzle in Hero's Cave (related to subid $14)}
+; @subid_16{Warps Link out of Hero's Cave upon opening the chest}
+; @subid_17{Enables portal in Hero's Cave first room if its other end is active}
+; @subid_18{Drops a key in hero's cave block-pushing puzzle}
+; @subid_19{Bridge controller in d5 room after the miniboss}
+; @subid_1a{Checks solution to pushblock puzzle in Hero's Cave}
+; @subid_1b{Spawn gasha seed at top of maku tree after 4th essence (left screen)}
+; @subid_1c{Spawn gasha seed at top of maku tree after 7th essence (center screen)}
+; @subid_1d{Spawn gasha seed at top of maku tree after 6th essence (right screen)}
+; @subid_1e{Play "puzzle solved" sound after navigating eyeball puzzle in final dungeon}
+; @subid_1f{Checks if Link gets stuck in the d5 boss key puzzle, resets the room if so}
+; @subid_20{Money in sidescrolling room in Hero's Cave}
+; @subid_21{Creates explosions while screen is fading out; used after killing veran}
+.define INTERACID_MISC_PUZZLES			$90
 
 ;;
-; Bubbles created at random when swimming in a sidescrolling area
+; Bubbles created at random when swimming in a sidescrolling area.
+; @subid_00{A bubble.}
+; @subid_01{Spawns bubbles every 90 frames until bit 7 of relatedObj1.collisionType is 0.}
 .define INTERACID_BUBBLE		$91
 
 ;;
@@ -1025,48 +1272,90 @@
 ; Link.)
 ;
 ; @subid_00{Spawner of falling rocks; stops when $cfdf is nonzero. Used when freeing goron
-;           elder.}
-; @subid_02{Used by gorons when freeing elder?}
-; @subid_06{Used by pickaxe workers?}
+;           elder. var03 is 0 or 1, changing the positions where the rocks fall?}
+; @subid_01{Instance of falling rock spawned by subid $00}
+; @subid_02{Small rock "debris". var03, angle, and counter1 affect its trajectory, etc?}
+; @subid_03{Debris from ENEMYID_TARGET_CART_CRYSTAL; angle is a value from 0-3, indicating
+;           a diagonal to move in.}
+; @subid_04{Blue rock debris, moving straight on a diagonal? (angle from 0-3)}
+; @subid_05{Red rock debris, moving straight on a diagonal? (angle from 0-3)}
+; @subid_06{Debris from pickaxe workers? var03 determines oamFlags, counter2 determines
+;           draw priority? angle should be 0 or 1 for right or left movement.}
 .define INTERACID_FALLING_ROCK		$92
 
 ;;
-; One half of twinrova riding their broomstick.
+; One half of twinrova riding their broomstick. Subids are "paired" by evens and odds; one
+; half is the red one, the other is the blue one, for a particular cutscene.
+;
+; @subid_00-01{Linked cutscene after saving Nayru?}
+; @subid_02-03{Twinrova introduction? Unlinked equivalent of subids $00-$01?}
+; @subid_04-05{?}
+; @subid_06-07{Something in endgame just before Ganon's being revived?}
 .define INTERACID_TWINROVA		$93
 
 ;;
 ; The restoration guru.
+; @subid_00{Patch in the upstairs room}
+; @subid_01{Patch in his minigame room}
+; @subid_02{The minecart in Patch's minigame}
+; @subid_03{Beetle "manager"; spawns them and check when they're killed.}
+; @subid_04{Broken tuni nut sprite}
+; @subid_05{Broken sword sprite}
+; @subid_06{Fixed tuni nut sprite}
+; @subid_07{Fixed sword sprite}
 .define INTERACID_PATCH			$94
 
 ;;
-; Ball used by villagers.
+; Ball used by villagers. Subid is controlled by $cfd3.
+; @subid_00-01{Standard ball; subid alternates from 0 to 1 based on who's holding it}
+; @subid_02{Cutscene where villager turns to stone?}
 .define INTERACID_BALL			$95
 
 ;;
-; A moblin NPC. (Only used in seasons?)
+; A moblin NPC. (Used in cutscene where past make tree is being attacked?)
 .define INTERACID_MOBLIN		$96
 
 ;;
-; Subid can be 0 or 1
+; @subid_00{Create "poofs" around this object randomly}
+; @subid_01{Spawns "bubbles" (PARTID_16) that seem to be blown to the north?}
 .define INTERACID_97			$97
 
 ;;
-; Wooden tunnel thing used in Seasons?
+; Wooden tunnel thing used in Seasons.
+; @subid_00{Upper half}
+; @subid_01{Lower half}
+; @subid_02{Right half}
+; @subid_03{Left half}
 .define INTERACID_WOODEN_TUNNEL		$98
 
 ;;
-; Subid can be 0-2. Used by pickaxe worker?
-.define INTERACID_99			$99
+; @subid_00{An explosion that throws out 4 pieces of rock debris}
+; @subid_01{A piece of rock debris}
+; @subid_02{Like subid 1, but value of "visible" is determined by var38?}
+; @var03{Angle for debris (0-3 for each diagonal)}
+.define INTERACID_EXPLOSION_WITH_DEBRIS	$99
 
 ;;
-; A carpenter (including the boss).
-; @subid_00{The boss}
+; For the subid, the first nibble corresponds to a bit number at
+; wTmpcfc0.carpenterSearch.carpentersFound; other than that, the first nibble is ignored.
+;
+; @subid_00{The boss carpenter; changes to subid 5 when needed}
+; @subid_01{The "gate" that the boss stands next to}
+; @subid_02-04{One of the carpenters to be sought out (either in the bridge room, or in
+;              the other rooms before returning)}
+; @subid_05{The boss carpenter in the cutscene where they build the bridge}
+; @subid_06-08{Carpenters in the cutscene where they build the bridge}
+; @subid_09{Carpenter in Eyeglasses Library}
+; @subid_ff{Checks if you leave the area without finding all the carpenters}
 .define INTERACID_CARPENTER		$9a
 
 ;;
-.define INTERACID_9b			$9b
+.define INTERACID_RAFTWRECK_CUTSCENE	$9b
 
 ;;
+; @subid_00{Present King Zora}
+; @subid_01{Past King Zora}
+; @subid_02{Potion sprite}
 .define INTERACID_KING_ZORA		$9c
 
 ;;
@@ -1075,30 +1364,44 @@
 
 ;;
 ; Pushblock that influences the flow of water in talus peaks.
+; @subid_00{On right side}
+; @subid_01{On left side}
 .define INTERACID_WATER_PUSHBLOCK	$9e
 
 ;;
+; @counter1{Number of frames to stay up. If 0 or $ff, it stays up indefinitely.}
 .define INTERACID_EXCLAMATION_MARK	$9f
 
 ; An image which moves up and to the left or right for 70 frames, then disappears.
-; subid: 0: "Z" letter for a snoring character
-;        1: A musical note
-; var03: 0: Veer left
-;        1: Veer right
+; @subid_00{"Z" letter for a snoring character}
+; @subid_01{A musical note}
+; @var03_00{Veer left}
+; @var03_01{Veer right}
 .define INTERACID_FLOATING_IMAGE	$a0
 
 ;;
+; See 'movingSidescrollPlatformScriptTable' for movement patterns of each subid.
 .define INTERACID_MOVING_SIDESCROLL_PLATFORM	$a1
 
 ;;
 ; Similar to above, but the platform has conveyor belts on it.
+; See 'movingSidescrollConveyorScriptTable' for movement patterns of each subid.
 .define INTERACID_MOVING_SIDESCROLL_CONVEYOR	$a2
 
 ;;
 ; Platform in sidescrolling areas which disappears.
+; @subid_00{}
+; @subid_01{}
+; @subid_02{}
 .define INTERACID_DISAPPEARING_SIDESCROLL_PLATFORM	$a3
 
-; Platform in sidescrolling areas which moves in a circular motion?
+; Platform in sidescrolling areas which moves in a circular motion. The "center" of the
+; circle it follows is always position $78x$56 at a fixed distance away, meaning X and
+; Y variables don't do anything.
+;
+; @subid_00{Starts moving up}
+; @subid_01{Starts moving right}
+; @subid_02{Starts moving down}
 .define INTERACID_CIRCULAR_SIDESCROLL_PLATFORM	$a4
 
 ;;
@@ -1131,8 +1434,15 @@
 ; @subid_01{Right side of house}
 .define INTERACID_BIPIN_BLOSSOM_FAMILY_SPAWNER	$ac
 
+
+.ifdef ROM_AGES
 ;;
 .define INTERACID_ZELDA				$ad
+
+.else; ROM_SEASONS
+
+.define INTERACID_ZELDA				$44 ; TODO: organize this better
+.endif
 
 ;;
 ; Used for the credits text in between the mini-cutscenes.
@@ -1165,7 +1475,11 @@
 .define INTERACID_FINAL_DUNGEON_ENERGY	$b5
 
 ;;
-; SubID: a unique value from $0-$f used as an index for wGashaSpot variables
+; @subid{A unique value from $0-$f used as an index for wGashaSpot variables. Each subid
+;        has a predetermined "class" determining how good its loot is (see
+;        "@gashaSpotRanks").\n
+;        Internally, this is copied to var03 when the subid gets overwritten with the
+;        index of the treasure received.}
 .define INTERACID_GASHA_SPOT		$b6
 
 ;;
@@ -1230,18 +1544,20 @@
 ;;
 .define INTERACID_c6			$c6
 
+;;
 ; Creates an object of the given type with the given ID at every position where there's
 ; a tile of the specified index, then deletes itself.
-; subid: tile index; an object will be spawned at each tile with this index.
-; Y: ID of object to spawn
-; X: bits 0-3: Subid of object to spawn
-;    bits 4-7: object type (0=enemy, 1=part, 2=interaction)
+; @subid{Tile index; an object will be spawned at each tile with this index.}
+; @Y{ID of object to spawn}
+; @X{bits 0-3: Subid of object to spawn;\n
+;    bits 4-7: object type (0=enemy, 1=part, 2=interaction)}
 .define INTERACID_CREATE_OBJECT_AT_EACH_TILEINDEX	$c7
 
 ;;
-.define INTERACID_TINGLUE		$c8
+.define INTERACID_TINGLE		$c8
 
 ;;
+; See also ENEMYID_CUCCO. (TODO: what's the difference?)
 .define INTERACID_CUCCO			$c9
 
 ;;
@@ -1259,28 +1575,58 @@
 .define INTERACID_MASTER_DIVER		$cd
 
 ;;
-; Not to be confused with INTERACID_DEKU_SCRUB.
+; Not to be confused with INTERACID_DEKU_SCRUB. This is divided into two parts, the scrub
+; itself (subids $00-$7f) and the bush above it (subid $80).
+;
+; @subid_00{Sells shield (expensive); subids 1-2 reserved for different shield levels}
+; @subid_03{Sells shield (moderate); subids 5-6 reserved for different shield levels}
+; @subid_06{Sells shield (cheap); subids 7-8 reserved for different shield levels}
+; @subid_09{Sells bombs (missing some data, doesn't work)}
+; @subid_0a{Sells ember seeds (missing some data)}
+; @subid_80{The "bush" the scrub hides under; spawned automatically}
 .define INTERACID_BUSINESS_SCRUB	$ce
 
 ;;
+; Some weird, corrupted animation?
 .define INTERACID_cf			$cf
 
 ;;
-.define INTERACID_d0			$d0
+; Shows text explaining how to use the companions' abilities on certain screens. Most of
+; these set bits in wCompanionTutorialTextShown so the explanation only happens once.
+;
+; @subid_00{Ricky hopping over holes}
+; @subid_01{Ricky jumping over cliffs}
+; @subid_02{Unused (should be "carrying dimitri"?)}
+; @subid_03{Dimitri swimming up waterfalls}
+; @subid_04{Moosh fluttering}
+; @subid_05{Moosh buttstomp (unused in ages)}
+.define INTERACID_COMPANION_TUTORIAL	$d0
 
 ;;
-.define INTERACID_d1			$d1
+; Shows the dialog after completing the game prompting you to save (unlinked only).
+.define INTERACID_GAME_COMPLETE_DIALOG	$d1
 
 ;;
-; Titlescreen "clouds" on left/right side when scrolling to the game logo?
-.define INTERACID_d2			$d2
+; Titlescreen "clouds" on left/right sides when scrolling to the game logo.
+; @subid_00{3rd from left}
+; @subid_01{2nd from left}
+; @subid_02{4th from the left}
+; @subid_03{1st from the left}
+.define INTERACID_TITLESCREEN_CLOUDS	$d2
 
 ;;
 ; Birds used while scrolling up the tree before the titlescreen
+; @subid{Value from 0-7}
 .define INTERACID_INTRO_BIRD		$d3
 
 ;;
-; Link's ship shown after credits in linked game
+; Link's ship shown after credits in linked game. Lower nibble of subid determines the
+; object (ship/seagull/text), while the upper nibble determines the value for counter1
+; (which affects the "cycle" that the seagull is on, in terms of bobbing up and down)
+;
+; @subid_00{The ship}
+; @subid_01{Seagull}
+; @subid_02{"The End" text}
 .define INTERACID_LINK_SHIP		$d4
 
 ;;
@@ -1304,12 +1650,14 @@
 .define INTERACID_d8			$d8
 
 ;;
-; Subid is the index of the secret (value of "wShortSecretIndex"?). This either creates
-; a chest or just gives the item to Link (if it's an upgrade).
+; @subid{The index of the secret (value of "wShortSecretIndex"?). This either creates
+;        a chest or just gives the item to Link (if it's an upgrade).}
 .define INTERACID_FARORE_GIVEITEM	$d9
 
 ;;
-.define INTERACID_da			$da
+; In the room of rites with Zelda, this triggers the twinrova battle when Link gets too
+; close to Zelda.
+.define INTERACID_ZELDA_APPROACH_TRIGGER	$da
 
 ;;
 .define INTERACID_db			$db
@@ -1364,3 +1712,33 @@
 .define INTERACID_RAFT			$e6
 
 ; Nothing beyond $e6.
+
+
+
+; ==============================================================================
+; SEASONS ONLY (TODO: organize this better)
+
+.ifdef ROM_SEASONS
+
+;;
+; The subrosian trying to blow up the volcano leading to d8
+.define INTERACID_SUBROSIAN_AT_D8 $55
+
+;;
+; @subid_00{Rooster on top of d4}
+; @subid_01{Rooster that leads to spring banana}
+.define INTERACID_FLYING_ROOSTER $8c
+
+;;
+.define INTERACID_OLD_MAN_WITH_JEWEL $8f
+
+;;
+; @subid_00{Tarm ruins entrance script (spawn jewels)}
+; @subid_01-07{?}
+.define INTERACID_JEWEL_HELPER $90
+
+;;
+; Jewels in place in tarm ruins (visual only)
+.define INTERACID_JEWEL $92
+
+.endif

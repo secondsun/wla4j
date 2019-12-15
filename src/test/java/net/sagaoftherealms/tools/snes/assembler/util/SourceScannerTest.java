@@ -356,12 +356,12 @@ public class SourceScannerTest {
     "\\2:, \\2", // basic label with colon
     ":label2, label2", // basic label with colon at beginning
     ":\\2Test, \\2Test", // a macro label with a bank and a template
-    "_label, label",
+    "_label, _label",
     // underscore label IE local label (see
     // https://wla-dx.readthedocs.io/en/latest/asmsyntax.html#labels)
-    "@label.b, label", // Child label
+    "@label.b, @label", // Child label
     "label.namespace, label.namespace", // Namespaced Label
-    "@@@@label, label", // Deeply nested child label
+    "@@@@label, @@@@label", // Deeply nested child label
     "---:, '---'", // unnamed label
     "+++, '+++'", // unnamed label
     "3BytePointer,3BytePointer",

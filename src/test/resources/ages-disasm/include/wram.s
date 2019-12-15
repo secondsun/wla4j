@@ -3,7 +3,7 @@
 ; When 2 addresses are listed (ie. $c6b9/$c6b5), the first address is for ages, the second
 ; is for seasons. If only one is listed, assume it's for ages.
 
-.enum $c000
+.enum $c000 export
 
 wMusicReadFunction: ; $c000
 ; Function copied to RAM to read a byte from another bank.
@@ -122,7 +122,7 @@ wChannelVolumes: ; $c07d
 
 .ende
 
-.enum $c0a0
+.enum $c0a0 export
 
 wMusicQueue: ; $c0a0
 	dsb $10
@@ -184,13 +184,14 @@ wThreadStateBuffer: ; $c2e0
 .define wPaletteThread_fadeOffset	wThreadStateBuffer + $1f ; $c2ff
 
 
-.enum $c300
+.enum $c300 export
 
 wBigBuffer: ; $c300
 ; General purpose $100 byte buffer. This has several, mutually exclusive uses:
 ; * Scripts that aren't in bank $C; the "loadscript" command loads $100 bytes into here to
 ;   allow script execution.
 ; * Screen waves; stores sinewave values used to make the screen wavy, ie. underwater.
+; * Stores the layout for the room in d6 with the changing floor
 	dsb $100
 
 wVBlankFunctionQueue: ; $c400
@@ -307,7 +308,7 @@ wPuddleAnimationPointer: ; $c4ba
 .ende
 
 
-.enum $c4c0
+.enum $c4c0 export
 
 wTerrainEffectsBuffer: ; $c4c0
 ; This might only be used for drawing objects' shadows, though in theory it could also be
@@ -331,7 +332,7 @@ wc540:
 ; Everything from this point ($c5b0) up to $caff goes into the save data ($550 bytes).
 ; ========================================================================================
 
-.enum $c5b0
+.enum $c5b0 export
 
 wFileStart: ; $c5b0
 ; Start of file data (same address as checksum)
@@ -351,7 +352,7 @@ wSavefileString: ; $c5b2
 .ende
 
 
-.enum $c5c0
+.enum $c5c0 export
 
 wUnappraisedRings: ; $c5c0
 ; List of unappraised rings. each byte always seems to have bit 6 set, indicating that the
@@ -396,7 +397,7 @@ wKidName: ; $c609
 wChildStatus: ; $c60f
 	db
 
-wAnimalRegion: ; $c610
+wAnimalCompanion: ; $c610
 ; $0b for ricky, $0c for dimitri, $0d for moosh (same as the SpecialObject id's for their
 ; corresponding objects)
 	db
@@ -456,9 +457,6 @@ wDeathRespawnBuffer: ; $c62b
 ; $0c bytes
 	INSTANCEOF DeathRespawnStruct
 
-wc637: ; $c637
-	db
-
 wLastAnimalMountPointY: ; $c638
 ; Looks like a component is set to $10 or $70 if the animal enters from
 ; a particular side. Not sure what it's used for.
@@ -479,6 +477,8 @@ wMinimapDungeonMapPosition: ; $c63c
 wMinimapDungeonFloor: ; $c63d
 	db
 
+.ifdef ROM_AGES
+
 wPortalGroup: ; $c63e
 ; This is set to $ff at the beginning of the game, indicating there's no portal.
 	db
@@ -487,7 +487,10 @@ wPortalRoom: ; $c63f
 wPortalPos: ; $c640
 	db
 
+.endif
+
 wMapleKillCounter: ; $c641/$c63e
+; Maple appears when this reaches 30 (15 with Maple's ring).
 	db
 
 wBoughtShopItems1: ; $c642
@@ -509,7 +512,7 @@ wBoughtShopItems2: ; $c643
 ; Bit 6: Bought heart piece from hidden shop.
 	db
 
-wMapleState: ; $c644
+wMapleState: ; $c644/$c641
 ; Bits 0-3: Number of maple encounters?
 ; Bit 4:    Set while touching book is being exchanged (unset at end of encounter)
 ; Bit 5:    Set if the touching book has been exchanged (permanently set)
@@ -517,71 +520,90 @@ wMapleState: ; $c644
 	db
 wc645: ; $c645
 	db
+
+wCompanionStates: ; $c646
+	.db
+
 wRickyState: ; $c646
-; bit 0: set if you've talked to Ricky about getting his gloves?
-;     5: similar to bit 0?
+; bit 0: set if you've talked to Ricky about getting his gloves
+;     5: set if you've returned Ricky's gloves
 ;     6: set when Ricky leaves you after obtaining island chart
-;     7:
+;     7: set if you have Ricky's flute
 	db
 wDimitriState: ; $c647
-; bit 1:
+; bit 0: set if you've seen the initial cutscene of the tokays discussing eating dimitri
+;     1: set if you've driven off the tokays harassing Dimitri
 ;     2:
-;     6: relates to raft
-;     7:
+;     5: set if you've talked to Dimitri after saving him from the tokays
+;     6: set if Dimitri should disappear from Tokay Island.
+;     7: set if you have Dimitri's flute
 	db
 wMooshState: ; $c648
 ; bit 5:
-;     6:
-;     7:
+;     6: set if he's left after you finished helping him
+;     7: set if you have Moosh's flute
 	db
-wc649: ; $c649
-; bit 2: set when dimitri is being carried?
-; bit 5: set the first time moosh's buttstomp hits the ground
+wCompanionTutorialTextShown: ; $c649
+; Bits here are used by INTERACID_COMPANION_TUTORIAL to remember which pieces of
+; "tutorial" text have been seen.
+; Bit 0: Ricky hopping over holes
+; Bit 1: Ricky jumping over cliffs
+; bit 2: Carrying Dimitri
+; Bit 3: Dimitri swimming up waterfalls
+; Bit 4: Moosh fluttering
+; bit 5: Moosh's buttstomp
 	db
 wc64a: ; $c64a
 	db
 wc64b: ; $c64b
 	db
 
-wGashaSpotFlags	 ; $c64c
+wGashaSpotFlags	 ; $c64c/$c649
 ; Bit 0 is set if you've harvested at least one gasha nut before. The first gasha nut
 ; always gives you a "class 1" ring (one of the weak, common ones).
 ; Bit 1 is set if you've obtained the heart piece from one of the gasha spots.
 	db
-wGashaSpotsPlantedBitset ; $c64d
+wGashaSpotsPlantedBitset ; $c64d/$c64a
 ; 2 bytes (1 bit for each spot)
 	dsb NUM_GASHA_SPOTS/8
-wGashaSpotKillCounters: ; $c64f
+wGashaSpotKillCounters: ; $c64f/$c64c
 ; 16 bytes (1 byte for each spot)
 	dsb NUM_GASHA_SPOTS
 
-wc65f: ; $c65f
-; This is a counter which many things (digging, getting hearts, getting a gasha nut)
-; increment or decrement. Not sure what it's used for, or if it's used at all.
+wGashaMaturity: ; $c65f/$c65c
+; When this value is 300 or higher, you get the best prizes from gasha trees; otherwise,
+; the prizes get progressively worse.
+; Many things increase this (digging, getting essence, screen transitions), and it gets
+; decreased by 200 when a gasha nut is harvested.
 	dw
 
+.ifdef ROM_AGES
 wc661: ; $c661
 	db
+.else
+ws_c65d: ; TODO: figure out what this is
+	dsb 4
+.endif
 
-wDungeonVisitedFloors: ; $c662
+wDungeonVisitedFloors: ; $c662/$c662
 ; 1 byte per dungeon ($10 total). Each byte is a bitset of visited floors for a particular dungeon.
 	dsb NUM_DUNGEONS
 
-wDungeonSmallKeys: ; $c672
+wDungeonSmallKeys: ; $c672/$c66e
 ; 1 byte per dungeon.
 	dsb NUM_DUNGEONS
 
-wDungeonBossKeys: ; $c682
+wDungeonBossKeys: ; $c682/$c67a
 ; Bitset of boss keys obtained
-	dsb NUM_DUNGEONS/8
+	dsb NUM_DUNGEONS_DIV_8
 
 wDungeonCompasses: ; $c684/$c67c
 ; Bitset of compasses obtained
-	dsb NUM_DUNGEONS/8
+	dsb NUM_DUNGEONS_DIV_8
 
-wDungeonMaps: ; $c686
+wDungeonMaps: ; $c686/$c67e
 ; Bitset of maps obtained
-	dsb NUM_DUNGEONS/8
+	dsb NUM_DUNGEONS_DIV_8
 
 wInventoryB: ; $c688/$c680
 	db
@@ -610,9 +632,9 @@ wNumOreChunks: ; $c6a7
 	dw
 .endif
 
-wShieldLevel: ; $c6af
+wShieldLevel: ; $c6af/$c6a9
 	db
-wNumBombs: ; $c6b0
+wNumBombs: ; $c6b0/$c6aa
 	db
 wMaxBombs: ; $c6b1
 	db
@@ -632,6 +654,9 @@ wFluteIcon: ; $c6b5/$c6af
 wSwitchHookLevel: ; $c6b6
 	db
 wSelectedHarpSong: ; $c6b7
+; 1 = Tune of Echoes;
+; 2 = Tune of Currents;
+; 3 = Tune of Ages
 	db
 wBraceletLevel: ; $c6b8
 	db
@@ -654,46 +679,62 @@ wFeatherLevel: ; $c6b4
 
 wNumEmberSeeds: ; $c6b9/$c6b5
 	db
-wNumScentSeeds: ; $c6ba
+wNumScentSeeds: ; $c6ba/$c6b6
 	db
 wNumPegasusSeeds: ; $c6bb/$c6b7
 	db
-wNumGaleSeeds: ; $c6bc
+wNumGaleSeeds: ; $c6bc/$c6b8
 	db
 wNumMysterySeeds: ; $c6bd/$c6b9
 	db
-wNumGashaSeeds: ; $c6be
+wNumGashaSeeds: ; $c6be/$c6ba
 	db
 wEssencesObtained: ; $c6bf
 	db
 wTradeItem: ; $c6c0
 	db
+
+.ifdef ROM_AGES
+
 wc6c1: ; $c6c1
 	db
 wTuniNutState: ; $c6c2
-; 0: broken, 2: fixed (only within Link's inventory?)
+; 0: broken
+; 1: not in inventory (doing patch's game)
+; 2: fixed (only within Link's inventory?)
 	db
 wNumSlates: ; $c6c3
 ; Slates used only in ages dungeon 8
 	db
+
+.else; ROM_SEASONS
+
+wPirateBellState: ; -/$c6bd
+	db
+.endif
+
 wSatchelSelectedSeeds: ; $c6c4/$c6be
 	db
 wShooterSelectedSeeds: ; $c6c5/$c6bf
 ; Can also be slingshot selected seeds for seasons
 	db
-wRingBoxContents: ; $c6c6
+wRingBoxContents: ; $c6c6/$c6c0
 	dsb 5
-wActiveRing: ; $c6cb
+wActiveRing: ; $c6cb/$c6c5
 ; When bit 6 is set, the ring is disabled?
 	db
-wRingBoxLevel: ; $c6cc
+wRingBoxLevel: ; $c6cc/$c6c6
 	db
 wNumUnappraisedRingsBcd: ; $c6cd
 	db
 wNumRingsAppraised: ; $c6ce
 ; Once this reaches 100, Vasu gives you the 100th ring.
 	db
-wc6cf: ; $c6cf
+wKilledGoldenEnemies: ; $c6cf
+; Bit 0: killed golden octorok
+; Bit 1: killed golden moblin
+; Bit 2: killed golden darknut
+; Bit 3: killed golden lynel
 	db
 
 wGlobalFlags: ; $c6d0/$c6ca
@@ -717,7 +758,7 @@ wc6e2: ; $c6e2
 wChildStage8Response: ; $c6e3
 ; This is the response to the child's question or request at stage 8.
 	db
-wChildPersonality: ; $c6e4
+wChildPersonality: ; $c6e4/$c6de
 ; When [wChildStage] >= 4, he starts developing a personality.
 ; For stages 4-6:
 ;   0: Hyperactive
@@ -729,15 +770,18 @@ wChildPersonality: ; $c6e4
 ;   2: Arborist
 ;   3: Singer
 	db
-wc6e5: ; $c6e5
+wc6e5: ; $c6e5/$c6df
 	db
 
 .ifdef ROM_SEASONS
 
-; Not exactly sure where this goes; somewhere between globalFlags and makuText below.
+ws_c6e0: ; TODO: figure out what this is
+	db
 wInsertedJewels: ; -/$c6e1
 ; Bitset of jewels inserted into tarm ruins entrance.
 	db
+ws_c6e2: ; TODO: figure out what this is
+	dsb 3
 
 .endif
 
@@ -745,21 +789,28 @@ wInsertedJewels: ; -/$c6e1
 wMakuMapTextPresent: ; $c6e6/$c6e5
 ; Low byte of text index (05XX) of text to show when selecting maku tree on map
 	db
+
+.ifdef ROM_AGES
+
 wMakuMapTextPast: ; $c6e7
 	db
 
 wMakuTreeState: ; $c6e8
 ; Keeps track of what the Maku Tree says when you talk to her.
+; 0: Haven't met yet
+; 1: Disappeared from the present
 	db
 
 wJabuWaterLevel: ; $c6e9
-; This almost certainly does more than control the water level.
+; Bits 4-7: Remembers which buttons are pressed. Corresponds to same bits in wSwitchState.
+; Bits 0-3: Actual water level (0 for drained, 2 for full)
 	db
 
 wWildTokayGameLevel: ; $c6ea
 ; Goes up to 4. (Level 0 is playing for the scent seedling.)
 	db
-wc6eb: ; $c6eb
+
+wMakuTreeSeedSatchelXPosition: ; $c6eb
 	db
 
 wPirateShipRoom: ; $c6ec
@@ -775,7 +826,9 @@ wPirateShipAngle: ; $c6ef
 wc6f0: ; $c6f0
 	dsb $b
 
-wShortSecretIndex: ; $c6fb
+.endif ; ROM_AGES
+
+wShortSecretIndex: ; $c6fb/$c6e6
 ; bits 0-3: index of a small secret?
 ; bits 4-5: indicates the game it's for, and whether it's a return secret or not?
 ; Also used as a placeholder in the "giveTreasure" function?
@@ -800,7 +853,7 @@ wSecretType: ; $c6fe
 .define wSeedsAndHarpSongsObtained	wObtainedTreasureFlags+TREASURE_EMBER_SEEDS/8
 
 
-.enum $c700
+.enum $c700 export
 
 ; Flags shared for above water and underwater
 wPresentRoomFlags: ; $c700
@@ -854,6 +907,7 @@ wTextIndexH_backup: ; $cba4
 
 wSelectedTextOption: ; $cba5
 ; Selected option in a textbox, ie. yes/no
+; Bit 7 can be set sometimes?
 	db
 
 wTextGfxColorIndex: ; $cba6
@@ -894,248 +948,382 @@ wTextSubstitutions: ; $cbaf
 
 
 ; Following variables are used for a variety of purposes.
-; cbb3-cbc2 are sometimes cleared together.
+; Each "union" entry uses the same space in RAM for different purposes.
+; You'd use, for example, "wFileSelect.mode" to access a variable.
 
-wFileSelectMode:
+wMenuUnionStart:
 	.db
-wMapMenu_mode:
-; 0: present (overworld/underwater)
-; 1: past (overworld/underwater) or subrosia (seasons)
-; 2: dungeon
-	.db
-wRingMenu_selectedRing:
-; The ring which the cursor is hovering over (and is having its text displayed).
-; $FF for no ring.
-	.db
-wSaveQuitMenu_state:
-	.db
-wSecretListMenu_state:
-	.db
-wFakeResetMenu_state:
-	.db
-wTmpcbb3: ; $cbb3
-	db
 
-wFileSelectMode2:
-	.db
-wMapMenu_varcbb4:
-; - Acts as a counter while scrolling between floors in dungeon map
-	.db
-wRingMenu_ringListCursorIndex:
-; Index of cursor in the ring list ($0-$f).
-	.db
-wSaveQuitMenu_gameOver:
-; 0 if the menu was entered voluntarily; 1 if we got here from a game-over.
-	.db
-wFakeResetMenu_delayCounter:
-	.db
-wTmpcbb4: ; $cbb4
-	db
+; This union has both "file select" and "text input" stuff.
+.union wFileSelect
 
-wItemSubmenuIndex:
-; Selection in submenus (seeds, harp)
-	.db
-wMapMenu_currentRoom:
-; Normally this is the current room index.
-; For dungeon maps, this is 0 when scrolling up, 1 when scrolling down.
-	.db
-wRingMenu_numPages:
-	.db
-wSaveQuitMenu_cursorIndex:
-; Value from 0-2
-	.db
-wSecretListMenu_numEntries:
-; This is the maximum value (plus one) that the cursor can be in farore's secret list.
-	.db
-wIntroCinematicState:
-; Value from 0-2:
-;   0: Link riding horse
-;   1: Link in temple approaching triforce
-;   2: Scrolling up the tree just before the titlescreen
-	.db
-wTmpcbb5: ; $cbb5
-; Used for:
-; - Index of link's position on map
-; - Index of an interaction?
-; - Cutscene where a hand grabs you in the black tower
-	db
+	mode: ; $cbb3
+		db
+	mode2: ; $cbb4
+		db
+	cbb5 ; $cbb5
+		db
+	cbb6:
+		db
+	textInputMode: ; $cbb7
+	; Bit 7 means secret entry?
+	; $00 for link name input
+	; $01 for kid name input
+	; $80 for 5-letter secret input
+	; $81 for ring secret input
+	; $82 for secret input for new file
+		db
+	textInputMaxCursorPos: ; $cbb8
+	; The number of characters that can be entered on a text input screen (minus one)
+		db
+	cbb9:
+		db
+	fontXor: ; $cbba
+		db
+	cursorOffset: ; $cbbb
+		db
+	cursorPos: ; $cbbc
+		db
+	cursorPos2: ; $cbbd
+		db
+	textInputCursorPos: ; $cbbe
+		db
+	linkTimer: ; $cbbf
+		db
 
-wMapMenu_cursorIndex:
-	.db
-wRingMenu_page:
-; Value from 0-3, corresponding to the page in the ring menu.
-	.db
-wSaveQuitMenu_delayCounter:
-	.db
-wSecretListMenu_cursorIndex:
-	.db
-wTmpcbb6: ; $cbb6
-; Used for:
-; - Index of cursor on map
-; - Something in menus
-	db
+.nextu wMapMenu
 
-wTextInputMode:
-; Bit 7 means secret entry?
-; $00 for link name input
-; $01 for kid name input
-; $80 for 5-letter secret input
-; $81 for ring secret input
-; $82 for secret input for new file
-	.db
-wInventorySelectedItem:
-	.db
-wMapMenu_warpIndex:
-; The index of the selected warp point in the gale seed menu.
-	.db
-wDungeonMenu_floorIndex:
-; This counts from the top floor down, instead of bottom up like wDungeonFloor.
-; This is the floor being displayed, not the floor Link's on.
-	.db
-wSecretListMenu_scroll:
-; This value is the index of the first entry listed at the top. Scrolling the menu down
-; increases this.
-	.db
-wIntroThreadFrameCounter:
-; Incremented once per frame while intro thread is running.
-	.db
-wTmpcbb7: ; $cbb7
-	db
+	mode: ; $cbb3
+	; 0: present (overworld/underwater)
+	; 1: past (overworld/underwater) or subrosia (seasons)
+	; 2: dungeon
+		db
+	varcbb4: ; $cbb4
+	; - Acts as a counter while scrolling between floors in dungeon map
+		db
+	currentRoom: ; $cbb5
+	; Normally this is the current room index.
+	; For dungeon maps, this is 0 when scrolling up, 1 when scrolling down.
+		db
+	cursorIndex: ; $cbb6
+		db
 
-wTextInputMaxCursorPos:
-; The number of characters that can be entered on a text input screen (minus one)
-	.db
-wMapMenu_dungeonScrollY:
-	.db
-wRingMenu_listCursorFlickerCounter:
-	.db
-wSecretListMenu_scrollSpeed:
-	.db
-wTmpcbb8: ; $cbb8
-; Also used by:
-; * Black tower cutscene after d3?
-	db
+	; Overworld only
+	.union
+		warpIndex: ; $cbb7
+		; The index of the selected warp point in the gale seed menu.
+			db
+		cbb8:
+			db
+		popupState: ; $cbb9
+		; Only used for overworld map.
+		;   0: Icon is uninitialized
+		;   1: Icon is popping in
+		;   2: Icon is fully loaded
+			db
+		cbba: ; $cbba
+			db
+		popupY: ; $cbbb
+		; Y position of the minimap's popup (ie. shows there's a house or gasha spot).
+		; Not used in dungeon minimaps.
+			db
+		popupX: ; $cbbc
+			db
+		popupSize: ; $cbbd
+		; This starts at 0 and increases until the popup icon reaches its full size (value 4).
+			db
+		popup1: ; $cbbe
+			db
+		popup2: ; $cbbf
+			db
+		popupIndex: ; $cbc0
+		; Either 0 or 1 to determine whether to use popup1 or popup2.
+			db
+		drawWarpDestinations: ; $cbc1
+		; Draws warp destinations for gale seed menu if nonzero.
+			db
+	; Dungeon only
+	.nextu
+		floorIndex: ; $cbb7
+		; This counts from the top floor down, instead of bottom up like wDungeonFloor.
+		; This is the floor being displayed, not the floor Link's on.
+			db
+		dungeonScrollY: ; $cbb8
+			db
+		dungeonCursorFlicker: ; $cbb9
+		; Only used for dungeon map. Toggles from 0/1 to make the cursor visible or not.
+			db
+		visitedFloors: ; $cbba
+		; Bitset of floors available to scroll through on minimap (before getting the map).
+			db
+		dungeonCursorIndex: ; $cbbb
+			db
+		linkFloor: ; $cbbc
+		; Only used in dungeons
+			db
+	.endu
 
-wInventorySubmenu2CursorPos2:
-	.db
-wMapMenu_popupState:
-; Only used for overworld map.
-;   0: Icon is uninitialized
-;   1: Icon is popping in
-;   2: Icon is fully loaded
-	.db
-wMapMenu_dungeonCursorFlicker:
-; Only used for dungeon map. Toggles from 0/1 to make the cursor visible or not.
-	.db
-wRingMenu_rupeeRefundValue:
-; Set to $07 (corresponds to 30 rupees) if you appraise a ring you already own.
-	.db
-wTempleIntro_triforceState:
-; This variable is used as communication between cutscene objects and the main code in the
-; "runIntroCinematic" function?
-	.db
-wTmpcbb9: ; $cbb9
-	db
+.nextu wRingMenu
 
-wFileSelectFontXor:
-	.db
-wMapMenu_visitedFloors:
-; Bitset of floors available to scroll through on minimap (before getting the map).
-	.db
-wRingMenu_tileMapIndex:
-; The ring menu cycles between the two tilemaps to provide the scrolling effect.
-	.db
-wTmpcbba: ; $cbba
-	db
+	selectedRing: ; $cbb3
+	; The ring which the cursor is hovering over (and is having its text displayed).
+	; $FF for no ring.
+		db
+	ringListCursorIndex: ; $cbb4
+	; Index of cursor in the ring list ($0-$f).
+		db
+	numPages: ; $cbb5
+		db
+	page: ; $cbb6
+	; Value from 0-3, corresponding to the page in the ring menu.
+		db
+	cbb7: ; $cbb7
+		db
+	listCursorFlickerCounter: ; $cbb8
+		db
+	rupeeRefundValue:  ; $cbb9
+	; Set to $07 (corresponds to 30 rupees) if you appraise a ring you already own.
+		db
+	tileMapIndex: ; $cbba
+	; The ring menu cycles between the two tilemaps to provide the scrolling effect.
+		db
+	ringNameTextIndex: ; $cbbb
+		db
+	scrollDirection: ; $cbbc
+	; $01 for right scrolling, $ff for left scrolling
+		db
+	ringBoxCursorIndex: ; $cbbd
+	; The index of the cursor on the ring box.
+		db
+	boxCursorFlickerCounter: ; $cbbe
+	; When $80 or above, the ring box cursor flickers. When $00, it's displayed constantly.
+		db
+	displayedRingNumberComparator: ; $cbbf
+	; This is compared with ringListCursorIndex; when they differ, the displayed
+	; ring number is updated.
+		db
+	descriptionTextIndex: ; $cbc0
+		db
+	textDelayCounter: ; $cbc1
+	; When nonzero, this delay showing the text for a ring in the ring box.
+		db
+	textDelayCounter2: ; $cbc2
+		db
 
-wFileSelectCursorOffset:
-	.db
-wInventoryActiveText:
-	.db
-wMapMenu_popupY:
-; Y position of the minimap's popup (ie. shows there's a house or gasha spot).
-; Not used in dungeon minimaps.
-	.db
-wMapMenu_dungeonCursorIndex:
-	.db
-wRingMenu_ringNameTextIndex:
-	.db
-wTmpcbbb: ; $cbbb
-	db
+.nextu wSaveQuitMenu
 
-wFileSelectCursorPos:
-	.db
-wMapMenu_popupX:
-	.db
-wMapMenu_linkFloor:
-; Only used in dungeons
-	.db
-wRingMenu_scrollDirection:
-; $01 for right scrolling, $ff for left scrolling
-	.db
-wTmpcbbc: ; $cbbc
-	db
+	state: ; $cbb3
+		db
+	gameOver: ; $cbb4
+	; 0 if the menu was entered voluntarily; 1 if we got here from a game-over.
+		db
+	cursorIndex: ; $cbb5
+	; Value from 0-2
+		db
+	delayCounter: ; $cbb6
+		db
 
-wFileSelectCursorPos2:
-	.db
-wMapMenu_popupSize:
-; This starts at 0 and increases until the popup icon reaches its full size (value 4).
-	.db
-wRingMenu_ringBoxCursorIndex:
-; The index of the cursor on the ring box.
-	.db
-wTmpcbbd: ; $cbbd
-	db
+.nextu wSecretListMenu
 
-wTextInputCursorPos:
-	.db
-wItemSubmenuCounter:
-	.db
-wMapMenu_popup1:
-	.db
-wRingMenu_boxCursorFlickerCounter:
-; When $80 or above, the ring box cursor flickers. When $00, it's displayed constantly.
-	.db
-wTmpcbbe: ; $cbbe
-	db
+	state: ; $cbb3
+		db
+	cbb4: ; $cbb4
+		db
+	numEntries: ; $cbb5
+	; This is the maximum value (plus one) that the cursor can be in farore's secret list.
+		db
+	cursorIndex: ; $cbb6
+		db
+	scroll: ; $cbb7
+	; This value is the index of the first entry listed at the top. Scrolling the menu down
+	; increases this.
+		db
+	scrollSpeed: ; $cbb8
+		db
+	; $cbba: wFileSelect.fontXor
 
-wItemSubmenuMaxWidth:
-	.db
-wFileSelectLinkTimer:
-	.db
-wMapMenu_popup2:
-	.db
-wRingMenu_displayedRingNumberComparator:
-; This is compared with wRingMenu_ringListCursorIndex; when they differ, the displayed
-; ring number is updated.
-	.db
-wTmpcbbf: ; $cbbf
-	db
+.nextu wFakeResetMenu
 
-wItemSubmenuWidth:
-	.db
-wMapMenu_popupIndex:
-; Either 0 or 1 to determine whether to use wMapMenu_popup1 or wMapMenu_popup2.
-	.db
-wRingMenu_descriptionTextIndex:
-	.db
-wTmpcbc0: ; $cbc0
-	db
+	state: ; $cbb3
+		db
+	delayCounter: ; $cbb4
+		db
 
-wMapMenu_drawWarpDestinations:
-; Draws warp destinations for gale seed menu if nonzero.
-	.db
-wRingMenu_textDelayCounter:
-; When nonzero, this delay showing the text for a ring in the ring box.
-	.db
-wcbc1: ; $cbc1
-	db
+.nextu wIntro
 
-wRingMenu_textDelayCounter2:
-	.db
-wcbc2: ; $cbc2
-	db
+	wcbb3:
+		db
+	wcbb4:
+		db
+	cinematicState: ; $cbb5
+	; Value from 0-2:
+	;   0: Link riding horse
+	;   1: Link in temple approaching triforce
+	;   2: Scrolling up the tree just before the titlescreen
+		db
+	cbb6:
+		db
+	frameCounter: ; $cbb7
+	; Incremented once per frame while intro thread is running.
+		db
+	cbb8:
+		db
+	triforceState: ; $cbb9
+	; This variable is used as communication between cutscene objects and the main code in the
+	; "runIntroCinematic" function?
+		db
+	cbba:
+		db
 
+.nextu wInventory
+	cbb3:
+		db
+	cbb4:
+		db
+	itemSubmenuIndex: ; $cbb5
+	; Selection in submenus (seeds, harp)
+		db
+	cbb6:
+		db
+	selectedItem: ; $cbb7
+		db
+	cbb8:
+		db
+	submenu2CursorPos2: ; $cbb9
+		db
+	cbba:
+		db
+	activeText: ; $cbbb
+		db
+	cbbc: ; $cbbc
+		db
+	cbbe: ; $cbbd
+		db
+	itemSubmenuCounter: ; $cbbe
+		db
+	itemSubmenuMaxWidth: ; $cbbf
+		db
+	itemSubmenuWidth: ; $cbc0
+		db
+	cbc1:
+		db
+
+.nextu wGenericCutscene
+
+	cbb3: ; $cbb3
+	; A counter, often used with "flashScreen" function?
+		db
+
+	cbb4: ; $cbb4
+		db
+
+	cbb5: ; $cbb5
+		db
+
+	cbb6: ; $cbb6
+		db
+
+	cbb7: ; $cbb7
+		db
+
+	cbb8: ; $cbb8
+		db
+
+	cbb9: ; $cbb9
+		db
+
+	cbba: ; $cbba
+		db
+
+	cbbb: ; $cbbb
+		db
+
+	cbbc: ; $cbbc
+		db
+
+	cbbd: ; $cbbd
+		db
+
+	cbbe: ; $cbbe
+		db
+
+	cbbf: ; $cbbf
+		db
+
+	cbc0: ; $cbc0
+		db
+
+	cbc1: ; $cbc1
+		db
+
+	cbc2: ; $cbc2
+		db
+
+.nextu
+
+	; TODO: replace all references to wTmpcbXX with meaningful names
+
+	wTmpcbb3: ; $cbb3
+		db
+
+	wTmpcbb4: ; $cbb4
+		db
+
+	wTmpcbb5: ; $cbb5
+	; Used for:
+	; - Index of link's position on map
+	; - Index of an interaction?
+	; - Cutscene where a hand grabs you in the black tower
+		db
+
+	wTmpcbb6: ; $cbb6
+	; Used for:
+	; - Index of cursor on map
+	; - Something in menus
+		db
+
+	wTmpcbb7: ; $cbb7
+		db
+
+	wTmpcbb8: ; $cbb8
+	; Also used by:
+	; * Black tower cutscene after d3?
+		db
+
+	wTmpcbb9: ; $cbb9
+		db
+
+	wTmpcbba: ; $cbba
+		db
+
+	wTmpcbbb: ; $cbbb
+		db
+
+	wTmpcbbc: ; $cbbc
+		db
+
+	wTmpcbbd: ; $cbbd
+		db
+
+	wTmpcbbe: ; $cbbe
+		db
+
+	wTmpcbbf: ; $cbbf
+		db
+
+	wTmpcbc0: ; $cbc0
+		db
+
+	wTmpcbc1: ; $cbc1
+		db
+
+	wTmpcbc2: ; $cbc2
+		db
+
+.endu
+
+wMenuUnionEnd:
+	.db
 
 wUseSimulatedInput: ; $cbc3
 ; When set to $01, Link will perform "simulated" input, ie. in the opening cutscene.
@@ -1155,9 +1343,9 @@ wSimulatedInputAddressH: ; $cbc8
 wSimulatedInputValue: ; $cbc9
 	db
 
-wcbca: ; $cbca
-; Related to the switch hook?
-; Set to $00 when a heart container is spawned from a boss?
+wDisableLinkCollisionsAndMenu: ; $cbca
+; Disables menu and link's collisions when nonzero.
+; Set while warping, being shocked, getting essence, opening chest, playing harp/flute...
 	db
 
 wOpenedMenuType: ; $cbcb
@@ -1205,9 +1393,9 @@ wRingMenu_mode: ; $cbd3
 ; 1: display ring list
 	db
 wLastSecretInputLength: ; $cbd4
-; This is compared with wTextInputMaxCursorPos when a secret input menu is opened. If
-; these variables differ, that must mean a different secret type is being entered, so the
-; secret will be cleared before proceeding.
+; This is compared with wFileSelect.textInputMaxCursorPos when a secret input menu is
+; opened. If these variables differ, that must mean a different secret type is being
+; entered, so the secret will be cleared before proceeding.
 	db
 
 
@@ -1223,8 +1411,11 @@ wcbe1: ; $cbe1
 	db
 wcbe2: ; $cbe2
 	db
-wcbe3: ; $cbe3
-; cbe3: palette header index for menus?
+wExtraBgPaletteHeader: ; $cbe3
+; Palette header index to reload upon exiting a menu (separate from normal area
+; palettes).
+; In the ganon fight, this is used to keep track of the palette on the inverted
+; control screen (background palette 7). This may be its only use.
 	db
 wDisplayedHearts: ; $cbe4
 	db
@@ -1306,19 +1497,21 @@ wMenuDisabled: ; $cc02/$cc02
 wCutsceneState: ; $cc03
 	db
 
-wCutsceneTrigger: ; $cc04
-; Gets copied to wcutsceneIndex. So, writing a value here triggers a cutscene.
+wCutsceneTrigger: ; $cc04/$cc04
+; Gets copied to wCutsceneIndex. So, writing a value here triggers a cutscene.
 ; (See constants/cutsceneIndices.s)
 	db
 
+.ifdef ROM_AGES
 wcc05: ; $cc05
 ; bit 0: if unset, prevents the room's object data from loading
 ; bit 1: if unset, prevents object pointers from loading
 ; bit 2: if unset, prevents remembered Companions from loading
 ; bit 3: if unset, prevents Maple from loading
 	db
+.endif
 
-wLoadedObjectGfxIndex: ; $cc06
+wLoadedObjectGfxIndex: ; $cc06/$cc05
 ; An index for wLoadedObjectGfx. Keeps track of where to add the next thing to be
 ; loaded?
 	db
@@ -1326,22 +1519,21 @@ wLoadedObjectGfxIndex: ; $cc06
 wcc07: ; $cc07
 	db
 
-wLoadedObjectGfx: ; $cc08
+wLoadedObjectGfx: ; $cc08/$cc07
 ; This is a data structure related to used sprites. Each entry is 2 bytes, and
-; corresponds to an npc gfx header loaded into vram at its corresponding
-; position.
+; corresponds to an object gfx header loaded into vram at its corresponding position.
 ; Eg. Entry $cc08/09 is loaded at $8000, $cc0a/0b is loaded at $8200.
-; Byte 0 is the index of the npc header (see npcGfxHeaders.s).
+; Byte 0 is the index of the object gfx header (see objectGfxHeaders.s).
 ; Byte 1 is whether these graphics are currently in use?
 	dsb $10
-wLoadedObjectGfxEnd: ; $cc18
+wLoadedObjectGfxEnd: ; $cc18/$cc17
 	.db
 
-wLoadedTreeGfxIndex: ; $cc18
+wLoadedTreeGfxIndex: ; $cc18/$cc17
 ; This (along with wLoadedTreeGfxActive) is the same structure as the above buffer, but
 ; only for trees.
 	db
-wLoadedTreeGfxActive: ; $cc19
+wLoadedTreeGfxActive: ; $cc19/$cc18
 	db
 
 wcc1a: ; $cc1a
@@ -1350,12 +1542,12 @@ wcc1a: ; $cc1a
 ; These are uncompressed gfx header indices.
 ; They're used for loading graphics for certain items (sword, cane, switch hook,
 ; boomerang... not bombs, seeds).
-wLoadedItemGraphic1: ; $cc1b
+wLoadedItemGraphic1: ; $cc1b/$cc1a
 	db
-wLoadedItemGraphic2: ; $cc1c
+wLoadedItemGraphic2: ; $cc1c/$cc1b
 	db
 
-wEnemyIDToLoadExtraGfx: ; $cc1d
+wEnemyIDToLoadExtraGfx: ; $cc1d/$cc1c
 ; An enemy can write its ID byte here to request that "extra graphics" get loaded for it.
 ; It will continue loading subsequent object gfx headers until the "stop" bit is encountered.
 ; Can't use this at the same time as "wInteractionIDToLoadExtraGraphics"?
@@ -1364,17 +1556,20 @@ wInteractionIDToLoadExtraGfx: ; $cc1e
 ; Same as above, but for interactions.
 	db
 
-wcc1f: ; $cc1f
-	db
-wcc20: ; $cc20
-	db
+.ende
+
+; Ages: $cc1f-$cc20 unused.
+; Seasons: $cc1f-$cc3c are occupied by data which, in ages, is at $cdc0.
+
+	.enum $cc3d export
+
 
 ; Point to respawn after falling in hole or w/e
-wLinkLocalRespawnY: ; $cc21
+wLinkLocalRespawnY: ; $cc21/$cc3d
 	db
-wLinkLocalRespawnX: ; $cc22
+wLinkLocalRespawnX: ; $cc22/$cc3e
 	db
-wLinkLocalRespawnDir: ; $cc23
+wLinkLocalRespawnDir: ; $cc23/$cc3f
 	db
 
 
@@ -1395,10 +1590,10 @@ wRememberedCompanionX: ; $cc28/$cc44
 ; Dunno what the distinction is between these and wKeysPressed, wKeysJustPressed?
 wGameKeysPressed: ; $cc29
 	db
-wGameKeysJustPressed: ; $cc2a
+wGameKeysJustPressed: ; $cc2a/$cc46
 	db
 
-wLinkAngle: ; $cc2b
+wLinkAngle: ; $cc2b/$cc47
 ; Same as w1Link.angle? Set to $FF when not moving. Should always be a multiple of
 ; 4 (since d-pad input doesn't allow more fine-grained angles)
 ; This may correspond more to the direction button input than to the Link object in
@@ -1492,7 +1687,7 @@ wDungeonMapData: ; $cc3d
 ; 8 bytes of dungeonData copied to here
 	.db
 
-wDungeonFlagsAddressH: ; $cc3d
+wDungeonFlagsAddressH: ; $cc3d/$cc59
 ; The high byte of the dungeon flags (wGroup4Flags/wGroup5Flags)
 	db
 wDungeonWallmasterDestRoom: ; $cc3e
@@ -1542,9 +1737,10 @@ wWarpDestPos: ; $cc4a/$cc66
 wWarpTransition2: ; $cc4b/$cc67
 ; wWarpTransition2 is set by code.
 ; Values for wWarpTransition2:
-; 00: none
-; 01: instant
-; 03: fadeout
+;   00: none
+;   01: instant
+;   03: fadeout
+; Does bit 7 do something?
 	db
 
 wWarpDestVariablesEnd: ; $cc4c
@@ -1621,7 +1817,7 @@ wLinkGrabState: ; $cc5a/$cc75
 ;  $83 when holding something
 	db
 
-wLinkGrabState2: ; $cc5b
+wLinkGrabState2: ; $cc5b/$cc76
 ; bit 7: set when pulling a lever?
 ; bits 4-6: weight of object (0-4 or 0-5?). (See _itemWeights.)
 ; bits 0-3: should equal 0, 4, or 8; determines where the grabbed object is placed
@@ -1632,28 +1828,29 @@ wLinkGrabState2: ; $cc5b
 ; cc5c-cce9 treated as a block: cleared when loading a room through "whiteout" transition
 
 
-wLinkInAir: ; $cc5c
-; Bit 7: lock link's movement direction, prevent jumping
+wLinkInAir: ; $cc5c/$cc77
+; Bit 7: lock link's movement direction, prevent jumping. (Jumping down a cliff, using
+;        gale seed, jumping into bed in Nayru's house, etc...)
 ; Bit 5: If set, Link's gravity is reduced
 ; Bit 1: set when link is jumping
 ; Bit 0: set when jumping down a cliff
 ; If nonzero, Link's knockback durations are halved.
 	db
 
-wLinkSwimmingState: ; $cc5d
+wLinkSwimmingState: ; $cc5d/$cc78
 ; Bit 7 is set when Link dives underwater.
-; Bit 6 causes Link to drown.
+; Bit 6 causes Link to drown (it's lava).
 ; Bits 0-3 hold a "state" which remembers whether Link is actually in the water, and
 ; whether he just entered or has been there for a few frames.
 	db
 
-wcc5e: ; $cc5e
-; Makes Link get stuck in a "punching" / using item animation?
-; If bit 6 is set, Link ignores holes.
+wMagnetGloveState: ; $cc5e/$cc79
+; Bit 6: Set while latched onto something (ignore holes, etc).
+; Bit 1: Set based on glove's polarity.
 	db
 
-wLinkUsingItem1: ; $cc5f
-; This is a bitset of special item objects ($d2-$d5) which are being used?
+wLinkUsingItem1: ; $cc5f/$cc7a
+; This is a bitset of special item objects ($d2-$d6) which are being used?
 	db
 
 wLinkTurningDisabled: ; $cc60
@@ -1661,10 +1858,11 @@ wLinkTurningDisabled: ; $cc60
 ; When this is nonzero, Link's facing direction is locked (ie. using a sword).
 	db
 
-wLinkImmobilized: ; $cc61
+wLinkImmobilized: ; $cc61/$cc7c
 ; Set when link is using an item which immobilizes him. Each bit corresponds to
 ; a different item.
 ; Bit 4: Set when Link is falling down a hole
+; Bit 5: Set every other frame while Link is latched by a gel
 	db
 
 wcc62: ; $cc62
@@ -1678,7 +1876,7 @@ wcc63: ; $cc63
 
 wBraceletGrabbingNothing: ; $cc64
 ; This is set to Link's direction (or'd with $80) when holding the bracelet and not
-; grabbing anything. Probably used for the rollers in Seasons
+; grabbing anything. Used for the rollers in Seasons.
 	db
 
 wLinkPushingDirection: ; $cc65
@@ -1695,15 +1893,17 @@ wcc67: ; $cc67
 ; Used with dimitri?
 	db
 
-wLinkClimbingVine: ; $cc68
+wLinkClimbingVine: ; $cc68/$cc83
 ; Set to $ff when link climbs certain ladders. Forces him to face upwards.
 	db
 
+.ifdef ROM_AGES
 wLinkRaisedFloorOffset: ; $cc69
 ; This shifts the Y position at which link is drawn.
 ; Used by the raisable platforms in various dungeons.
 ; If nonzero, Link is allowed to walk on raised floors.
 	db
+.endif
 
 wPushingAgainstTileCounter: ; $cc6a
 ; Keeps track of how many frames Link has been pushing against a tile, ie. for push
@@ -1749,6 +1949,8 @@ wGrabbableObjectBuffer: ; $cc74
 ; * state = 2
 ; * state2 = 0
 ; * enabled |= 2 (allows it to persist across screens)
+;
+; state2 is set to 2 when the object is thrown / released?
 	dsb $10
 wGrabbableObjectBufferEnd: ; $cc84
 	.db
@@ -1759,7 +1961,7 @@ wcc85: ; $cc85
 ; Relates to maple?
 	db
 
-wRoomEdgeY: ; $cc86
+wRoomEdgeY: ; $cc86/$cca0
 	db
 wRoomEdgeX: ; $cc87
 	db
@@ -1775,7 +1977,9 @@ wTextInputResult: ; $cc89
 ; secret's "wShortSecretType".
 	db
 
-wDisabledObjects: ; $cc8a
+; Everything from $cc8a-$cce0 is cleared on screen transitions?
+
+wDisabledObjects: ; $cc8a/$cca4
 ; Bit 0 disables link.
 ; Bit 1 disables interactions.
 ; Bit 2 disables enemies.
@@ -1787,28 +1991,32 @@ wDisabledObjects: ; $cc8a
 wcc8b: ; $cc8b
 ; Bit 0 set if items aren't being updated?
 	db
-wcc8c: ; $cc8c
+wLinkCanPassNpcs: ; $cc8c/$cca6
+; When nonzero, Link can pass through objects.
+; Set when in a miniboss portal, using gale seeds, in a timewarp.
 	db
 
-wPlayingInstrument1: ; $cc8d
-; Set when playing an instrument. Copied to wPlayingInstrument2?
+wLinkPlayingInstrument: ; $cc8d/$cca7
+; Nonzero while playing an instrument.
+; Set to $ff when playing flute; otherwise, this is the value of wSelectedHarpSong.
+; Copied to wLinkRidingObject?
 	db
 
-wEnteredWarpPosition: ; $cc8e
+wEnteredWarpPosition: ; $cc8e/$cca8
 ; After certain warps and when falling down holes, this variable is set to Link's
 ; position. When it is set, the warp on that tile does not function.
 ; This prevents Link from instantly activating a warp tile when he spawns in.
 ; This is set to $ff when the above does not apply.
 	db
 
-wNumTorchesLit: ; $cc8f
+wNumTorchesLit: ; $cc8f/$cca9
 	db
 
 wcc90: ; $cc90
 ; Disables warp tiles if nonzero?
 	db
 
-wcc91: ; $cc91
+wDisableScreenTransitions: ; $cc91/$ccab
 ; If nonzero, screen transitions and diving don't work?
 ; Set when:
 ; - An animal companion (not dimitri) is drowning in water?
@@ -1821,12 +2029,12 @@ wcc91: ; $cc91
 
 wcc92: ; $cc92
 ; Bit 7 set when over a hole, first entering water, dismounting raft,
-;       knockback when on raft...
+;       knockback when on raft, eaten by like-like...
 ; Bit 3 set when moving on a raft (allows screen transitions over water)
 ; Bit 2 set on conveyors?
 	db
 
-wcc93: ; $cc93
+wcc93: ; $cc93/$ccad
 ; "Status" of door shutters?
 	db
 
@@ -1838,12 +2046,17 @@ wScreenShakeMagnitude: ; $cc94
 	db
 
 wcc95: ; $cc95
-; $cc95: something to do with items being used (like wLinkUsingItem1, 2)
-; If bit 7 is set, link can't move or use items.
+; $cc95: Bits 0-3 unset when corresponding item is in use (w1ParentItem2/3/4)
+; bit 4: Unset when in midair or swimming (in overworld, not underwater areas)?
+; bit 5: Set when experiencing knockback?
+; bit 7: Set when in a spinner or playing harp/flute (Link can't move or use items).
 	db
 
-wPlayingInstrument2: ; $cc96
-; If nonzero, Link is basically invincible. Copied from wPlayingInstrument1?
+wLinkRidingObject: ; $cc96
+; When Link is riding an object, this is the index of that object (ie. raft, moving
+; platforms, thwomps).
+; The value of [wLinkPlayingInstrument] is also copied here each frame, though it may get
+; overwritten with the index of an object Link is riding.
 	db
 
 wForceCompanionDismount: ; $cc97
@@ -1851,7 +2064,7 @@ wForceCompanionDismount: ; $cc97
 ; (Gets ignored if the companion's "var38" variable is nonzero?)
 	db
 
-wcc98: ; $cc98
+wDisallowMountingCompanion: ; $cc98
 ; $cc98: relates to switch hook
 ; If nonzero, can't mount animal companion?
 	db
@@ -1862,21 +2075,21 @@ wActiveTilePos: ; $cc99
 wActiveTileIndex: ; $cc9a
 	db
 
-wStandingOnTileCounter: ; $cc9b
+wStandingOnTileCounter: ; $cc9b/$ccb5
 ; This counter is used for certain tile types to help implement their behaviours.
 ; Ie. cracked floors use this as a counter until the floor breaks.
 	db
 
-wActiveTileType: ; $cc9c
+wActiveTileType: ; $cc9c/$ccb6
 ; Different values for grass, stairs, water, etc
 	db
 
-wLastActiveTileType: ; $cc9d
+wLastActiveTileType: ; $cc9d/$ccb7
 ; In top-down sections, this seems to remember the tile that Link stood on last frame.
 ; In sidescroll sections, however, this keeps track of the tile underneath Link instead.
 	db
 
-wIsTileSlippery: ; $cc9e
+wIsTileSlippery: ; $cc9e/$ccb8
 ; Bit 6 is set if Link is on a slippery tile.
 	db
 
@@ -1893,9 +2106,10 @@ wcca1: ; $cca1
 	db
 wcca2: ; $cca2
 ; Position of a chest?
+; When a nonzero value is written here, dormant armos statues with subid 0 begin moving?
 	db
 
-wChestContentsOverride: ; $cca3
+wChestContentsOverride: ; $cca3/$ccbd
 ; 2 bytes. When set, this overrides the contents of a chest.
 ; Used for farore's secrets, maybe also the chest minigame?
 	dw
@@ -1909,11 +2123,25 @@ wcca7: ; $cca7
 	db
 wcca8: ; $cca8
 	db
-wcca9: ; $cca9
-; $cca9: relates to ganon/twinrova fight somehow
+
+.ifdef ROM_SEASONS ; TODO: figure out what this is, where it goes
+wUnknown: ; -/$ccc3
 	db
-wccaa: ; $ccaa
+.endif
+
+wTwinrovaTileReplacementMode: ; $cca9/$ccc4
+; 0: Do nothing
+; 1: Fill room with lava
+; 2: Fill room with ice
+; 3: ?
+; 4+: Use "seizure tiles" (when controls are reversed in ganon fight)
 	db
+wccaa: ; $ccaa/$ccc5
+	db
+
+
+.ifdef ROM_AGES
+
 wLever1PullDistance: ; $ccab
 ; Number of pixels out a lever has been pulled. Bit 7 set when fully pulled.
 	db
@@ -1928,6 +2156,9 @@ wRotatingCubeColor: ; $ccad
 wRotatingCubePos: ; $ccae
 	db
 
+.endif
+
+
 wccaf: ; $ccaf/$ccc6
 ; Tile index being poked or slashed at?
 	db
@@ -1935,15 +2166,17 @@ wccb0: ; $ccb0/$ccc7
 ; Tile position being poked or slashed at?
 	db
 
+.ifdef ROM_AGES
 wccb1: ; $ccb1
 	db
+.endif
 
 wDisableWarps: ; $ccb2
-; Not sure what purpose this is for
+; Not sure what purpose this is for. (Might be ages-exclusive?)
 	db
 
 .ifdef ROM_SEASONS
-wInBoxingMatch: ; $ccc9
+wInBoxingMatch: ; -/$ccc9
 	db
 .endif
 
@@ -1954,52 +2187,68 @@ wAButtonSensitiveObjectList: ; $ccb3/$ccca
 wAButtonSensitiveObjectListEnd: ; $ccd3
 	.db
 
-wInShop: ; $ccd3
+wInShop: ; $ccd3/$ccea
 ; When this is nonzero, it prevents Link from using items.
 ; Bit 1: Set while in a shop.
 ; Bit 2: Requests the tilemap for the items on display to be updated.
 ; Bit 7: Set while playing the chest game.
 	db
 
-wLinkPushingAgainstBedCounter: ; $ccd4
-; $ccd4 seems to be used for multiple purposes.
-; One of them is as a counter for how many frames you've pushed against the bed in Nayru's
-; house. Once it reaches 90, Link jumps in.
-; Also used for shooting gallery?
-	.db
-wShootingGalleryHitTargets: ; $ccd4
-; In the shooting gallery, bits 0-3 are set depending on what the first target hit was?
-; Bits 4-7 are also set in the same way for the second target?
-	db
+
+.union
+	wLinkPushingAgainstBedCounter: ; $ccd4
+	; Counter for how many frames you've pushed against the bed in Nayru's house. Once
+	; it reaches 90, Link jumps in.
+		db
+.nextu
+	wShootingGalleryHitTargets: ; $ccd4
+	; In the shooting gallery, bits 0-3 are set depending on what the first target hit
+	; was? Bits 4-7 are also set in the same way for the second target?
+		db
+.nextu
+	wccd4: ; $ccd4
+	; Used in cutscene where maku sprout is attacked by moblins?
+		db
+.endu
 
 wShootingGalleryccd5: ; $ccd5
 ; Shooting gallery: ?
 	.db
 wShopHaveEnoughRupees: ; $ccd5
 ; Shop: Set to 0 if you have enough money for an item, 1 otherwise
+; Also used by target carts?
 	db
 
 wShootingGalleryBallStatus: ; $ccd6
 ; Shooting gallery: bit 7 set when the ball goes out-of-bounds
 	db
 
+
 wInformativeTextsShown: ; $ccd7
 ; Keeps track of whether certain informative texts have been shown.
 ; ie. "This block has cracks in it" when pushing against a cracked block.
 ; This is also used to prevent Link from jumping into the bed in Nayru's house more than
 ; once.
+;   Bit 0:
+;   Bit 1: Boss key door (and bed in impa's house)
+;   Bit 2: Keyblock
+;   Bit 3: Pot
+;   Bit 4: Cracked block
+;   Bit 5: Cracked wall, unlit torch
+;   Bit 6: Roller from Seasons
 	db
 
 wccd8: ; $ccd8
 ; If nonzero, link can't use his sword. Relates to dimitri?
+; Bit 5 set while latched by a gel or ages d1 miniboss
 	db
 
-wccd9: ; $ccd9
+wScentSeedActive: ; $ccd9/$ccf0
 ; Nonzero while scent seed is active?
 	db
 
-wIsSeedShooterInUse: ; $ccda
-; Set when there is a seed shooter seed on-screen
+wIsSeedShooterInUse: ; $ccda/$ccf1
+; Set when there is a seed shooter (or slingshot) seed on-screen
 	db
 
 wIsLinkBeingShocked: ; $ccdb
@@ -2007,11 +2256,13 @@ wIsLinkBeingShocked: ; $ccdb
 wLinkShockCounter: ; $ccdc
 	db
 
+.ifdef ROM_AGES
 wSwitchHookState: ; $ccdd
 ; Used when swapping with the switch hook
 	db
+.endif
 
-wccde: ; $ccde
+wDiggingUpEnemiesForbidden: ; $ccde/$ccf4
 	db
 
 ; Indices for w2ChangedTileQueue
@@ -2021,6 +2272,8 @@ wChangedTileQueueTail: ; $cce0
 	db
 
 wcce1: ; $cce1
+; This is used as a marker; all memory from "wDisabledObjects" to here is cleared in one
+; spot (not including wcce1).
 	db
 wcce2: ; $cce2
 	db
@@ -2040,7 +2293,7 @@ wLinkPathIndex: ; $cce6
 
 wFollowingLinkObjectType: ; $cce7/$ccfd
 	db
-wFollowingLinkObject: ; $cce8
+wFollowingLinkObject: ; $cce8/$ccfe
 	db
 
 wcce9: ; $cce9
@@ -2202,7 +2455,8 @@ wLoadedAreaAnimation: ; $cd2b
 wLastToggleBlocksState: ; $cd2c
 ; Corresponds to wToggleBlocksState. This is used to detect changes to it.
 	db
-wcd2d: ; $cd2d
+wDeleteEnergyBeads: ; $cd2d
+; When nonzero, energy beads (part ID $53) delete themselves? Used when getting essence.
 	db
 
 ; $cd2e-$cd2f unused?
@@ -2246,58 +2500,81 @@ wTmpVramBuffer: ; $cd40
 ; Used temporarily for vram transfers, dma, etc.
 	dsb $40
 
-wStaticObjects: ; $cd80
-; Note: this is $40 bytes, but Seasons will actually read $80 bytes in the
-; "findFreeStaticObjectSlot" function?
-	dsb $40
 
-wEnemiesKilledList: ; $cdc0
+; Size of this differs between games.
+.ifdef ROM_AGES
+wStaticObjects: ; $cd80
+	dsb $40
+.else
+wStaticObjects: ; $cd80
+	dsb $80
+.endif
+
+.ende
+
+; Data here occupies different spots in ages and seasons.
+; TODO: organize this better?
+
+	.enum $cdc0 export
+
+wEnemiesKilledList: ; $cdc0/$cc1f
 ; This remembers the enemies that have been killed in the last 8 visited rooms.
 ; 8 groups of 2 bytes:
 ;   b0: room index
 ;   b1: bitset of enemies killed (copied to wKilledEnemiesBitset when screen is loaded)
 	dsb $10
 
-wEnemiesKilledListTail: ; $cdd0
+wEnemiesKilledListTail: ; $cdd0/$cc2f
 ; This is the first available unused position in wEnemiesKilledList.
 	db
 
-wNumEnemies: ; $cdd1
+wNumEnemies: ; $cdd1/$cc30
 ; Number of enemies on the screen. When this reaches 0, certain events trigger. Not all
 ; enemies count for this.
 	db
 
-wToggleBlocksState: ; $cdd2
-; State of the blocks that are toggled by the orbs
+wToggleBlocksState: ; $cdd2/$cc31
+; State of the blocks that are toggled by the orbs.
+; Persists between rooms within a dungeon.
 	db
 
-wSwitchState: ; $cdd3
+wSwitchState: ; $cdd3/$cc32
 ; Each bit keeps track of whether a certain switch has been hit.
-; Persists between rooms?
+; Persists between rooms within a dungeon.
 	db
 
-wcdd4: ; $cdd4
+wSpinnerState: ; $cdd4/$cc33
+; Used by INTERACID_SPINNER.
+; Each bit holds the state of one spinner (0 for blue, 1 for red).
+; Persists between rooms within a dungeon.
 	db
 
-wLinkDeathTrigger: ; $cdd5
+wLinkDeathTrigger: ; $cdd5/$cc34
 ; Write anything here to make link die
 	db
-wGameOverScreenTrigger: ; $cdd6
+wGameOverScreenTrigger: ; $cdd6/$cc35
 ; Write anything here to open the Game Over screen
 	db
 
-wcdd7: ; $cdd7
+wcdd7: ; $cdd7/$cc36
 	db
-wcdd8: ; $cdd8
-; Relates to Dimitri?
-; If set, this forces Dimitri to stop moving when thrown?
+wDimitriHitNpc: ; $cdd8/$cc37
+; Nonzero if Dimitri hits an npc while being thrown.
 	db
 wcdd9: ; $cdd9
 	db
 
-wIsMaplePresent: ; $cdda
+.ifdef ROM_SEASONS
+ws_cc39: ; TODO: figure out what this is
+	db
+.endif
+
+wIsMaplePresent: ; $cdda/$cc3a
 ; Nonzero while maple is on the screen.
 	db
+
+
+.ifdef ROM_AGES
 
 wcddb: ; $cddb
 ; Scratch variable for scripts?
@@ -2347,12 +2624,11 @@ wcde4: ; $cde4
 
 ; $cde5-$ceff unused?
 
+.endif ; ROM_AGES
 .ende
 
-.define wStaticObjects.size	$40
 
-
-.enum $ce00
+.enum $ce00 export
 
 wRoomCollisions: ; $ce00
 ; $10 bytes larger than it needs to be?
@@ -2371,20 +2647,31 @@ wTmpcec0: ; $cec0
 ; * Functions which apply an object's speed ($cec0-$cec3)
 ; * Unpacking secrets
 
-.enum $cec0
+.enum $cec0 export
 	wEnemyPlacement: instanceof EnemyPlacementStruct
 .ende
-.enum $cee0
+
+.enum $cee0 export
 	wShootingGalleryTileLayoutsToShow: ; $cee0
 	; This consists of the numbers 0-9. As the game progresses, a number is read from
 	; a random position in this buffer, then the buffer is decreased in size by one
 	; and the value that was just read is overwritten. In this way, each game in the
 	; shooting gallery will show each target layout exactly once.
+	;
+	; The goron dance also uses this in exactly the same way.
 		dsb 10
 .ende
 
+.enum $cee0 export
+	wWizzrobePositionReservations: ; $cee0
+	; Each 2 bytes are the position and object index of a wizzrobe. Keeps track of
+	; their positions so multiple red wizzrobes don't spawn on top of each other.
+	; A red could still spawn on top of a green, though.
+		dsb $10
+.ende
 
-.enum $cf00
+
+.enum $cf00 export
 
 wRoomLayout: ; $cf00
 ; $10 bytes larger than it needs to be; the row below the last row is reserved and filled
@@ -2394,8 +2681,6 @@ wRoomLayout: ; $cf00
 wRoomLayoutEnd: ; $cfc0
 	.db
 
-.ende
-
 ; $cfc0-$cfff are generally used as variables for scripts, with many uses.
 ; Aside from the enums below, here are some of their uses:
 ;
@@ -2404,6 +2689,8 @@ wRoomLayoutEnd: ; $cfc0
 ;    corresponding cutscene (which appears to be dependent on the room you're in).
 ; $cfc1:
 ;  * Used by door controllers
+; $cfd3:
+;  * Used by the villagers' ball; alternates between 1 and 2 depending who's holding it
 ; $cfd5-$cfd6:
 ;  * Position value used for some cutscenes?
 ; $cfc8-$cfdf:
@@ -2427,22 +2714,319 @@ wRoomLayoutEnd: ; $cfc0
 ;  * $cfd1: Bitset of discovered fairies?
 ;  * $cfd2: ?
 ;
-; Goron elder breaking free cutscene:
-;  * $cfdd: ?
-;  * $cfdf: Signal to stop the falling rock spawner
-;
 ; Goron who checks for the brother's emblem:
 ;  * $cfc0: Set to $01 if you've rejected his trade offer.
-;
-; Target carts:
-;  * $cfd4:    Index for configuration / behaviour of targets?
-;  * $cfd7/d8: Saves Link's A/B button items before starting
-;  * $cfd9:    Saves Link's scent seed count before starting
-;  * $cfda:    Saves wShooterSelectedSeeds before starting
 
-.enum $cfc0
-	wShootingGallery: instanceof ShootingGalleryStruct
+.union wTmpcfc0
+
+.union shootingGallery
+
+	gameStatus: ; $cfc0
+	; Set to 0 while game is running, 1 when it's finished
+		db
+	cfc1: ; $cfc1
+		dsb $15
+	isStrike: ; $cfd6
+	; Set if the current shot was a strike
+		db
+	savedBItem: ; $cfd7
+	; Saves Link's B button item
+		db
+	savedAItem: ; $cfd8
+	; Saves Link's A button item
+		db
+	cfd9: ; $cfd9
+		db
+	cfda: ; $cfda
+		db
+	cfdb: ; $cfdb
+		db
+	disableGoronNpcs: ; $cfdc
+	; Affects the goron npc? Set when doing the biggoron's sword version of the game?
+		db
+	useTileIndexData: ; $cfdd
+	; Used as a parameter for a function.
+		db
+	remainingRounds: ; $cfde
+	; The number of rounds remaining in the game.
+		db
+	targetLayoutIndex: ; $cfdf
+	; The index of the layout to use for the targets (value from 0-9)
+		db
+
+.nextu goronDance
+
+	filler1:
+		dsb $11
+	failureType: ; $cfd1
+	; $00: Too early
+	; $01: Too late
+	; $02: Wrong move
+		db
+	danceAnimation:
+	; Animation that all dancing gorons/subrosians should use.
+		db
+	linkJumping:
+		db
+	linkStartedDance:
+	; Nonzero if Link has entered his first input this round
+		db
+	frameCounter:
+	; Increments each frame, only whin "linkStartedDance" is nonzero.
+		dw
+	currentMove: ; $cfd7
+	; $ff to stop?
+		db
+	consecutiveBPressCounter: ; $cfd8
+		db
+	cfd9: ; $cfd9
+	; Set when failed a round?
+		db
+	roundIndex: ; $cfda
+	; Value from $00-$08 ($08 means we're done)
+		db
+	numFailedRounds: ; $cfdb
+		db
+	beat: ; $cfdc
+	; Current "beat" we're on ($00-$0f) in the current dancePattern
+		db
+	danceLevel: ; $cfdd
+	; 0: platinum
+	; 1: gold
+	; 2: silver
+	; 3: bronze
+		db
+	remainingRounds: ; $cfde
+	; Same address as wTmpcfc0.shootingGallery.remainingRounds
+		db
+	dancePattern: ; $cfdf
+	; Dance pattern (for this particular danceLevel). This is an index for a dance
+	; pattern.
+		db
+	dataEnd:
+		.db
+
+.nextu targetCarts
+
+	filler1: ; $cfc0
+		dsb $14
+	targetConfiguration: ; $cfd4
+		db
+	cfd5:
+		db
+	prizeIndex: ; $cfd6
+		db
+	savedBItem: ; $cfd7
+		db
+	savedAItem: ; $cfd8
+		db
+	savedNumScentSeeds: ; $cfd9
+		db
+	savedShooterSelectedSeeds: ; $cfda
+		db
+	beginGameTrigger: ; $cfdb
+	; Write nonzero here to begin the game
+		db
+	cfdc: ; $cfdc
+		db
+	crystalsHitInFirstRoom: ; $cfdd
+	; Bitset of crystals in the first room that were hit (so it's consistent when you
+	; re-enter the room).
+		db
+	numTargetsHit: ; $cfde
+		db
+	cfdf:
+	; Nonzero if entered the second room?
+		db
+
+.nextu bigBangGame
+
+	gameStatus:
+	; Set to 0 while game is running, 1 when it's finished
+		db
+	filler1:
+		dsb $15
+	prizeIndex: ; $cfd6
+		db
+	filler2:
+		dsb $6
+
+.nextu goronCutscenes
+
+	; Stuff here relates to various goron cutscenes, and technically most of these
+	; could be in separate unions of their own.
+
+	goronGuardMovedAside:
+	; Nonzero if the goron who checks for the brother's emblem has just moved aside?
+		db
+	filler1:
+		dsb $1c
+	elderVar_cfdd: ; $cfdd
+		db
+	cfde:
+		db
+	elder_stopFallingRockSpawner: ; $cfdf
+		db
+
+	dataEnd:
+		.db
+
+.nextu fairyHideAndSeek
+
+	cfc0:
+		dsb $10
+	active: ; $cfd0
+		db
+	foundFairiesBitset: ; $cfd1
+	; Bits 0-2 set if the corresponding fairies have been found.
+		db
+	cfd2:
+		db
+
+.nextu wildTokay
+
+	inPresent: ; $cfc0
+		db
+	filler1:
+		dsb $19
+	activeMeatObject: ; $cfda
+		dw
+	cfdc: ; $cfdc
+		db
+	cfdd: ; $cfdd
+		db
+	cfde: ; $cfde
+	; $00: still playing
+	; $01: won game
+	; $ff: failed game
+		db
+	cfdf: ; $cfdf
+		db
+
+.nextu genericCutscene
+
+	state: ; $cfc0
+		db
+	filler1:
+		dsb $0f
+	cfd0: ; $cfd0
+	; Acts as a synchronization thing, ie. between objects?
+		db
+	cfd1: ; $cfd1
+		db
+	filler2:
+		dsb 3
+	cfd5: ; $cfd5
+	; Used as a position value? Maybe a focus position for npcs in certain cutscenes?
+	; (see "objectWritePositionTocfd5")
+		dw
+	filler3:
+		dsb 7
+	cfde: ; $cfde
+		db
+	cfdf: ; $cfdf
+		db
+
+.nextu introCutscene
+
+	state: ; $cfc0
+		db
+	filler1:
+		dsb $10
+	cfd1: ; $cfd1
+		db
+
+.nextu bombUpgradeCutscene
+
+	state: ; $cfc0
+		db
+
+.nextu octogonBoss ; Persistent variables for octogon boss
+
+	filler: ; $cfc0
+		dsb $10
+	loadedExtraGfx:  ; $cfd0
+		db
+	var03: ; $cfd1
+		db
+	direction: ; $cfd2
+		db
+	health: ; $cfd3
+		db
+	y: ; $cfd4
+		db
+	x: ; $cfd5
+		db
+	var30: ; $cfd6
+		db
+	posNeedsFixing: ; $cfd7
+		db
+
+.nextu patchMinigame
+
+	filler: ; $cfc0
+		dsb $10
+	fixingSword: ; $cfd0
+	; 0: Restoring tuni nut
+	; 1: Restoring broken sword
+		db
+	swordLevel: ; $cfd1
+	; Sword level to give (0 for L3, 1 for L2)
+		db
+	patchDownstairs: ; $cfd2
+	; if $01, patch is in the downstairs room; $00, he's upstairs
+		db
+	wonMinigame: ; $cfd3
+		db
+	gameStarted: ; $cfd4
+		db
+	failedGame: ; $cfd5
+		db
+	screenFadedOut: ; $cfd6
+	; This is set to $01 when the screen goes fully white after the game ends.
+		db
+	itemNameText: ; $cfd7
+		db
+
+	; for $cfd8-$cfd9, see "fallDownHoleEvent" below. (also used by toilet hand)
+
+.nextu fallDownHoleEvent
+
+	filler: ; $cfc0
+		dsb $18
+	cfd8: ; $cfd8
+		dsb 8
+
+.nextu carpenterSearch
+
+	filler: ; $cfc0
+		dsb $10
+
+	; $10 bytes reserved
+	cfd0:
+	; State; 0 if haven't agreed to search;
+	;        1 if agreed;
+	;        further values are used to control the cutscene where the bridge is
+	;        built.
+		db
+	carpentersFound:
+	; Bits 2-4 set when the corresponding carpenters are found?
+		dw
+
+.nextu armosStatue
+	filler: ; $cfc0
+		dsb $10
+
+	; The initial positions of all killed armos with subid 1 are recorded here. (Maybe
+	; this is used in Seasons for the puzzle where you kill armos in order?)
+	killedArmosPositions:
+		dsb $10
+
+.endu
+.endu
+
 .ende
+
 
 ; ========================================================================================
 ; Bank 1: objects
@@ -2456,7 +3040,7 @@ wRoomLayoutEnd: ; $cfc0
 ; including link and his companions.
 ; ========================================================================================
 
-.ENUM $d000
+.ENUM $d000 export
 	w1Link:			instanceof SpecialObjectStruct
 	; This is used for:
 	; * Items from treasure chests
@@ -2464,43 +3048,47 @@ wRoomLayoutEnd: ; $cfc0
 	w1ReservedInteraction0:	instanceof InteractionStruct
 .ENDE
 
-.ENUM $d100
+.ENUM $d100 export
 	w1Companion:		instanceof SpecialObjectStruct
 	w1ReservedInteraction1:	instanceof InteractionStruct
 .ENDE
 
-.ENUM $d200
+.ENUM $d200 export
 	; Used for stuff Link holds?
 	w1ParentItem2:		instanceof ItemStruct
 .ENDE
-.ENUM $d300
+.ENUM $d300 export
 	; Used for projectiles like w1ParentItem4?
 	w1ParentItem3:		instanceof ItemStruct
 .ENDE
-.ENUM $d400
+.ENUM $d400 export
 	; Used for projectiles like w1ParentItem3?
 	w1ParentItem4:		instanceof ItemStruct
 .ENDE
-.ENUM $d500
+.ENUM $d500 export
 	; Used for flute, harp, shield?
 	w1ParentItem5:		instanceof ItemStruct
 .ENDE
-.ENUM $d600
+.ENUM $d600 export
 	w1WeaponItem:		instanceof ItemStruct
 .ENDE
 
-.ENUM $dc00
-	; The item that Link is holding / throwing?
+.ENUM $dc00 export
+	; The item that Link is holding / throwing. Even if Link is holding some other
+	; object like an enemy or Dimitri, this object still exists as ITEMID_BRACELET,
+	; or at least it does while the object is being thrown. This invisible object will
+	; copy its position to the actual object being thrown each frame, and update that
+	; object's state accordingly (ie. ENEMYSTATE_GRABBED).
 	w1ReservedItemC:	instanceof ItemStruct
 .ENDE
 
-.ENUM $de00
+.ENUM $de00 export
 	; Doesn't have collisions? (comes after LAST_STANDARD_ITEM_INDEX)
 	; Used to store positions for switch hook (ITEMID_SWITCH_HOOK_HELPER).
 	w1ReservedItemE:	instanceof ItemStruct
 .ENDE
 
-.ENUM $df00
+.ENUM $df00 export
 	; Used for puffs at Link's feet while using pegasus seeds
 	w1ReservedItemF:	instanceof ItemStruct
 .ENDE
@@ -2548,7 +3136,7 @@ wRoomLayoutEnd: ; $cfc0
 .RAMSECTION "RAM 2" BANK 2 SLOT 3
 
 ; $d000 used as part of the routine for redrawing the collapsed d2 cave in the present
-w2Filler1:			dsb $0800
+w2TmpGfxBuffer:			dsb $0800
 
 ; This is a list of values for scrollX or scrollY registers to make the screen turn all
 ; wavy (ie. in underwater areas).
@@ -2556,11 +3144,16 @@ w2WaveScrollValues:		dsb $80	; $d800/$d800
 
 w2Filler7:			dsb $80
 
-; Tree refill data also used for child and an event in room $2f7
-w2SeedTreeRefillData:		dsb NUM_SEED_TREES*8 ; $d900/3:dfc0
-
 .ifdef ROM_SEASONS
-w2Filler9:			dsb $40
+
+w2Filler9:			dsb $80
+
+.else; ROM_AGES
+
+; Tree refill data also used for child and an event in room $2f7.
+; Located elsewhere in seasons.
+wxSeedTreeRefillData:		dsb NUM_SEED_TREES*8 ; 2:d900/3:dfc0
+
 .endif
 
 ; Bitset of positions where objects (mostly npcs) are residing. When one of these bits is
@@ -2616,6 +3209,7 @@ w2FadingSprPalettes:	dsb $40		; $dfc0
 w3TileMappingData:	dsb $800	; $d000
 
 ; Room tiles in a format which can be written straight to vram. Each row is $20 bytes.
+; TODO: Rename this to "w3TileMap" or something
 w3VramTiles:		dsb $100	; $d800
 
 w3Filler1:		dsb $200
@@ -2635,7 +3229,12 @@ w3TileMappingIndices:	dsb $200	; $dc00
 
 w3Filler2:		dsb $100
 
-w3RoomLayoutBuffer:	dsb $100	; $df00
+w3RoomLayoutBuffer:	dsb $c0	; $df00
+
+.ifdef ROM_SEASONS
+; Located elsewhere in ages
+wxSeedTreeRefillData:		dsb NUM_SEED_TREES*8 ; 2:d900/3:dfc0
+.endif
 
 .ENDS
 
@@ -2645,11 +3244,11 @@ w3RoomLayoutBuffer:	dsb $100	; $df00
 
 .RAMSECTION "Ram 4" BANK 4 SLOT 3
 
-; When transitioning between screens, $d000-$d0ff are initialized with numbers $00-$ff,
-; and their positions are randomized. This is used to help place enemies on the screen.
-w4RandomBuffer:			.db		; $d000-$d0ff
-
-w4TileMap:			dsb $240	; $d000-$d23f
+.union
+	w4RandomBuffer:		dsb $100	; $d000-$d0ff
+.nextu
+	w4TileMap:		dsb $240	; $d000-$d23f
+.endu
 
 w4StatusBarTileMap:		dsb $40		; $d240
 w4PaletteData:			dsb $40		; $d280
@@ -2676,7 +3275,9 @@ w4Filler8:			dsb $20
 
 w4SavedVramTiles:		dsb $180	; $d800
 
-w4Filler1:			dsb $280
+w4Filler1:			dsb $0d		; $d980
+w4RingFortuneStuff:		dsb $16*3	; $d98d: $16 bytes per file?
+w4Filler2:			dsb $231
 w4GfxBuf1:			dsb $200	; $dc00
 w4GfxBuf2:			dsb $200	; $de00
 
@@ -2851,12 +3452,9 @@ w6SpecialObjectGfxBuffer:	dsb $100	; $d600
 ; When encoding data into a secret, bits are inserted one at a time to the end of this
 ; buffer, causing all existing data to be shifted forward by one bit.
 .define w7SecretGenerationBuffer	$d478
-.define :w7SecretGenerationBuffer	7
 
 ; $d5e0: Used at some point for unknown purpose
 
 .define w7d800			$d800 ; $300 bytes? Secret text gets written here?
-.define :w7d800			7 ; $300 bytes?
 
 ; Manually define the bank number for now
-.define :w7SecretText1	$07
