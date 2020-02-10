@@ -15,7 +15,7 @@ public class TestUtils {
    * @param inputString a string
    * @return a stream containing inputString
    */
-  public static InputStream $(String inputString) {
+  public static InputStream toStream(String inputString) {
     return new ByteArrayInputStream(inputString.getBytes());
   }
 
@@ -29,7 +29,7 @@ public class TestUtils {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(sourceLine), inputFile, lineNumber);
+    data.includeFile(toStream(sourceLine), inputFile, lineNumber);
 
     var scanner = data.startRead(opcodes);
     return scanner;

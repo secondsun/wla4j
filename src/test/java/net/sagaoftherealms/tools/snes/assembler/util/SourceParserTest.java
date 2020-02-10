@@ -2,8 +2,8 @@ package net.sagaoftherealms.tools.snes.assembler.util;
 
 import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.BANK;
 import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.NAME;
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.asParser;
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.toStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.Gson;
@@ -659,7 +659,7 @@ public class SourceParserTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(enumSource), inputFile, lineNumber);
+    data.includeFile(toStream(enumSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -677,7 +677,7 @@ public class SourceParserTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(enumSource), inputFile, lineNumber);
+    data.includeFile(toStream(enumSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -712,7 +712,7 @@ public class SourceParserTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(enumSource), inputFile, lineNumber);
+    data.includeFile(toStream(enumSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -743,7 +743,7 @@ public class SourceParserTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(sectionSource), inputFile, lineNumber);
+    data.includeFile(toStream(sectionSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -766,7 +766,7 @@ public class SourceParserTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(sectionSource), inputFile, lineNumber);
+    data.includeFile(toStream(sectionSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -1234,7 +1234,7 @@ public class SourceParserTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(macroSource), inputFile, lineNumber);
+    data.includeFile(toStream(macroSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCodeZ80.opcodes());
 
@@ -1264,7 +1264,7 @@ public class SourceParserTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(macroSource), inputFile, lineNumber);
+    data.includeFile(toStream(macroSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCodeZ80.opcodes());
 
@@ -1296,7 +1296,7 @@ public class SourceParserTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(macroSource), inputFile, lineNumber);
+    data.includeFile(toStream(macroSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCodeZ80.opcodes());
 
@@ -1338,7 +1338,7 @@ public class SourceParserTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(expression), inputFile, lineNumber);
+    data.includeFile(toStream(expression), inputFile, lineNumber);
     var scanner = data.startRead(OpCodeZ80.opcodes());
 
     SourceParser parser = new SourceParser(scanner);
@@ -1377,7 +1377,7 @@ public class SourceParserTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(macroSource), inputFile, lineNumber);
+    data.includeFile(toStream(macroSource), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCodeZ80.opcodes());
 
@@ -1416,7 +1416,7 @@ public class SourceParserTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(program), inputFile, lineNumber);
+    data.includeFile(toStream(program), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCodeZ80.opcodes());
     SourceParser parser = new SourceParser(scanner);
@@ -1456,7 +1456,7 @@ public class SourceParserTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(program), inputFile, lineNumber);
+    data.includeFile(toStream(program), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCodeZ80.opcodes());
     SourceParser parser = new SourceParser(scanner);

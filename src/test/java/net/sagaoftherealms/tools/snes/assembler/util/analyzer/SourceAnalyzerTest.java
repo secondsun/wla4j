@@ -1,6 +1,6 @@
-package net.sagaoftherealms.tools.snes.assembler.util;
+package net.sagaoftherealms.tools.snes.assembler.util.analyzer;
 
-import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.$;
+import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.toStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -10,10 +10,8 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled("Implement this after wla-language-server is done.")
 public class SourceAnalyzerTest {
 
   @Test
@@ -89,7 +87,7 @@ public class SourceAnalyzerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(source), inputFile, lineNumber);
+    data.includeFile(toStream(source), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 

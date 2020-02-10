@@ -3,6 +3,7 @@ open module wla_parser {
   requires java.json;
 
   exports net.sagaoftherealms.tools.snes.assembler.main;
+  exports net.sagaoftherealms.tools.snes.assembler.analyzer;
   exports net.sagaoftherealms.tools.snes.assembler.pass.parse.visitor;
   exports net.sagaoftherealms.tools.snes.assembler.definition.directives;
   exports net.sagaoftherealms.tools.snes.assembler.definition.opcodes;

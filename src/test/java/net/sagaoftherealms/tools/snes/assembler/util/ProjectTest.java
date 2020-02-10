@@ -49,7 +49,6 @@ public class ProjectTest {
 
     var response = agesProject.getParseTree(includedFile);
 
-
     // Thread.sleep(10000);
 
     assertNotNull(response);

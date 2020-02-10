@@ -71,7 +71,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(sourceLine), inputFile, lineNumber);
+    data.includeFile(toStream(sourceLine), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -106,7 +106,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(sourceLine), inputFile, lineNumber);
+    data.includeFile(toStream(sourceLine), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -123,7 +123,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(line), inputFile, lineNumber);
+    data.includeFile(toStream(line), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -139,7 +139,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($("42 *"), inputFile, lineNumber);
+    data.includeFile(toStream("42 *"), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
     scanner.getNextToken(); // Skip 42
@@ -156,7 +156,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($("\"This \nshould\n crash"), inputFile, lineNumber);
+    data.includeFile(toStream("\"This \nshould\n crash"), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -182,7 +182,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(sourceLine), inputFile, lineNumber);
+    data.includeFile(toStream(sourceLine), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -203,7 +203,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($("ah"), inputFile, lineNumber);
+    data.includeFile(toStream("ah"), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -233,7 +233,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(sourceLine), inputFile, lineNumber);
+    data.includeFile(toStream(sourceLine), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -256,7 +256,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(sourceLine), inputFile, lineNumber);
+    data.includeFile(toStream(sourceLine), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -281,7 +281,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(source), inputFile, lineNumber);
+    data.includeFile(toStream(source), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -312,7 +312,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(source), inputFile, lineNumber);
+    data.includeFile(toStream(source), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -342,7 +342,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(". Crash"), inputFile, lineNumber);
+    data.includeFile(toStream(". Crash"), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -374,7 +374,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(sourceLine), inputFile, lineNumber);
+    data.includeFile(toStream(sourceLine), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -399,7 +399,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(sourceLine), inputFile, lineNumber);
+    data.includeFile(toStream(sourceLine), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
     scanner.getNextToken();
@@ -416,7 +416,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(sourceLine), inputFile, lineNumber);
+    data.includeFile(toStream(sourceLine), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCode65816.opcodes());
 
@@ -434,7 +434,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(sourceLine), inputFile, lineNumber);
+    data.includeFile(toStream(sourceLine), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCodeSpc700.opcodes());
 
@@ -494,7 +494,7 @@ public class SourceScannerTest {
             directive -> {
               var sourceLine = generateDirectiveLine(directive.getPattern(), true);
               var data = new InputData();
-              data.includeFile($(sourceLine), "main.s", 0);
+              data.includeFile(toStream(sourceLine), "main.s", 0);
 
               var scanner = data.startRead(OpCodeSpc700.opcodes());
               System.out.println(sourceLine);
@@ -524,7 +524,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(sourceLine), inputFile, lineNumber);
+    data.includeFile(toStream(sourceLine), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCodeSpc700.opcodes());
 
@@ -546,7 +546,7 @@ public class SourceScannerTest {
     final int lineNumber = 0;
 
     var data = new InputData();
-    data.includeFile($(sourceLine), inputFile, lineNumber);
+    data.includeFile(toStream(sourceLine), inputFile, lineNumber);
 
     var scanner = data.startRead(OpCodeSpc700.opcodes());
     assertEquals(TokenTypes.LABEL, scanner.getNextToken().getType());

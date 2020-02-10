@@ -8,7 +8,6 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
-import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
 /** This class parses Enums, Structs, and RAMSECTIONS */
 public class EnumParser extends BodyDefinitionParser {
