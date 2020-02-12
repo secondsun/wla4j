@@ -55,8 +55,7 @@ public class SourceFileDataMap {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    lines
-        .stream()
+    lines.stream()
         .filter(it -> !it.getDataLine().isEmpty())
         .forEach(it -> builder.append(it.getDataLine()).append(System.lineSeparator()));
     return builder.toString();

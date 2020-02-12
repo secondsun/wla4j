@@ -130,7 +130,7 @@ public class DirectiveArgumentsValidatorTester {
     var scanner = toScanner(sourceLine);
     for (String type : typeArray) {
       var token = scanner.getNextToken();
-      System.out.println(token.toString());
+
       assertEquals(TokenTypes.valueOf(type.trim()), token.getType());
       assertTrue(validator.accept(token, parser).isPresent());
     }

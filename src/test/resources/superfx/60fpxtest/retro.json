@@ -1,11 +1,5 @@
 {
-  "main": "FXtest1.asm",
-  "main-arch": "65816",
-  "arch-roots": [
-    {
-      "path":"gsu",
-      "arch": "sfx",
-      "main": "fx.asm"
-    }
-  ]
+ 
+"main" : "FXtest1.asm",
+"main-arch": "65816"
 }

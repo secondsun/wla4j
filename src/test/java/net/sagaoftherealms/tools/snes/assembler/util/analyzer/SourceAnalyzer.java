@@ -112,6 +112,7 @@ public class SourceAnalyzer {
             case DWSIN -> {
             }
             case ROMBANKS -> {
+
             }
             case EMPTYFILL -> {
             }
@@ -168,8 +169,14 @@ public class SourceAnalyzer {
             case SLOT -> {
             }
             case ROMBANKSIZE -> {
+                BankSizeAnalyzer bsa = new BankSizeAnalyzer(this.context);
+                errors.addAll(bsa.checkDirective(node));
+
             }
             case BANKSIZE -> {
+                BankSizeAnalyzer bsa = new BankSizeAnalyzer(this.context);
+                errors.addAll(bsa.checkDirective(node));
+
             }
             case ORG -> {
             }

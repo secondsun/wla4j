@@ -48,8 +48,7 @@ public class DirectiveArgumentsNode extends Node {
     if (getChildren().isEmpty()) {
       return "";
     }
-    return getChildren()
-        .stream()
+    return getChildren().stream()
         .map(obj -> obj == null ? "" : obj.toString())
         .collect(Collectors.joining(", "));
   }

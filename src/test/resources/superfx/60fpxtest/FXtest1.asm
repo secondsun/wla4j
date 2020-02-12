@@ -157,7 +157,6 @@ Main:
 	stx $4305
 	lda #$01
 	sta $420B
-	
 	lda #$71			; second bank in Game Pak RAM
 	sta $4304
 	lda #$01

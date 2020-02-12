@@ -459,7 +459,7 @@ public class SourceScannerTest {
 
     var token = scanner.getNextToken();
     while (token != null) {
-      System.out.println(token);
+
       if (scanner.endOfInput()) {
         break;
       }
@@ -479,7 +479,7 @@ public class SourceScannerTest {
 
     var token = scanner.getNextToken();
     while (token != null) {
-      System.out.println(token);
+
       if (scanner.endOfInput()) {
         break;
       }
@@ -497,13 +497,10 @@ public class SourceScannerTest {
               data.includeFile(toStream(sourceLine), "main.s", 0);
 
               var scanner = data.startRead(OpCodeSpc700.opcodes());
-              System.out.println(sourceLine);
 
               while (!scanner.endOfInput()) {
-                System.out.print(scanner.getNextToken());
-                System.out.print(" ");
+                scanner.getNextToken();
               }
-              System.out.println(" ");
             });
   }
 

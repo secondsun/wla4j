@@ -62,19 +62,19 @@ public class MultiFileParser {
     }
     new HashSet<String>(parsedFiles.keySet())
         .stream()
-        .forEach(
-            key -> {
-              if (needsReparse(getNodes(key))) {
-                LOG.info(
-                    "MultiFileParser.parse needs reparse "
-                        + sourceDirectory
-                        + " "
-                        + key
-                        + " but is actually "
-                        + key.replace(sourceDirectory + File.separator, ""));
-                parseFile(sourceDirectory, key.replace(sourceDirectory + File.separator, ""));
-              }
-            });
+            .forEach(
+                key -> {
+                  if (needsReparse(getNodes(key))) {
+                    LOG.info(
+                        "MultiFileParser.parse needs reparse "
+                            + sourceDirectory
+                            + " "
+                            + key
+                            + " but is actually "
+                            + key.replace(sourceDirectory + File.separator, ""));
+                    parseFile(sourceDirectory, key.replace(sourceDirectory + File.separator, ""));
+                  }
+                });
   }
 
   private void parseFile(URI sourceDirectory, String rootSourceFile) {
@@ -113,8 +113,7 @@ public class MultiFileParser {
     }
 
     fileNodes =
-        fileNodes
-            .stream()
+        fileNodes.stream()
             .filter(fileNode -> fileNode != null)
             .filter(
                 fileNode ->

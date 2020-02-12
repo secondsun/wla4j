@@ -28,8 +28,7 @@ public class SourceScanner {
   public SourceScanner(SourceFileDataMap source, OpCode[] opcodes) {
     this.source = source;
     this.opCodes =
-        Arrays.asList(opcodes)
-            .stream()
+        Arrays.asList(opcodes).stream()
             .map(OpCode::getOp)
             .map(code -> code.split(" ")[0])
             .collect(Collectors.toList());

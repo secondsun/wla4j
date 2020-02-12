@@ -778,7 +778,6 @@ public class SourceParserTest {
     assertEquals("GSUcode", node.getName());
 
     Gson gson = new Gson();
-    System.out.println(gson.toJson(node));
 
     assertEquals(429, node.getBody().getChildren().size());
   }
@@ -1386,7 +1385,6 @@ public class SourceParserTest {
     var node = parser.nextNode();
 
     while (node != null) {
-      System.out.println(node);
       node = parser.nextNode();
     }
   }
@@ -1477,7 +1475,6 @@ public class SourceParserTest {
     int writeobjectbyteMacronodeSize = 0;
 
     for (var node : writeobjectwordMacro) {
-      System.out.println(node.getSourceToken());
       writeobjectbyteMacronodeSize++;
     }
 
