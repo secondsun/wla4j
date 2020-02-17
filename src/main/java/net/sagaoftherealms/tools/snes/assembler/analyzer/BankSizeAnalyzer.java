@@ -1,4 +1,4 @@
-package net.sagaoftherealms.tools.snes.assembler.util.analyzer;
+package net.sagaoftherealms.tools.snes.assembler.analyzer;
 
 import java.util.ArrayList;
 import java.util.List;

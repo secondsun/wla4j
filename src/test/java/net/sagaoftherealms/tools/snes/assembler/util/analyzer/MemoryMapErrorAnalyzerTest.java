@@ -1,9 +1,8 @@
 package net.sagaoftherealms.tools.snes.assembler.util.analyzer;
 
 import net.sagaoftherealms.tools.snes.assembler.analyzer.Context;
-import net.sagaoftherealms.tools.snes.assembler.analyzer.MemoryMapAnalyzer;
+import net.sagaoftherealms.tools.snes.assembler.analyzer.SourceAnalyzer;
 import net.sagaoftherealms.tools.snes.assembler.main.Project;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.ErrorNode;
 import net.sagaoftherealms.tools.snes.assembler.util.TestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

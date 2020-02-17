@@ -1,13 +1,10 @@
-package net.sagaoftherealms.tools.snes.assembler.util.analyzer;
+package net.sagaoftherealms.tools.snes.assembler.analyzer;
 
-import net.sagaoftherealms.tools.snes.assembler.analyzer.Context;
-import net.sagaoftherealms.tools.snes.assembler.analyzer.MemoryMapAnalyzer;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ErrorNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class SourceAnalyzer {
@@ -112,7 +109,8 @@ public class SourceAnalyzer {
             case DWSIN -> {
             }
             case ROMBANKS -> {
-
+                RomBanksAnalyzer bsa = new RomBanksAnalyzer(this.context);
+                errors.addAll(bsa.checkDirective(node));
             }
             case EMPTYFILL -> {
             }
@@ -168,15 +166,9 @@ public class SourceAnalyzer {
             }
             case SLOT -> {
             }
-            case ROMBANKSIZE -> {
+            case ROMBANKSIZE, BANKSIZE -> {
                 BankSizeAnalyzer bsa = new BankSizeAnalyzer(this.context);
                 errors.addAll(bsa.checkDirective(node));
-
-            }
-            case BANKSIZE -> {
-                BankSizeAnalyzer bsa = new BankSizeAnalyzer(this.context);
-                errors.addAll(bsa.checkDirective(node));
-
             }
             case ORG -> {
             }
