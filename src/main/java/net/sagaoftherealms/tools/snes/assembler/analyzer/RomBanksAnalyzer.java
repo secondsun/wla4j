@@ -21,6 +21,16 @@ public class RomBanksAnalyzer extends AbstractAnalyzer {
         if (context.getBankSize() <= 0) {
             errors.add(new ErrorNode(node.getSourceToken(), new ParseException("Banksize must be defined", node.getSourceToken())));
         }
+
+        if (context.getRomBanksDefined()) {
+            errors.add(new ErrorNode(node.getSourceToken(), new ParseException("Banksize must be defined only once", node.getSourceToken())));
+        }
+
+        if (errors.isEmpty()) {
+            context.setRomBanks(node.getArguments().getInt(0));
+            context.setRomBanksDefined(true);
+            context.createRomBanks();
+        }
         return errors;
     }
 

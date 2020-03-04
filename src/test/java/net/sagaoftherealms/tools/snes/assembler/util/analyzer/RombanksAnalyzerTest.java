@@ -31,6 +31,27 @@ public class RombanksAnalyzerTest {
 
 
     @Test
+    @DisplayName("Rombanks may not change : This is a break from how wla-dx handles it")
+    public void testBanksizeMayNotChange() {
+        var source = """
+                .ROMBANKSIZE $8000              ; Every ROM bank is 32 KBytes in size
+                .ROMBANKS 8
+                .ROMBANKS 12
+                """;
+
+        var parser = TestUtils.asParser(source);
+        var nodes = List.of(parser.nextNode(), parser.nextNode(), parser.nextNode());
+
+        Context ctx = new Context();
+
+        SourceAnalyzer checker = new SourceAnalyzer(ctx);
+        var errors = checker.analyzeProject("main.s", nodes);
+        assertEquals(1, errors.size());
+    }
+
+
+
+    @Test
     @DisplayName("Golden Scenario")
     public void goldenScenario() {
         var source = """
@@ -45,7 +66,7 @@ public class RombanksAnalyzerTest {
 
 
         var parser = TestUtils.asParser(source);
-        var nodes = List.of(parser.nextNode(), parser.nextNode());
+        var nodes = List.of(parser.nextNode(), parser.nextNode(), parser.nextNode());
 
         SourceAnalyzer checker = new SourceAnalyzer(new Context());
         var errors = checker.analyzeProject("main.s", nodes);
