@@ -9,11 +9,10 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.*;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefinitionNode;
 
-public class MemoryMapAnalyzer {
-  private final Context context;
+public class MemoryMapAnalyzer extends AbstractAnalyzer {
 
   public MemoryMapAnalyzer(Context context) {
-    this.context = context;
+    super(context);
   }
 
   private static Stream<DirectiveNode> hasMemoryMapNode(DirectiveNode node) {
@@ -36,6 +35,7 @@ public class MemoryMapAnalyzer {
    * @param node a memoryMap node to check for errors and add to the context
    * @return a list of errors, never null
    */
+  @Override
   public List<? extends ErrorNode> checkDirective(DirectiveNode node) {
 
     if (node.getDirectiveType().equals(AllDirectives.MEMORYMAP)) {

@@ -14,14 +14,14 @@ public class RombanksAnalyzerTest {
 
 
     @Test
-    @DisplayName("banksized must be defined")
+    @DisplayName("banksize must be defined")
     public void testBanksizeRequired() {
         var source = """
                 .ROMBANKS 8
                 """;
 
         var parser = TestUtils.asParser(source);
-        var nodes = List.of(parser.nextNode(), parser.nextNode());
+        var nodes = List.of(parser.nextNode());
 
         SourceAnalyzer checker = new SourceAnalyzer(new Context());
         var errors = checker.analyzeProject("main.s", nodes);
