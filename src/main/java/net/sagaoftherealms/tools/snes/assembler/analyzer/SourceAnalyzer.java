@@ -299,6 +299,8 @@ public class SourceAnalyzer {
             case OUTNAME -> {
             }
             case SNESHEADER -> {
+                SNESHeaderAnalyzer mapAnal = new SNESHeaderAnalyzer(this.context);
+                errors.addAll(mapAnal.checkDirective(node));
             }
             case ENDSNES -> {
             }

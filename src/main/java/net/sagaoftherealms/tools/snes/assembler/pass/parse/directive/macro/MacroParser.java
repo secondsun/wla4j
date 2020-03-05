@@ -1,8 +1,8 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro;
 
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.StringExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;

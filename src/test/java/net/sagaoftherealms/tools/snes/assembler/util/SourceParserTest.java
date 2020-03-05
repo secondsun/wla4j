@@ -4,7 +4,11 @@ import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.sect
 import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.NAME;
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.asParser;
 import static net.sagaoftherealms.tools.snes.assembler.util.TestUtils.toStream;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.gson.Gson;
 import java.io.BufferedReader;
@@ -18,7 +22,15 @@ import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirecti
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCode65816;
 import net.sagaoftherealms.tools.snes.assembler.definition.opcodes.OpCodeZ80;
 import net.sagaoftherealms.tools.snes.assembler.main.InputData;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.*;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.ErrorNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.LabelDefinitionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.MacroCallNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.MultiFileParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.OpcodeArgumentNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.OpcodeNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.bank.BankNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveNode;
@@ -32,10 +44,15 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.Macro
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode.SectionStatus;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.*;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.IdentifierNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExpressionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.Sizes;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.visitor.MacroDefinitionVisitor;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.converter.ConvertWith;
@@ -70,14 +87,14 @@ public class SourceParserTest {
 
   @ParameterizedTest
   @CsvSource({
-    "'- rti \n jmp -'", // Label, opcode newline opcode
-    "'--- rti \n jmp ---'", // Label, opcode newline opcode
-    "'+ rti \n jmp +'", // Label, opcode newline opcode
-    "'++ rti \n jmp ++'", // Label, opcode newline opcode
-    "'+++ rti \n jmp +++'", // Label, opcode newline opcode
-    "'-- rti \n jmp --'", // Label, opcode newline opcode
-    "'__ rti \n jmp _f'", // Label, opcode newline opcode
-    "'__ rti \n jmp _b'" // Label, opcode newline opcode
+      "'- rti \n jmp -'", // Label, opcode newline opcode
+      "'--- rti \n jmp ---'", // Label, opcode newline opcode
+      "'+ rti \n jmp +'", // Label, opcode newline opcode
+      "'++ rti \n jmp ++'", // Label, opcode newline opcode
+      "'+++ rti \n jmp +++'", // Label, opcode newline opcode
+      "'-- rti \n jmp --'", // Label, opcode newline opcode
+      "'__ rti \n jmp _f'", // Label, opcode newline opcode
+      "'__ rti \n jmp _b'" // Label, opcode newline opcode
   })
   public void testAnonymousLabelNode(String sourceLine) {
     var parser = asParser(sourceLine);
@@ -114,8 +131,6 @@ public class SourceParserTest {
   /**
    * When sourceparser is run on a file, it may encounter macros defined in other files that it
    * hasn't found yet. This test tests that those trees get reparsed.
-   *
-   * @throws IOException
    */
   @Test
   public void testMultiFileParserGeneratesCorrectParseTreeWithMacros()
@@ -134,8 +149,6 @@ public class SourceParserTest {
   /**
    * When sourceparser is run on a file, it may encounter macros defined in other files that it
    * hasn't found yet. This test tests that those trees get reparsed.
-   *
-   * @throws IOException
    */
   @Test
   public void testMultiFileParserGeneratesCorrectParseTreeWithMacros2()
@@ -330,21 +343,21 @@ public class SourceParserTest {
 
   @ParameterizedTest
   @CsvSource({
-    ".IF 5 > 10",
-    ".IFDEF LABEL",
-    ".IFDEFM \\5",
-    ".IFEQ 4 4", // Two constant expressions
-    ".IFEQ 4 * 4 BERRIES", // A math experssion and a label
-    ".IFEXISTS \"FileName String\"",
-    ".IFGR 4 * 4 BERRIES",
-    ".IFGR 4 4 ",
-    ".IFGREQ 4 * 4 BERRIES",
-    ".IFGREQ 4 BERRIES",
-    ".IFLE BERRIES 45",
-    ".IFLEEQ BERRIES @JAMMING",
-    ".IFNDEF LABEL",
-    ".IFNDEFM \\5",
-    ".IFNEQ BERRIES :JAMMING",
+      ".IF 5 > 10",
+      ".IFDEF LABEL",
+      ".IFDEFM \\5",
+      ".IFEQ 4 4", // Two constant expressions
+      ".IFEQ 4 * 4 BERRIES", // A math experssion and a label
+      ".IFEXISTS \"FileName String\"",
+      ".IFGR 4 * 4 BERRIES",
+      ".IFGR 4 4 ",
+      ".IFGREQ 4 * 4 BERRIES",
+      ".IFGREQ 4 BERRIES",
+      ".IFLE BERRIES 45",
+      ".IFLEEQ BERRIES @JAMMING",
+      ".IFNDEF LABEL",
+      ".IFNDEFM \\5",
+      ".IFNEQ BERRIES :JAMMING",
   })
   public void parseIfs(String ifStatement) {
     var source =
@@ -385,7 +398,7 @@ public class SourceParserTest {
 
   @ParameterizedTest
   @CsvSource({
-    "+", "-", "++", "--", "++++", "----",
+      "+", "-", "++", "--", "++++", "----",
   })
   public void testAnonymousLabelsEvaluate(String line) {
     var parser = asParser(line);
@@ -488,26 +501,26 @@ public class SourceParserTest {
     assertEquals(
         "monster",
         ((DefinitionNode)
-                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
-                    .getThenBody()
-                    .getChildren()
-                    .get(0))
+            ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                .getThenBody()
+                .getChildren()
+                .get(0))
             .getLabel());
     assertEquals(
         "dragon",
         ((DefinitionNode)
-                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
-                    .getElseBody()
-                    .getChildren()
-                    .get(0))
+            ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                .getElseBody()
+                .getChildren()
+                .get(0))
             .getLabel());
     assertEquals(
         AllDirectives.IFDEF,
         ((DirectiveNode)
-                ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
-                    .getThenBody()
-                    .getChildren()
-                    .get(1))
+            ((IfBodyNode) ((DirectiveNode) (enumNode.getBody().getChildren().get(7))).getBody())
+                .getThenBody()
+                .getChildren()
+                .get(1))
             .getDirectiveType());
   }
 
@@ -555,25 +568,25 @@ public class SourceParserTest {
     assertEquals(
         "age",
         ((DefinitionNode)
-                ((DirectiveBodyNode)
-                        ((IfBodyNode)
-                                ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
-                                    .getBody())
-                            .getElseBody())
-                    .getChildren()
-                    .get(0))
+            ((DirectiveBodyNode)
+                ((IfBodyNode)
+                    ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
+                        .getBody())
+                    .getElseBody())
+                .getChildren()
+                .get(0))
             .getLabel());
     assertEquals(
         2,
         (int)
             ((DefinitionNode)
-                    ((DirectiveBodyNode)
-                            ((IfBodyNode)
-                                    ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
-                                        .getBody())
-                                .getThenBody())
-                        .getChildren()
-                        .get(0))
+                ((DirectiveBodyNode)
+                    ((IfBodyNode)
+                        ((DirectiveNode) (structNode.getBody().getChildren().get(0)))
+                            .getBody())
+                        .getThenBody())
+                    .getChildren()
+                    .get(0))
                 .getSize()
                 .evaluate());
   }
@@ -642,7 +655,9 @@ public class SourceParserTest {
     assertEquals("mon", ((DefinitionNode) enumBody.getChildren().get(8)).getStructName().get());
   }
 
-  /** Only if directives are allowed inside of a DirectiveBody */
+  /**
+   * Only if directives are allowed inside of a DirectiveBody
+   */
   @Test
   public void parseEnumBodyWithDirectiveThrowsParseException() {
     final String enumSource =
@@ -691,12 +706,12 @@ public class SourceParserTest {
    */
   @ParameterizedTest
   @CsvSource({
-    ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SIZE 100 ALIGN 4 FORCE RETURNORG APPENDTO \"appended\", FORCE, 100, 4, RETURNORG, appended",
-    ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" FREE, FREE, , , , ",
-    ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SIZE 84 ALIGN 100 SUPERFREE RETURNORG APPENDTO \"appendix\", SUPERFREE, 84, 100, RETURNORG, appendix",
-    ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SEMIFREE,SEMIFREE, , , , ",
-    ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SEMISUBFREE,SEMISUBFREE, , , , ",
-    ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" OVERWRITE,OVERWRITE, , , , "
+      ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SIZE 100 ALIGN 4 FORCE RETURNORG APPENDTO \"appended\", FORCE, 100, 4, RETURNORG, appended",
+      ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" FREE, FREE, , , , ",
+      ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SIZE 84 ALIGN 100 SUPERFREE RETURNORG APPENDTO \"appendix\", SUPERFREE, 84, 100, RETURNORG, appendix",
+      ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SEMIFREE,SEMIFREE, , , , ",
+      ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" SEMISUBFREE,SEMISUBFREE, , , , ",
+      ".SECTION \"EmptyVectors\" NAMESPACE \"bank0\" OVERWRITE,OVERWRITE, , , , "
   })
   public void testSectionBasic(
       String section,
@@ -1216,15 +1231,17 @@ public class SourceParserTest {
         + ".ENDS";
   }
 
-  /** macro_1 is a basic macro with no variables or lookups or anything. */
+  /**
+   * macro_1 is a basic macro with no variables or lookups or anything.
+   */
   @Test
   public void testDefineMacro1BasicMacro() throws IOException {
     final String macroSource =
         new BufferedReader(
-                new InputStreamReader(
-                    SourceParserTest.class
-                        .getClassLoader()
-                        .getResourceAsStream("parseMacro/define-macro-1.s")))
+            new InputStreamReader(
+                SourceParserTest.class
+                    .getClassLoader()
+                    .getResourceAsStream("parseMacro/define-macro-1.s")))
             .lines()
             .collect(Collectors.joining("\n"));
 
@@ -1247,15 +1264,17 @@ public class SourceParserTest {
     assertEquals(TokenTypes.LABEL, body.getChildren().get(1).getSourceToken().getType());
   }
 
-  /** macro_2 is a basic macro with two variables */
+  /**
+   * macro_2 is a basic macro with two variables
+   */
   @Test
   public void testDefineMacro2DeclaredVariables() throws IOException {
     final String macroSource =
         new BufferedReader(
-                new InputStreamReader(
-                    SourceParserTest.class
-                        .getClassLoader()
-                        .getResourceAsStream("parseMacro/define_macro_2.s")))
+            new InputStreamReader(
+                SourceParserTest.class
+                    .getClassLoader()
+                    .getResourceAsStream("parseMacro/define_macro_2.s")))
             .lines()
             .collect(Collectors.joining("\n"));
     final String outfile = "define_macro_2.out";
@@ -1278,16 +1297,18 @@ public class SourceParserTest {
     assertEquals("value3", arguments.getString(3));
   }
 
-  /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */
+  /**
+   * macro_3 is a basic macro with labels inside that refer to macro arguments by number
+   */
   @Test
   public void testDefineMacro3DeclaredVariables() throws IOException {
 
     final String macroSource =
         new BufferedReader(
-                new InputStreamReader(
-                    SourceParserTest.class
-                        .getClassLoader()
-                        .getResourceAsStream("parseMacro/define_macro_3.s")))
+            new InputStreamReader(
+                SourceParserTest.class
+                    .getClassLoader()
+                    .getResourceAsStream("parseMacro/define_macro_3.s")))
             .lines()
             .collect(Collectors.joining("\n"));
     final String outfile = "define_macro_3.out";
@@ -1315,21 +1336,21 @@ public class SourceParserTest {
 
   @ParameterizedTest
   @CsvSource({
-    "2*81, 162",
-    "2+1, 3",
-    "21-1, 20",
-    "20/2, 10",
-    "(20 + 2)/2, 11",
-    "20 + (2/2), 21",
-    "8 | 2, 10",
-    "7 & 4, 4",
-    "-5 + 5, 0",
-    "2<<1, 4",
-    "512 >> 8 != 1024 >> 8, 1 ",
-    "512 >> 8 != 2, 0 ",
-    "2>>1, 1",
-    "<$DEAD, 173",
-    ">$DEAD, 222"
+      "2*81, 162",
+      "2+1, 3",
+      "21-1, 20",
+      "20/2, 10",
+      "(20 + 2)/2, 11",
+      "20 + (2/2), 21",
+      "8 | 2, 10",
+      "7 & 4, 4",
+      "-5 + 5, 0",
+      "2<<1, 4",
+      "512 >> 8 != 1024 >> 8, 1 ",
+      "512 >> 8 != 2, 0 ",
+      "2>>1, 1",
+      "<$DEAD, 173",
+      ">$DEAD, 222"
   })
   public void testExpressions(String expression, int value) {
     final String outfile = "script_commands.out";
@@ -1354,21 +1375,23 @@ public class SourceParserTest {
     assertEquals(4, ((DirectiveNode) node).getArguments().getInt(1));
   }
 
-  /** macro_3 is a basic macro with labels inside that refer to macro arguments by number */
+  /**
+   * macro_3 is a basic macro with labels inside that refer to macro arguments by number
+   */
   @ParameterizedTest
   @CsvSource({
-    "parseLargeFiles/script_commands.s",
-    "parseLargeFiles/main.s",
-    "ages-disasm/include/musicMacros.s",
-    "ages-disasm/include/rominfo.s",
-    "ages-disasm/include/structs.s"
+      "parseLargeFiles/script_commands.s",
+      "parseLargeFiles/main.s",
+      "ages-disasm/include/musicMacros.s",
+      "ages-disasm/include/rominfo.s",
+      "ages-disasm/include/structs.s"
   })
   public void testLargeFile(String fileName) throws IOException {
 
     final String macroSource =
         new BufferedReader(
-                new InputStreamReader(
-                    SourceParserTest.class.getClassLoader().getResourceAsStream(fileName)))
+            new InputStreamReader(
+                SourceParserTest.class.getClassLoader().getResourceAsStream(fileName)))
             .lines()
             .collect(Collectors.joining("\n"));
     final String outfile = fileName + ".out";
@@ -1569,6 +1592,34 @@ public class SourceParserTest {
             .getChildren()
             .get(0)
             .getType());
+  }
+
+  @Test
+  @DisplayName("SNES Header Body parses")
+  public void parseSnesHeaderTest() {
+    var source = """
+        .SNESHEADER
+           ID "SNES"                     ; 1-4 letter string, just leave it as "SNES"
+
+           NAME "SNES Tile Demo       "  ; Program Title - can't be over 21 bytes,
+           ;    "123456789012345678901"  ; use spaces for unused bytes of the name.
+
+           SLOWROM
+           LOROM
+
+           CARTRIDGETYPE $00             ; $00 = ROM only, see WLA documentation for others
+           ROMSIZE $08                   ; $08 = 2 Mbits,  see WLA doc for more..
+           SRAMSIZE $00                  ; No SRAM         see WLA doc for more..
+           COUNTRY $01                   ; $01 = U.S.  $00 = Japan  $02 = Australia, Europe, Oceania and Asia  $03 = Sweden  $04 = Finland  $05 = Denmark  $06 = France  $07 = Holland  $08 = Spain  $09 = Germany, Austria and Switzerland  $0A = Italy  $0B = Hong Kong and China  $0C = Indonesia  $0D = Korea
+           LICENSEECODE $00              ; Just use $00
+           VERSION $00                   ; $00 = 1.00, $01 = 1.01, etc.
+         .ENDSNES
+        """;
+
+    var parser = asParser(source);
+    DirectiveNode  snesHeaderDireciveNode = (DirectiveNode) parser.nextNode();
+    assertTrue(snesHeaderDireciveNode.hasBody());
+
   }
 
   private boolean isNullOrEmpty(String string) {

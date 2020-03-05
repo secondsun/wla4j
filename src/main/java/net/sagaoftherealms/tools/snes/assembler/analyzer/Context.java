@@ -1,6 +1,5 @@
 package net.sagaoftherealms.tools.snes.assembler.analyzer;
 
-import java.nio.ByteBuffer;
 
 public class Context {
   private boolean memoryMapSet;
@@ -12,6 +11,8 @@ public class Context {
   private int maxAddress;
   private byte[] cartRomBank;
   private byte[] cartRomBankUsageTable;
+  private boolean snesDefined;
+  private String snesHeaderId;
 
   public boolean isMemoryMapSet() {
     return memoryMapSet;
@@ -45,13 +46,13 @@ public class Context {
     return bankSizeSet;
   }
 
-    public boolean getRomBanksDefined() {
-        return romBanksDefined;
-    }
+  public boolean getRomBanksDefined() {
+    return romBanksDefined;
+  }
 
-    public void setRomBanksDefined(boolean romBanksDefined) {
-        this.romBanksDefined = romBanksDefined;
-    }
+  public void setRomBanksDefined(boolean romBanksDefined) {
+    this.romBanksDefined = romBanksDefined;
+  }
 
   public int getRomBanks() {
     return romBanks;
@@ -61,7 +62,6 @@ public class Context {
     this.romBanks = romBanks;
   }
 
-
   public int getMaxAddress() {
     return maxAddress;
   }
@@ -69,7 +69,7 @@ public class Context {
   public void createRomBanks() {
     maxAddress = getBankSize() * getRomBanks();
     this.cartRomBank = new byte[maxAddress];
-    this.cartRomBankUsageTable  = new byte[maxAddress];
+    this.cartRomBankUsageTable = new byte[maxAddress];
   }
 
   public byte[] getCartRomBank() {
@@ -78,5 +78,21 @@ public class Context {
 
   public byte[] getCartRomBankUsageTable() {
     return cartRomBankUsageTable;
+  }
+
+  public boolean getSnesDefined() {
+    return snesDefined;
+  }
+
+  public void setSnesDefined(boolean snesDefined) {
+    this.snesDefined = snesDefined;
+  }
+
+  public void setSnesHeaderId(String snesHeaderId) {
+    this.snesHeaderId = snesHeaderId;
+  }
+
+  public String getSnesHeaderId() {
+    return snesHeaderId;
   }
 }

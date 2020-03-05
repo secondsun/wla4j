@@ -1,6 +1,9 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive;
 
-import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.*;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.COMMA;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
+import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.NodeTypes;
@@ -9,7 +12,18 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.bank.BankNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.bank.BankParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfDefForMacrosParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.*;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.BaseParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefineByteParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefineByteSeriesParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefineWordParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.DefineWordSeriesParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.EnumParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.RepeatParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.StructParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.UnionNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.UnionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.gbheader.GBHeaderParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.incbin.IncbinParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.MacroNode;
@@ -17,6 +31,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.Macro
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamSectionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.snesheader.SNESHeaderParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
@@ -79,7 +94,8 @@ public final class DirectiveUtils {
         return arguments;
       };
 
-  private DirectiveUtils() {}
+  private DirectiveUtils() {
+  }
 
   public static DirectiveParser getParser(AllDirectives type) {
     switch (type) {
@@ -87,6 +103,8 @@ public final class DirectiveUtils {
         return new MemoryMapParser();
       case ROMBANKMAP:
         return new RomBankMapParser();
+      case SNESHEADER:
+        return new SNESHeaderParser();
       case GBHEADER:
         return new GBHeaderParser();
       case INCBIN:
@@ -171,7 +189,6 @@ public final class DirectiveUtils {
    * Creates the appropriate class of directive node
    *
    * @param directiveName the name of the directive
-   * @param directiveToken
    * @return a directive node with all of its arguments and body
    */
   public static DirectiveNode createDirectiveNode(String directiveName, Token directiveToken) {
@@ -211,6 +228,7 @@ public final class DirectiveUtils {
         case ROMBANKMAP:
         case RAMSECTION:
         case GBHEADER:
+        case SNESHEADER:
         case IFDEFM:
         case IFNDEFM:
         case IF:

@@ -1,4 +1,4 @@
-package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition;
+package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.snesheader;
 
 import java.util.Optional;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
@@ -13,14 +13,14 @@ import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
  *
  * <p>Labels have a label (the name) and a size in bytes
  */
-public class DefinitionNode extends Node {
+public class SnesDefinitionNode extends Node {
 
   private final String label;
-  private StringExpressionNode structName;
+  private StringExpressionNode name;
   private NumericExpressionNode size;
 
-  public DefinitionNode(String label, Token token) {
-    super(NodeTypes.DIRECTIVE_BODY, token);
+  public SnesDefinitionNode(String label, Token token) {
+    super(NodeTypes.SNES_HEADER_DEFINITION, token);
     this.label = label;
   }
 
@@ -48,17 +48,17 @@ public class DefinitionNode extends Node {
     this.size = size;
   }
 
-  public Optional<String> getStructName() {
-    if (structName == null) {
+  public Optional<String> getName() {
+    if (name == null) {
       return Optional.empty();
     } else {
-      return Optional.ofNullable(structName.evaluate());
+      return Optional.ofNullable(name.evaluate());
     }
   }
 
-  public void setStructName(String structName, Token token) {
-    StringExpressionNode node = new StringExpressionNode(structName, token);
+  public void setName(String name, Token token) {
+    StringExpressionNode node = new StringExpressionNode(name, token);
     this.addChild(node);
-    this.structName = node;
+    this.name = node;
   }
 }

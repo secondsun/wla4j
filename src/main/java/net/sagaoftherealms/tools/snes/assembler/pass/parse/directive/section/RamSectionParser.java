@@ -1,15 +1,14 @@
 package net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section;
 
-import static net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments.*;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.EOL;
 import static net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes.LABEL;
 
 import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirectives;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.definition.BodyDefinitionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenTypes;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.TokenUtil;
 
@@ -25,7 +24,7 @@ public class RamSectionParser extends BodyDefinitionParser {
     var arguments = new RamsectionArgumentsNode(token);
 
     parser.consume(TokenTypes.STRING, TokenTypes.LABEL);
-    arguments.put(NAME, "" + token.getString(), token);
+    arguments.put(RamsectionArguments.NAME, "" + token.getString(), token);
 
     token = parser.getCurrentToken();
 
@@ -35,19 +34,19 @@ public class RamSectionParser extends BodyDefinitionParser {
 
       switch (argument) {
         case "BANK":
-          consumeInt(BANK, arguments, parser);
+          consumeInt(RamsectionArguments.BANK, arguments, parser);
           break;
         case "SLOT":
-          consumeInt(SLOT, arguments, parser);
+          consumeInt(RamsectionArguments.SLOT, arguments, parser);
           break;
         case "ALIGN":
-          consumeInt(ALIGN, arguments, parser);
+          consumeInt(RamsectionArguments.ALIGN, arguments, parser);
           break;
         case "APPENDTO":
           parser.consume(LABEL);
           token = parser.getCurrentToken();
-          if (arguments.get(APPEND_TO) == null) {
-            arguments.put(APPEND_TO, token.getString(), token); // TYPECHECK
+          if (arguments.get(RamsectionArguments.APPEND_TO) == null) {
+            arguments.put(RamsectionArguments.APPEND_TO, token.getString(), token); // TYPECHECK
             parser.consume(TokenTypes.LABEL);
           } else {
             throw new ParseException(

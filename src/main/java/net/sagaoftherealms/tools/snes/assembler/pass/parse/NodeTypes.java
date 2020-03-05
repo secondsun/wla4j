@@ -18,5 +18,7 @@ public enum NodeTypes {
   SLOT,
   MACRO_BODY,
   ERROR,
-  ENUM
+  SNES_HEADER_DEFINITION,
+  ENUM;
+
 }

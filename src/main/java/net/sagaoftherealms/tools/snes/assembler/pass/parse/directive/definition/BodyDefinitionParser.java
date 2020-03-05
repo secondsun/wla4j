@@ -7,8 +7,8 @@ import net.sagaoftherealms.tools.snes.assembler.definition.directives.AllDirecti
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.Node;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.ParseException;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.SourceParser;
-import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveBodyNode;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.DirectiveUtils;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.GenericDirectiveParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.control.IfBodyNode;
