@@ -2,6 +2,7 @@ package net.sagaoftherealms.tools.snes.assembler.analyzer;
 
 
 public class Context {
+
   private boolean memoryMapSet;
   private Integer slotSize;
   private int bankSize;
@@ -13,6 +14,14 @@ public class Context {
   private byte[] cartRomBankUsageTable;
   private boolean snesDefined;
   private String snesHeaderId;
+  private String snesHeaderName;
+  private SNESRomMode snesRomMode;
+  private Integer cartridgeType;
+  private Integer romSize;
+  private Integer sramSize;
+  private Integer country;
+  private Integer license;
+  private Integer version;
 
   public boolean isMemoryMapSet() {
     return memoryMapSet;
@@ -94,5 +103,69 @@ public class Context {
 
   public String getSnesHeaderId() {
     return snesHeaderId;
+  }
+
+  public void setSnesHeaderName(String snesHeaderName) {
+    this.snesHeaderName = snesHeaderName;
+  }
+
+  public String getSnesHeaderName() {
+    return snesHeaderName;
+  }
+
+  public void setSnesRomMode(SNESRomMode snesRomMode) {
+    this.snesRomMode = snesRomMode;
+  }
+
+  public SNESRomMode getSnesRomMode() {
+    return snesRomMode;
+  }
+
+  public void setCartridgeType(Integer cartridgeType) {
+    this.cartridgeType = cartridgeType;
+  }
+
+  public Integer getCartridgeType() {
+    return cartridgeType;
+  }
+
+  public void setRomSize(Integer romSize) {
+    this.romSize = romSize;
+  }
+
+  public Integer getRomSize() {
+    return romSize;
+  }
+
+  public void setSramSize(Integer sramSize) {
+    this.sramSize = sramSize;
+  }
+
+  public Integer getSramSize() {
+    return sramSize;
+  }
+
+  public void setCountry(Integer country) {
+    this.country = country;
+  }
+
+  public Integer getCountry() {
+    return country;
+  }
+
+  public void setLicense(Integer license) {
+    this.license = license;
+  }
+
+  public Integer getLicense() {
+    return license;
+  }
+
+  public void setVersion(Integer version) {
+    this.version = version;
+  }
+
+  public Integer getVersion() {
+    return version;
   }
 }

@@ -72,4 +72,91 @@ public class SnesHeaderAnalyzerTest {
     assertEquals(1, errors.size());
   }
 
+
+  @Test
+  @DisplayName("Name Must Be Between 1 And 21 Characters")
+  public void nameMustBeBetweenOneAnd21Characters() {
+    var source = """
+                .SNESHEADER
+                  ID "SNES"
+                  NAME "1234567890123456789012"
+                .ENDSNES
+                """;
+
+    var parser = TestUtils.asParser(source);
+    var nodes = List.of(parser.nextNode());
+
+    Context ctx = new Context();
+
+    SourceAnalyzer checker = new SourceAnalyzer(ctx);
+    var errors = checker.analyzeProject("main.s", nodes);
+    assertEquals(1, errors.size());
+  }
+
+  @Test
+  @DisplayName("Name  Must Be Between 1 And 21 Characters")
+  public void nameMustBeBetweenOneAnd21Characters2() {
+    var source = """
+                .SNESHEADER
+                  ID "SNES"
+                  NAME ""
+                .ENDSNES
+                """;
+
+    var parser = TestUtils.asParser(source);
+    var nodes = List.of(parser.nextNode());
+
+    Context ctx = new Context();
+
+    SourceAnalyzer checker = new SourceAnalyzer(ctx);
+    var errors = checker.analyzeProject("main.s", nodes);
+    assertEquals(1, errors.size());
+  }
+
+  @Test
+  @DisplayName("ROM Mode must be set only once")
+  public void setRomModeOnlyOnce() {
+    var source = """
+                .SNESHEADER
+                  ID "SNES"
+                  NAME "This Name"
+                  LOROM
+                  HIROM
+                .ENDSNES
+                """;
+
+    var parser = TestUtils.asParser(source);
+    var nodes = List.of(parser.nextNode());
+
+    Context ctx = new Context();
+
+    SourceAnalyzer checker = new SourceAnalyzer(ctx);
+    var errors = checker.analyzeProject("main.s", nodes);
+    assertEquals(1, errors.size());
+  }
+
+  @Test
+  @DisplayName("Cartridge Type must be set only once")
+  public void setCartridgeTypeOnlyOnce() {
+    var source = """
+                .SNESHEADER
+                  ID "SNES"
+                  NAME "This Name"
+                  HIROM
+                  CARTRIDGETYPE $FF
+                  CARTRIDGETYPE $01
+                .ENDSNES
+                """;
+
+    var parser = TestUtils.asParser(source);
+    var nodes = List.of(parser.nextNode());
+
+    Context ctx = new Context();
+
+    SourceAnalyzer checker = new SourceAnalyzer(ctx);
+    var errors = checker.analyzeProject("main.s", nodes);
+    assertEquals(1, errors.size());
+  }
+
+
 }
