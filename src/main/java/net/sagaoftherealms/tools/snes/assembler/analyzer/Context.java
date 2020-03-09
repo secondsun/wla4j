@@ -22,6 +22,7 @@ public class Context {
   private Integer country;
   private Integer license;
   private Integer version;
+  private boolean snesNativeVector;
 
   public boolean isMemoryMapSet() {
     return memoryMapSet;
@@ -31,28 +32,28 @@ public class Context {
     this.memoryMapSet = memoryMapSet;
   }
 
-  public void setSlotSize(Integer slotSize) {
-    this.slotSize = slotSize;
-  }
-
   public Integer getSlotSize() {
     return slotSize;
   }
 
-  public void setBankSize(int bankSize) {
-    this.bankSize = bankSize;
+  public void setSlotSize(Integer slotSize) {
+    this.slotSize = slotSize;
   }
 
   public int getBankSize() {
     return bankSize;
   }
 
-  public void setBankSizeSet(boolean bankSizeSet) {
-    this.bankSizeSet = bankSizeSet;
+  public void setBankSize(int bankSize) {
+    this.bankSize = bankSize;
   }
 
   public boolean getBankSizeSet() {
     return bankSizeSet;
+  }
+
+  public void setBankSizeSet(boolean bankSizeSet) {
+    this.bankSizeSet = bankSizeSet;
   }
 
   public boolean getRomBanksDefined() {
@@ -97,75 +98,83 @@ public class Context {
     this.snesDefined = snesDefined;
   }
 
-  public void setSnesHeaderId(String snesHeaderId) {
-    this.snesHeaderId = snesHeaderId;
-  }
-
   public String getSnesHeaderId() {
     return snesHeaderId;
   }
 
-  public void setSnesHeaderName(String snesHeaderName) {
-    this.snesHeaderName = snesHeaderName;
+  public void setSnesHeaderId(String snesHeaderId) {
+    this.snesHeaderId = snesHeaderId;
   }
 
   public String getSnesHeaderName() {
     return snesHeaderName;
   }
 
-  public void setSnesRomMode(SNESRomMode snesRomMode) {
-    this.snesRomMode = snesRomMode;
+  public void setSnesHeaderName(String snesHeaderName) {
+    this.snesHeaderName = snesHeaderName;
   }
 
   public SNESRomMode getSnesRomMode() {
     return snesRomMode;
   }
 
-  public void setCartridgeType(Integer cartridgeType) {
-    this.cartridgeType = cartridgeType;
+  public void setSnesRomMode(SNESRomMode snesRomMode) {
+    this.snesRomMode = snesRomMode;
   }
 
   public Integer getCartridgeType() {
     return cartridgeType;
   }
 
-  public void setRomSize(Integer romSize) {
-    this.romSize = romSize;
+  public void setCartridgeType(Integer cartridgeType) {
+    this.cartridgeType = cartridgeType;
   }
 
   public Integer getRomSize() {
     return romSize;
   }
 
-  public void setSramSize(Integer sramSize) {
-    this.sramSize = sramSize;
+  public void setRomSize(Integer romSize) {
+    this.romSize = romSize;
   }
 
   public Integer getSramSize() {
     return sramSize;
   }
 
-  public void setCountry(Integer country) {
-    this.country = country;
+  public void setSramSize(Integer sramSize) {
+    this.sramSize = sramSize;
   }
 
   public Integer getCountry() {
     return country;
   }
 
-  public void setLicense(Integer license) {
-    this.license = license;
+  public void setCountry(Integer country) {
+    this.country = country;
   }
 
   public Integer getLicense() {
     return license;
   }
 
-  public void setVersion(Integer version) {
-    this.version = version;
+  public void setLicense(Integer license) {
+    this.license = license;
   }
 
   public Integer getVersion() {
     return version;
+  }
+
+  public void setVersion(Integer version) {
+    this.version = version;
+  }
+
+  public boolean getSnesNativeVector() {
+    return snesNativeVector;
+  }
+
+  public void setSnesNativeVector(boolean snesNativeVector) {
+    this.snesNativeVector = snesNativeVector;
   }
 }

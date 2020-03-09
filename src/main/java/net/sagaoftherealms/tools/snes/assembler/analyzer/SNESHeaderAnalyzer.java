@@ -36,8 +36,8 @@ public class SNESHeaderAnalyzer extends AbstractAnalyzer {
       }
 
       SnesDefinitionNode snesNode = (SnesDefinitionNode) headerNode;
-      if (snesNode.getLabel().equalsIgnoreCase("ID")) {
-        String id = snesNode.getName().get();
+      if (snesNode.getKey().equalsIgnoreCase("ID")) {
+        String id = snesNode.getStringValue().get();
         if (id.length() < 1 || id.length() > 4) {
           errors.add(new ErrorNode(snesNode.getSourceToken(),
               new ParseException("ID must be between 1 and 4 characters",
@@ -47,10 +47,10 @@ public class SNESHeaderAnalyzer extends AbstractAnalyzer {
           errors.add(new ErrorNode(snesNode.getSourceToken(),
               new ParseException("ID already Defined", snesNode.getSourceToken())));
         } else {
-          context.setSnesHeaderId(snesNode.getName().get());
+          context.setSnesHeaderId(snesNode.getStringValue().get());
         }
-      } else if (snesNode.getLabel().equalsIgnoreCase("NAME")) {
-        String id = snesNode.getName().get();
+      } else if (snesNode.getKey().equalsIgnoreCase("NAME")) {
+        String id = snesNode.getStringValue().get();
         if (id.length() < 1 || id.length() > 21) {
           errors.add(new ErrorNode(snesNode.getSourceToken(),
               new ParseException("NAME must be between 1 and 21 characters",
@@ -60,11 +60,11 @@ public class SNESHeaderAnalyzer extends AbstractAnalyzer {
           errors.add(new ErrorNode(snesNode.getSourceToken(),
               new ParseException("NAME already Defined", snesNode.getSourceToken())));
         } else {
-          context.setSnesHeaderName(snesNode.getName().get());
+          context.setSnesHeaderName(snesNode.getStringValue().get());
         }
-      } else if (SNESRomMode.asCollection().contains(snesNode.getLabel().toUpperCase())) {
+      } else if (SNESRomMode.asCollection().contains(snesNode.getKey().toUpperCase())) {
         try {
-          var romMode = SNESRomMode.valueOf(snesNode.getLabel().toUpperCase());
+          var romMode = SNESRomMode.valueOf(snesNode.getKey().toUpperCase());
           if (context.getSnesRomMode() == null) {
             context.setSnesRomMode(romMode);
           } else {
@@ -75,8 +75,8 @@ public class SNESHeaderAnalyzer extends AbstractAnalyzer {
           errors.add(new ErrorNode(snesNode.getSourceToken(),
               new ParseException(ex.getMessage(), snesNode.getSourceToken())));
         }
-      } else if (snesNode.getLabel().equalsIgnoreCase("CARTRIDGETYPE")) {
-        Integer type = snesNode.getSize().evaluate();
+      } else if (snesNode.getKey().equalsIgnoreCase("CARTRIDGETYPE")) {
+        Integer type = snesNode.getNumericValue().evaluate();
         if (context.getCartridgeType() == null) {
           context.setCartridgeType(type);
         } else {
@@ -89,8 +89,8 @@ public class SNESHeaderAnalyzer extends AbstractAnalyzer {
               new ParseException("CARTRIDGETYPE must be 8-bit", snesNode.getSourceToken())));
         }
 
-      } else if (snesNode.getLabel().equalsIgnoreCase("ROMSIZE")) {
-        Integer romSize = snesNode.getSize().evaluate();
+      } else if (snesNode.getKey().equalsIgnoreCase("ROMSIZE")) {
+        Integer romSize = snesNode.getNumericValue().evaluate();
         if (context.getRomSize() == null) {
           context.setRomSize(romSize);
         } else {
@@ -102,8 +102,8 @@ public class SNESHeaderAnalyzer extends AbstractAnalyzer {
           errors.add(new ErrorNode(snesNode.getSourceToken(),
               new ParseException("ROMSIZE must be 8-bit", snesNode.getSourceToken())));
         }
-      } else if (snesNode.getLabel().equalsIgnoreCase("SRAMSIZE")) {
-        Integer sramSize = snesNode.getSize().evaluate();
+      } else if (snesNode.getKey().equalsIgnoreCase("SRAMSIZE")) {
+        Integer sramSize = snesNode.getNumericValue().evaluate();
         if (context.getSramSize() == null) {
           context.setSramSize(sramSize);
         } else {
@@ -115,8 +115,8 @@ public class SNESHeaderAnalyzer extends AbstractAnalyzer {
           errors.add(new ErrorNode(snesNode.getSourceToken(),
               new ParseException("SRAMSIZE must be 8-bit", snesNode.getSourceToken())));
         }
-      } else if (snesNode.getLabel().equalsIgnoreCase("COUNTRY")) {
-        Integer country = snesNode.getSize().evaluate();
+      } else if (snesNode.getKey().equalsIgnoreCase("COUNTRY")) {
+        Integer country = snesNode.getNumericValue().evaluate();
         if (context.getCountry() == null) {
           context.setCountry(country);
         } else {
@@ -128,8 +128,8 @@ public class SNESHeaderAnalyzer extends AbstractAnalyzer {
           errors.add(new ErrorNode(snesNode.getSourceToken(),
               new ParseException("COUNTRY must be 8-bit", snesNode.getSourceToken())));
         }
-      } else if (snesNode.getLabel().equalsIgnoreCase("LICENSEECODE")) {
-        Integer license = snesNode.getSize().evaluate();
+      } else if (snesNode.getKey().equalsIgnoreCase("LICENSEECODE")) {
+        Integer license = snesNode.getNumericValue().evaluate();
         if (context.getLicense() == null) {
           context.setLicense(license);
         } else {
@@ -141,8 +141,8 @@ public class SNESHeaderAnalyzer extends AbstractAnalyzer {
           errors.add(new ErrorNode(snesNode.getSourceToken(),
               new ParseException("LICENSEECODE must be 8-bit", snesNode.getSourceToken())));
         }
-      } else if (snesNode.getLabel().equalsIgnoreCase("VERSION")) {
-        Integer version = snesNode.getSize().evaluate();
+      } else if (snesNode.getKey().equalsIgnoreCase("VERSION")) {
+        Integer version = snesNode.getNumericValue().evaluate();
         if (context.getVersion() == null) {
           context.setVersion(version);
         } else {

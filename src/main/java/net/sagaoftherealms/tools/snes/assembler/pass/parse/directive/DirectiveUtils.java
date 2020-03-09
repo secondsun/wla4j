@@ -31,7 +31,9 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.Macro
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamSectionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.snesheader.SNESEmuVectorParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.snesheader.SNESHeaderParser;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.snesheader.SNESNativeVectorParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
@@ -103,6 +105,10 @@ public final class DirectiveUtils {
         return new MemoryMapParser();
       case ROMBANKMAP:
         return new RomBankMapParser();
+      case SNESNATIVEVECTOR:
+        return new SNESNativeVectorParser();
+      case SNESEMUVECTOR:
+        return new SNESEmuVectorParser();
       case SNESHEADER:
         return new SNESHeaderParser();
       case GBHEADER:
@@ -229,6 +235,8 @@ public final class DirectiveUtils {
         case RAMSECTION:
         case GBHEADER:
         case SNESHEADER:
+        case SNESNATIVEVECTOR:
+        case SNESEMUVECTOR:
         case IFDEFM:
         case IFNDEFM:
         case IF:

@@ -9,56 +9,50 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.NumericExp
 import net.sagaoftherealms.tools.snes.assembler.pass.scan.token.Token;
 
 /**
- * This class represents a label definition.
- *
- * <p>Labels have a label (the name) and a size in bytes
+ * This class represents a SNES header definition.  SNES header directives are snesheader,
+ * snesnativevector, and snesemuvector
  */
 public class SnesDefinitionNode extends Node {
 
-  private final String label;
-  private StringExpressionNode name;
-  private NumericExpressionNode size;
+  private final String key;
+  private StringExpressionNode stringValue;
+  private NumericExpressionNode numericValue;
 
-  public SnesDefinitionNode(String label, Token token) {
+  public SnesDefinitionNode(String key, Token token) {
     super(NodeTypes.SNES_HEADER_DEFINITION, token);
-    this.label = label;
+    this.key = key;
   }
 
-  public String getLabel() {
-    return label;
+  public String getKey() {
+    return key;
   }
 
-  public NumericExpressionNode getSize() {
-    return size;
+  public NumericExpressionNode getNumericValue() {
+    return numericValue;
   }
 
-  /**
-   * Sets the size in bytes
-   *
-   * @param size number of bytes
-   */
-  public void setSize(int size, Token token) {
+  public void setNumericValue(NumericExpressionNode numericValue) {
+    this.numericValue = numericValue;
+  }
+
+  public void setNumericValue(int size, Token token) {
     NumericExpressionNode node = new NumericExpressionNode(token);
     node.addChild(new ConstantNode(size, token));
     this.addChild(node);
-    this.size = node;
+    this.numericValue = node;
   }
 
-  public void setSize(NumericExpressionNode size) {
-    this.size = size;
-  }
-
-  public Optional<String> getName() {
-    if (name == null) {
+  public Optional<String> getStringValue() {
+    if (stringValue == null) {
       return Optional.empty();
     } else {
-      return Optional.ofNullable(name.evaluate());
+      return Optional.ofNullable(stringValue.evaluate());
     }
   }
 
-  public void setName(String name, Token token) {
+  public void setStringValue(String name, Token token) {
     StringExpressionNode node = new StringExpressionNode(name, token);
     this.addChild(node);
-    this.name = node;
+    this.stringValue = node;
   }
 }

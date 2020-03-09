@@ -44,6 +44,7 @@ import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.macro.Macro
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.RamsectionArgumentsNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.section.SectionNode.SectionStatus;
+import net.sagaoftherealms.tools.snes.assembler.pass.parse.directive.snesheader.SnesDefinitionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionNode;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.ExpressionParser;
 import net.sagaoftherealms.tools.snes.assembler.pass.parse.expression.IdentifierNode;
@@ -1617,8 +1618,66 @@ public class SourceParserTest {
         """;
 
     var parser = asParser(source);
-    DirectiveNode  snesHeaderDireciveNode = (DirectiveNode) parser.nextNode();
+    DirectiveNode snesHeaderDireciveNode = (DirectiveNode) parser.nextNode();
     assertTrue(snesHeaderDireciveNode.hasBody());
+
+  }
+
+  @Test
+  @DisplayName("SNES Native Vector Body parses")
+  public void parseSnesNativeVectorTest() {
+    var source = """
+         .SNESNATIVEVECTOR               ; Define Native Mode interrupt vector table
+           COP EmptyHandler
+           BRK EmptyHandler
+           ABORT EmptyHandler
+           NMI VBlank
+           IRQ EmptyHandler
+         .ENDNATIVEVECTOR
+        """;
+
+    var parser = asParser(source);
+    DirectiveNode snesHeaderDireciveNode = (DirectiveNode) parser.nextNode();
+    assertTrue(snesHeaderDireciveNode.hasBody());
+    SnesDefinitionNode defNode = (SnesDefinitionNode) snesHeaderDireciveNode.getBody().getChildren()
+        .get(0);
+    assertTrue(defNode.getNumericValue().getType().equals(NodeTypes.IDENTIFIER_EXPRESSION));
+    assertTrue(defNode.getKey().equalsIgnoreCase("COP"));
+
+    defNode = (SnesDefinitionNode) snesHeaderDireciveNode.getBody().getChildren().get(4);
+    assertTrue(defNode.getNumericValue().getType().equals(NodeTypes.IDENTIFIER_EXPRESSION));
+    assertTrue(
+        defNode.getNumericValue().getSourceToken().getString().equalsIgnoreCase("EmptyHandler"));
+    assertTrue(defNode.getKey().equalsIgnoreCase("IRQ"));
+
+  }
+
+  @Test
+  @DisplayName("SNES Emu Vector Body parses")
+  public void parseSnesEmuVectorTest() {
+    var source = """
+              .SNESEMUVECTOR               ; Define Native Mode interrupt vector table
+        COP EmptyHandler
+        ABORT EmptyHandler
+        NMI EmptyHandler
+        RESET Start                   ; where execution starts
+        IRQBRK EmptyHandler
+              .ENDEMUVECTOR
+             """;
+
+    var parser = asParser(source);
+    DirectiveNode snesHeaderDireciveNode = (DirectiveNode) parser.nextNode();
+    assertTrue(snesHeaderDireciveNode.hasBody());
+    SnesDefinitionNode defNode = (SnesDefinitionNode) snesHeaderDireciveNode.getBody().getChildren()
+        .get(0);
+    assertTrue(defNode.getNumericValue().getType().equals(NodeTypes.IDENTIFIER_EXPRESSION));
+    assertTrue(defNode.getKey().equalsIgnoreCase("COP"));
+
+    defNode = (SnesDefinitionNode) snesHeaderDireciveNode.getBody().getChildren().get(4);
+    assertTrue(defNode.getNumericValue().getType().equals(NodeTypes.IDENTIFIER_EXPRESSION));
+    assertTrue(
+        defNode.getNumericValue().getSourceToken().getString().equalsIgnoreCase("EmptyHandler"));
+    assertTrue(defNode.getKey().equalsIgnoreCase("IRQBRK"));
 
   }
 
