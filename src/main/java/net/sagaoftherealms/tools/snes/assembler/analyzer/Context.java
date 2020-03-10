@@ -23,6 +23,7 @@ public class Context {
   private Integer license;
   private Integer version;
   private boolean snesNativeVector;
+  private SNESRomSpeed snesRomSpeed;
 
   public boolean isMemoryMapSet() {
     return memoryMapSet;
@@ -176,5 +177,13 @@ public class Context {
 
   public void setSnesNativeVector(boolean snesNativeVector) {
     this.snesNativeVector = snesNativeVector;
+  }
+
+  public SNESRomSpeed getSnesRomSpeed() {
+    return snesRomSpeed;
+  }
+
+  public void setSnesRomSpeed(SNESRomSpeed snesRomSpeed) {
+    this.snesRomSpeed = snesRomSpeed;
   }
 }

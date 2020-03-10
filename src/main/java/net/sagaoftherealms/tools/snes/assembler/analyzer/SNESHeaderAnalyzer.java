@@ -69,11 +69,24 @@ public class SNESHeaderAnalyzer extends AbstractAnalyzer {
             context.setSnesRomMode(romMode);
           } else {
             errors.add(new ErrorNode(snesNode.getSourceToken(),
-                new ParseException("Rom mode already Defined", snesNode.getSourceToken())));
+                    new ParseException("Rom mode already Defined", snesNode.getSourceToken())));
           }
         } catch (Exception ex) {
           errors.add(new ErrorNode(snesNode.getSourceToken(),
-              new ParseException(ex.getMessage(), snesNode.getSourceToken())));
+                  new ParseException(ex.getMessage(), snesNode.getSourceToken())));
+        }
+      } else if (SNESRomSpeed.asCollection().contains(snesNode.getKey().toUpperCase())) {
+        try {
+          var romMode = SNESRomSpeed.valueOf(snesNode.getKey().toUpperCase());
+          if (context.getSnesRomSpeed() == null) {
+            context.setSnesRomSpeed(romMode);
+          } else {
+            errors.add(new ErrorNode(snesNode.getSourceToken(),
+                    new ParseException("Rom speed already Defined", snesNode.getSourceToken())));
+          }
+        } catch (Exception ex) {
+          errors.add(new ErrorNode(snesNode.getSourceToken(),
+                  new ParseException(ex.getMessage(), snesNode.getSourceToken())));
         }
       } else if (snesNode.getKey().equalsIgnoreCase("CARTRIDGETYPE")) {
         Integer type = snesNode.getNumericValue().evaluate();
