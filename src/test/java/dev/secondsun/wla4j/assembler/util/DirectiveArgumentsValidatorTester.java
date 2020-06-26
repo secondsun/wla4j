@@ -28,8 +28,7 @@ import org.junit.jupiter.params.provider.CsvSource;
  *
  * <p>(pattern) a pattern
  *
- * <p>Tests for a {@link
- * DirectiveArgumentsValidator}
+ * <p>Tests for a {@link DirectiveArgumentsValidator}
  */
 public class DirectiveArgumentsValidatorTester {
 

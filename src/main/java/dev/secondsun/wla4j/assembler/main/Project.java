@@ -1,5 +1,10 @@
 package dev.secondsun.wla4j.assembler.main;
 
+import dev.secondsun.wla4j.assembler.definition.opcodes.OpCode;
+import dev.secondsun.wla4j.assembler.pass.parse.ErrorNode;
+import dev.secondsun.wla4j.assembler.pass.parse.MultiFileParser;
+import dev.secondsun.wla4j.assembler.pass.parse.Node;
+import dev.secondsun.wla4j.assembler.pass.parse.visitor.Visitor;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -11,17 +16,10 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 
-import dev.secondsun.wla4j.assembler.definition.opcodes.OpCode;
-import dev.secondsun.wla4j.assembler.pass.parse.ErrorNode;
-import dev.secondsun.wla4j.assembler.pass.parse.MultiFileParser;
-import dev.secondsun.wla4j.assembler.pass.parse.visitor.Visitor;
-import dev.secondsun.wla4j.assembler.pass.parse.Node;
-
 /**
  * A project contains all of the files, configurations, etc for a WLA project. What is important is
- * that Project, as opposed to {@link
- * MultiFileParser}, reasons about projects and
- * has more flexibility and configuration.
+ * that Project, as opposed to {@link MultiFileParser}, reasons about projects and has more
+ * flexibility and configuration.
  */
 public class Project {
 

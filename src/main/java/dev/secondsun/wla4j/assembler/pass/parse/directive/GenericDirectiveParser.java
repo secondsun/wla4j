@@ -1,7 +1,5 @@
 package dev.secondsun.wla4j.assembler.pass.parse.directive;
 
-import java.util.Optional;
-
 import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.definition.directives.DirectiveArgumentsValidator;
 import dev.secondsun.wla4j.assembler.pass.parse.Node;
@@ -9,6 +7,7 @@ import dev.secondsun.wla4j.assembler.pass.parse.ParseException;
 import dev.secondsun.wla4j.assembler.pass.parse.SourceParser;
 import dev.secondsun.wla4j.assembler.pass.parse.expression.ExpressionNode;
 import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
+import java.util.Optional;
 
 public class GenericDirectiveParser implements DirectiveParser {
 

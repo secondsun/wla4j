@@ -1,5 +1,12 @@
 package dev.secondsun.wla4j.assembler.pass.parse;
 
+import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
+import dev.secondsun.wla4j.assembler.definition.opcodes.OpCode;
+import dev.secondsun.wla4j.assembler.main.InputData;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveNode;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.macro.MacroNode;
+import dev.secondsun.wla4j.assembler.pass.parse.visitor.MacroDefinitionVisitor;
+import dev.secondsun.wla4j.assembler.pass.parse.visitor.Visitor;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,14 +21,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import dev.secondsun.wla4j.assembler.definition.opcodes.OpCode;
-import dev.secondsun.wla4j.assembler.main.InputData;
-import dev.secondsun.wla4j.assembler.pass.parse.visitor.Visitor;
-import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveNode;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.macro.MacroNode;
-import dev.secondsun.wla4j.assembler.pass.parse.visitor.MacroDefinitionVisitor;
 
 /**
  * This class was an old way to do quick and dirty parsing. I'm replacing this with a version that

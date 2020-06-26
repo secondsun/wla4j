@@ -1,13 +1,11 @@
 package dev.secondsun.wla4j.assembler.util;
 
 import dev.secondsun.wla4j.assembler.main.InputData;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This file is the the {@link InputData} data and
- * mapping to the original source files.
+ * This file is the the {@link InputData} data and mapping to the original source files.
  *
  * <p>The way it works is InputData data contains the positioning and manipulating information and
  * this file is the underlying characters and mapping back to the original file.

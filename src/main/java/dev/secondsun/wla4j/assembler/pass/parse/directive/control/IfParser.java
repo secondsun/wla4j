@@ -1,20 +1,19 @@
 package dev.secondsun.wla4j.assembler.pass.parse.directive.control;
 
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
-
+import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.pass.parse.NodeTypes;
 import dev.secondsun.wla4j.assembler.pass.parse.ParseException;
 import dev.secondsun.wla4j.assembler.pass.parse.SourceParser;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveArgumentsNode;
-import dev.secondsun.wla4j.assembler.pass.parse.expression.ExpressionParser;
-import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
-import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
-import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveBodyNode;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveNode;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.GenericDirectiveParser;
+import dev.secondsun.wla4j.assembler.pass.parse.expression.ExpressionParser;
+import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
+import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 
 public class IfParser extends GenericDirectiveParser {
 

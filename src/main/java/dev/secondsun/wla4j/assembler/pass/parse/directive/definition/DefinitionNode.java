@@ -1,13 +1,12 @@
 package dev.secondsun.wla4j.assembler.pass.parse.directive.definition;
 
-import java.util.Optional;
-
 import dev.secondsun.wla4j.assembler.pass.parse.Node;
 import dev.secondsun.wla4j.assembler.pass.parse.NodeTypes;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.StringExpressionNode;
 import dev.secondsun.wla4j.assembler.pass.parse.expression.ConstantNode;
 import dev.secondsun.wla4j.assembler.pass.parse.expression.NumericExpressionNode;
 import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
+import java.util.Optional;
 
 /**
  * This class represents a label definition.

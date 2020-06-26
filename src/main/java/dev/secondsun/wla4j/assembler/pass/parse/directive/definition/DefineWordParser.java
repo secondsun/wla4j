@@ -6,8 +6,6 @@ import static dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes.COMMA;
 import static dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes.END_OF_INPUT;
 import static dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes.EOL;
 
-import java.util.Arrays;
-import java.util.List;
 import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.pass.parse.ParseException;
 import dev.secondsun.wla4j.assembler.pass.parse.SourceParser;
@@ -15,6 +13,8 @@ import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveArgumentsNode
 import dev.secondsun.wla4j.assembler.pass.parse.directive.GenericDirectiveParser;
 import dev.secondsun.wla4j.assembler.pass.parse.expression.ExpressionParser;
 import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
+import java.util.Arrays;
+import java.util.List;
 
 public class DefineWordParser extends GenericDirectiveParser {
 

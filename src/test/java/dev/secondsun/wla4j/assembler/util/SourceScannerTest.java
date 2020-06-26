@@ -3,19 +3,18 @@ package dev.secondsun.wla4j.assembler.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import java.util.Arrays;
-import java.util.Random;
-import java.util.stream.Stream;
-
+import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.definition.opcodes.OpCode65816;
+import dev.secondsun.wla4j.assembler.definition.opcodes.OpCodeSpc700;
 import dev.secondsun.wla4j.assembler.definition.opcodes.OpCodeZ80;
 import dev.secondsun.wla4j.assembler.main.InputData;
 import dev.secondsun.wla4j.assembler.pass.parse.ErrorNode;
 import dev.secondsun.wla4j.assembler.pass.parse.ParseException;
 import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
-import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
-import dev.secondsun.wla4j.assembler.definition.opcodes.OpCodeSpc700;
 import dev.secondsun.wla4j.assembler.pass.scan.token.TokenUtil;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

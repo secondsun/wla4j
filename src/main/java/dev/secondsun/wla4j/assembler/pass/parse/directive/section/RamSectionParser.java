@@ -6,9 +6,9 @@ import static dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes.LABEL;
 import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.pass.parse.ParseException;
 import dev.secondsun.wla4j.assembler.pass.parse.SourceParser;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.definition.BodyDefinitionParser;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.section.RamsectionArgumentsNode.RamsectionArguments;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
 import dev.secondsun.wla4j.assembler.pass.scan.token.TokenUtil;
 

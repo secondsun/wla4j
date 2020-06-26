@@ -1,9 +1,8 @@
 package dev.secondsun.wla4j.assembler.pass.parse;
 
-import java.util.*;
-
 import dev.secondsun.wla4j.assembler.pass.parse.visitor.Visitor;
 import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
+import java.util.*;
 
 public abstract class Node implements Iterable<Node> {
 

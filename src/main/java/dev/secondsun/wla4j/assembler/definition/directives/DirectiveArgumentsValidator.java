@@ -1,12 +1,11 @@
 package dev.secondsun.wla4j.assembler.definition.directives;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 import dev.secondsun.wla4j.assembler.pass.parse.Node;
 import dev.secondsun.wla4j.assembler.pass.parse.SourceParser;
 import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
 import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
+import java.util.Arrays;
+import java.util.Optional;
 
 public final class DirectiveArgumentsValidator {
 
@@ -243,7 +242,8 @@ public final class DirectiveArgumentsValidator {
             }
             break;
           case 'e':
-            if (Arrays.asList(TokenTypes.LEFT_PAREN, TokenTypes.LABEL, TokenTypes.NUMBER).contains(token.getType())) {
+            if (Arrays.asList(TokenTypes.LEFT_PAREN, TokenTypes.LABEL, TokenTypes.NUMBER)
+                .contains(token.getType())) {
               expectComma = true;
               return true;
             }

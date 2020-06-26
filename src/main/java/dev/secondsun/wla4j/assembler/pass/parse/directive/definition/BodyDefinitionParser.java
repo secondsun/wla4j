@@ -1,21 +1,21 @@
 package dev.secondsun.wla4j.assembler.pass.parse.directive.definition;
 
+import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.pass.parse.Node;
 import dev.secondsun.wla4j.assembler.pass.parse.ParseException;
 import dev.secondsun.wla4j.assembler.pass.parse.SourceParser;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveArgumentsNode;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveBodyNode;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveUtils;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.GenericDirectiveParser;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.control.IfBodyNode;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.control.IfParser;
+import dev.secondsun.wla4j.assembler.pass.parse.expression.ConstantNode;
 import dev.secondsun.wla4j.assembler.pass.parse.expression.ExpressionParser;
 import dev.secondsun.wla4j.assembler.pass.parse.expression.NumericExpressionNode;
 import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
 import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
 import dev.secondsun.wla4j.assembler.pass.scan.token.TokenUtil;
-import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveBodyNode;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveUtils;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.GenericDirectiveParser;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.control.IfParser;
-import dev.secondsun.wla4j.assembler.pass.parse.expression.ConstantNode;
 
 /**
  * This class parses the body of directives which have definitions.

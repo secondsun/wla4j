@@ -1,7 +1,7 @@
 package dev.secondsun.wla4j.assembler.pass.parse;
 
-import java.util.List;
 import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
+import java.util.List;
 
 public class MacroCallNode extends Node {
 

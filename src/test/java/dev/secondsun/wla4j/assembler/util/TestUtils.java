@@ -1,11 +1,11 @@
 package dev.secondsun.wla4j.assembler.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import dev.secondsun.wla4j.assembler.definition.opcodes.OpCode;
 import dev.secondsun.wla4j.assembler.definition.opcodes.OpCode65816;
 import dev.secondsun.wla4j.assembler.main.InputData;
 import dev.secondsun.wla4j.assembler.pass.parse.SourceParser;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 public class TestUtils {
 

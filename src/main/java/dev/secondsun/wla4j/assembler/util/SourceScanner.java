@@ -2,16 +2,15 @@ package dev.secondsun.wla4j.assembler.util;
 
 import static java.lang.Math.min;
 
+import dev.secondsun.wla4j.assembler.definition.opcodes.OpCode;
+import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
+import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
+import dev.secondsun.wla4j.assembler.pass.scan.token.TokenUtil;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import dev.secondsun.wla4j.assembler.definition.opcodes.OpCode;
-import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
-import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
-import dev.secondsun.wla4j.assembler.pass.scan.token.TokenUtil;
 
 /** A stateful object that is used to read data from a {@link SourceFileDataMap} */
 public class SourceScanner {

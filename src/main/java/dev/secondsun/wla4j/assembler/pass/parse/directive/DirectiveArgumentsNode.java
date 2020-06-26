@@ -1,11 +1,10 @@
 package dev.secondsun.wla4j.assembler.pass.parse.directive;
 
-import java.util.stream.Collectors;
-
-import dev.secondsun.wla4j.assembler.pass.parse.NodeTypes;
-import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
 import dev.secondsun.wla4j.assembler.pass.parse.Node;
+import dev.secondsun.wla4j.assembler.pass.parse.NodeTypes;
 import dev.secondsun.wla4j.assembler.pass.parse.expression.ExpressionNode;
+import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
+import java.util.stream.Collectors;
 
 public class DirectiveArgumentsNode extends Node {
 

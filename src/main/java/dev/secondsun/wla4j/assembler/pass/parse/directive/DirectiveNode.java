@@ -1,8 +1,8 @@
 package dev.secondsun.wla4j.assembler.pass.parse.directive;
 
+import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.pass.parse.Node;
 import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
-import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 
 public class DirectiveNode extends Node {
 

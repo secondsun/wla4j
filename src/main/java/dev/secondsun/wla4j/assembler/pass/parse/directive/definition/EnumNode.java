@@ -1,8 +1,8 @@
 package dev.secondsun.wla4j.assembler.pass.parse.directive.definition;
 
-import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
 import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveNode;
+import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
 
 public class EnumNode extends DirectiveNode {
 

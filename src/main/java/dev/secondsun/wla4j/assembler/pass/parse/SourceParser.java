@@ -1,17 +1,16 @@
 package dev.secondsun.wla4j.assembler.pass.parse;
 
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import dev.secondsun.wla4j.assembler.pass.parse.visitor.Visitor;
-import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
-import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveUtils;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.StringExpressionNode;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.macro.MacroNode;
 import dev.secondsun.wla4j.assembler.pass.parse.expression.ExpressionParser;
+import dev.secondsun.wla4j.assembler.pass.parse.visitor.Visitor;
+import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
+import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
 import dev.secondsun.wla4j.assembler.util.SourceScanner;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SourceParser {
 
@@ -118,7 +117,8 @@ public class SourceParser {
   private MacroCallNode macroCall() {
     var node = new MacroCallNode(token.getString(), token);
     consume(TokenTypes.LABEL);
-    while (!token.getType().equals(TokenTypes.EOL) && !token.getType().equals(TokenTypes.END_OF_INPUT)) {
+    while (!token.getType().equals(TokenTypes.EOL)
+        && !token.getType().equals(TokenTypes.END_OF_INPUT)) {
       if (!token.getType().equals(TokenTypes.COMMA)) {
         node.addArgument(ExpressionParser.expressionNode(this));
       } else {
@@ -135,7 +135,8 @@ public class SourceParser {
     consume(TokenTypes.OPCODE);
     token = getCurrentToken();
 
-    while (!token.getType().equals(TokenTypes.EOL) && !token.getType().equals(TokenTypes.END_OF_INPUT)) {
+    while (!token.getType().equals(TokenTypes.EOL)
+        && !token.getType().equals(TokenTypes.END_OF_INPUT)) {
       if (token.getType().equals(TokenTypes.COMMA)) {
         consume(TokenTypes.COMMA);
         continue;

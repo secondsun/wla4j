@@ -23,20 +23,21 @@ public class SNESEmuVectorParser implements DirectiveParser {
         parser.consumeAndClear(TokenTypes.EOL);
         token = parser.getCurrentToken();
       }
-      parser.consumeAndClear(TokenTypes.LABEL, TokenTypes.OPCODE);//COP is an opcode as well
+      parser.consumeAndClear(TokenTypes.LABEL, TokenTypes.OPCODE); // COP is an opcode as well
       switch (token.getString().toUpperCase()) {
         case "COP":
         case "RESET":
         case "ABORT":
         case "NMI":
-        case "IRQBRK": {
-          var snesDefinition = new SnesDefinitionNode(token.getString().toUpperCase(), token);
-          token = parser.getCurrentToken();
-          snesDefinition.setNumericValue(new IdentifierNode(token));
-          parser.consumeAndClear(TokenTypes.LABEL);
-          body.addChild(snesDefinition);
-          break;
-        }
+        case "IRQBRK":
+          {
+            var snesDefinition = new SnesDefinitionNode(token.getString().toUpperCase(), token);
+            token = parser.getCurrentToken();
+            snesDefinition.setNumericValue(new IdentifierNode(token));
+            parser.consumeAndClear(TokenTypes.LABEL);
+            body.addChild(snesDefinition);
+            break;
+          }
         default:
           throw new ParseException("Unexpected label", token);
       }

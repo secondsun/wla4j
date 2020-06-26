@@ -1,24 +1,12 @@
 package dev.secondsun.wla4j.assembler.pass.parse.directive;
 
+import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.pass.parse.NodeTypes;
 import dev.secondsun.wla4j.assembler.pass.parse.ParseException;
 import dev.secondsun.wla4j.assembler.pass.parse.bank.BankNode;
 import dev.secondsun.wla4j.assembler.pass.parse.bank.BankParser;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.control.IfDefForMacrosParser;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.control.IfParser;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.gbheader.GBHeaderParser;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.incbin.IncbinParser;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.macro.MacroParser;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.section.RamSectionParser;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.section.SectionNode;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.section.SectionParser;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.snesheader.SNESEmuVectorParser;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.snesheader.SNESHeaderParser;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.snesheader.SNESNativeVectorParser;
-import dev.secondsun.wla4j.assembler.pass.parse.expression.ExpressionParser;
-import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
-import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
-import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.definition.BaseParser;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.definition.DefineByteParser;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.definition.DefineByteSeriesParser;
@@ -31,7 +19,19 @@ import dev.secondsun.wla4j.assembler.pass.parse.directive.definition.StructNode;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.definition.StructParser;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.definition.UnionNode;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.definition.UnionParser;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.gbheader.GBHeaderParser;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.incbin.IncbinParser;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.macro.MacroNode;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.macro.MacroParser;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.section.RamSectionParser;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.section.SectionNode;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.section.SectionParser;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.snesheader.SNESEmuVectorParser;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.snesheader.SNESHeaderParser;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.snesheader.SNESNativeVectorParser;
+import dev.secondsun.wla4j.assembler.pass.parse.expression.ExpressionParser;
+import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
+import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
 
 public final class DirectiveUtils {
 
@@ -53,7 +53,8 @@ public final class DirectiveUtils {
         node.add(new StringExpressionNode(token.getString(), token));
 
         token = parser.getCurrentToken();
-        while (!(token.getType().equals(TokenTypes.EOL) || token.getType().equals(TokenTypes.END_OF_INPUT))) {
+        while (!(token.getType().equals(TokenTypes.EOL)
+            || token.getType().equals(TokenTypes.END_OF_INPUT))) {
           if (token.getType().equals(TokenTypes.COMMA)) {
             parser.consume(TokenTypes.COMMA);
             token = parser.getCurrentToken();
@@ -92,8 +93,7 @@ public final class DirectiveUtils {
         return arguments;
       };
 
-  private DirectiveUtils() {
-  }
+  private DirectiveUtils() {}
 
   public static DirectiveParser getParser(AllDirectives type) {
     switch (type) {

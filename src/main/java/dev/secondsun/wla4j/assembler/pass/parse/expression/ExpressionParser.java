@@ -1,14 +1,13 @@
 package dev.secondsun.wla4j.assembler.pass.parse.expression;
 
-import java.util.Arrays;
-import java.util.List;
-
 import dev.secondsun.wla4j.assembler.pass.parse.ParseException;
 import dev.secondsun.wla4j.assembler.pass.parse.SourceParser;
+import dev.secondsun.wla4j.assembler.pass.parse.directive.StringExpressionNode;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.definition.OperationType;
 import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
 import dev.secondsun.wla4j.assembler.pass.scan.token.TokenUtil;
-import dev.secondsun.wla4j.assembler.pass.parse.directive.StringExpressionNode;
+import java.util.Arrays;
+import java.util.List;
 
 /** Parses expressions in the body definition. */
 public class ExpressionParser {
@@ -17,8 +16,10 @@ public class ExpressionParser {
   private static List<TokenTypes> comparisonTokens = Arrays.asList(TokenTypes.GT, TokenTypes.LT);
   private static List<TokenTypes> shiftTokens = Arrays.asList(TokenTypes.GT, TokenTypes.LT);
 
-  private static final List<TokenTypes> termTokens = Arrays.asList(TokenTypes.PLUS, TokenTypes.MINUS);
-  private static final List<TokenTypes> factorTokens = Arrays.asList(TokenTypes.MULTIPLY, TokenTypes.DIVIDE);
+  private static final List<TokenTypes> termTokens =
+      Arrays.asList(TokenTypes.PLUS, TokenTypes.MINUS);
+  private static final List<TokenTypes> factorTokens =
+      Arrays.asList(TokenTypes.MULTIPLY, TokenTypes.DIVIDE);
 
   private ExpressionParser() {}
 

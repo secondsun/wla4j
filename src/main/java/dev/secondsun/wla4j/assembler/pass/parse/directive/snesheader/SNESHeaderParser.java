@@ -26,43 +26,47 @@ public class SNESHeaderParser implements DirectiveParser {
       }
       parser.consumeAndClear(TokenTypes.LABEL);
       switch (token.getString().toUpperCase()) {
-        case "ID": {
-          var snesDefinition = new SnesDefinitionNode("ID", token);
-          token = parser.getCurrentToken();
-          snesDefinition.setStringValue(token.getString(), token);
-          parser.consumeAndClear(TokenTypes.STRING);
-          body.addChild(snesDefinition);
-          break;
-        }
-        case "NAME": {
-          var snesDefinition = new SnesDefinitionNode("NAME", token);
-          token = parser.getCurrentToken();
-          snesDefinition.setStringValue(token.getString(), token);
-          parser.consumeAndClear(TokenTypes.STRING);
-          body.addChild(snesDefinition);
-          break;
-        }
+        case "ID":
+          {
+            var snesDefinition = new SnesDefinitionNode("ID", token);
+            token = parser.getCurrentToken();
+            snesDefinition.setStringValue(token.getString(), token);
+            parser.consumeAndClear(TokenTypes.STRING);
+            body.addChild(snesDefinition);
+            break;
+          }
+        case "NAME":
+          {
+            var snesDefinition = new SnesDefinitionNode("NAME", token);
+            token = parser.getCurrentToken();
+            snesDefinition.setStringValue(token.getString(), token);
+            parser.consumeAndClear(TokenTypes.STRING);
+            body.addChild(snesDefinition);
+            break;
+          }
         case "HIROM":
         case "EXHIROM":
         case "LOROM":
         case "SLOWROM":
-        case "FASTROM": {
-          var snesDefinition = new SnesDefinitionNode(token.getString().toUpperCase(), token);
-          body.addChild(snesDefinition);
-          break;
-        }
+        case "FASTROM":
+          {
+            var snesDefinition = new SnesDefinitionNode(token.getString().toUpperCase(), token);
+            body.addChild(snesDefinition);
+            break;
+          }
         case "CARTRIDGETYPE":
         case "ROMSIZE":
         case "SRAMSIZE":
         case "COUNTRY":
         case "LICENSEECODE":
-        case "VERSION": {
-          var snesDefinition = new SnesDefinitionNode(token.getString().toUpperCase(), token);
-          snesDefinition
-              .setNumericValue((NumericExpressionNode) ExpressionParser.expressionNode(parser));
-          body.addChild(snesDefinition);
-          break;
-        }
+        case "VERSION":
+          {
+            var snesDefinition = new SnesDefinitionNode(token.getString().toUpperCase(), token);
+            snesDefinition.setNumericValue(
+                (NumericExpressionNode) ExpressionParser.expressionNode(parser));
+            body.addChild(snesDefinition);
+            break;
+          }
         default:
           throw new ParseException("Unexpected label", token);
       }

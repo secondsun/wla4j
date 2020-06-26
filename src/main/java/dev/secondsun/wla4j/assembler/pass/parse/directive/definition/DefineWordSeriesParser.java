@@ -1,9 +1,9 @@
 package dev.secondsun.wla4j.assembler.pass.parse.directive.definition;
 
-import java.util.Arrays;
-import java.util.List;
 import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.GenericDirectiveParser;
+import java.util.Arrays;
+import java.util.List;
 
 public class DefineWordSeriesParser extends GenericDirectiveParser {
 

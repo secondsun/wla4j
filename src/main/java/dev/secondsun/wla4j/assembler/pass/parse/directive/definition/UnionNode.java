@@ -1,11 +1,10 @@
 package dev.secondsun.wla4j.assembler.pass.parse.directive.definition;
 
-import java.util.Optional;
-
+import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveNode;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.StringExpressionNode;
 import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
-import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
+import java.util.Optional;
 
 public class UnionNode extends DirectiveNode {
 

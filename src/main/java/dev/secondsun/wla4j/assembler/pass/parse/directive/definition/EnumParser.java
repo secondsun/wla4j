@@ -1,11 +1,11 @@
 package dev.secondsun.wla4j.assembler.pass.parse.directive.definition;
 
+import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.pass.parse.ParseException;
 import dev.secondsun.wla4j.assembler.pass.parse.SourceParser;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import dev.secondsun.wla4j.assembler.pass.parse.expression.ExpressionParser;
 import dev.secondsun.wla4j.assembler.pass.scan.token.TokenTypes;
-import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 
 /** This class parses Enums, Structs, and RAMSECTIONS */
 public class EnumParser extends BodyDefinitionParser {

@@ -1,15 +1,15 @@
 package dev.secondsun.wla4j.assembler.pass.parse.directive.snesheader;
 
-import java.util.Optional;
 import dev.secondsun.wla4j.assembler.pass.parse.Node;
 import dev.secondsun.wla4j.assembler.pass.parse.NodeTypes;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.StringExpressionNode;
 import dev.secondsun.wla4j.assembler.pass.parse.expression.ConstantNode;
 import dev.secondsun.wla4j.assembler.pass.parse.expression.NumericExpressionNode;
 import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
+import java.util.Optional;
 
 /**
- * This class represents a SNES header definition.  SNES header directives are snesheader,
+ * This class represents a SNES header definition. SNES header directives are snesheader,
  * snesnativevector, and snesemuvector
  */
 public class SnesDefinitionNode extends Node {

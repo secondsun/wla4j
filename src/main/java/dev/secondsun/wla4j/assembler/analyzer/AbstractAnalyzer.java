@@ -1,10 +1,10 @@
 package dev.secondsun.wla4j.assembler.analyzer;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.pass.parse.ErrorNode;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveNode;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class AbstractAnalyzer {
   protected final Context context;

@@ -1,8 +1,8 @@
 package dev.secondsun.wla4j.assembler.pass.parse.directive;
 
 import dev.secondsun.wla4j.assembler.pass.parse.NodeTypes;
-import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
 import dev.secondsun.wla4j.assembler.pass.parse.expression.ExpressionNode;
+import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
 
 public class StringExpressionNode extends ExpressionNode<String> {
 

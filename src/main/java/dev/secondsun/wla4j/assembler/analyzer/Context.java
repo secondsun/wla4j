@@ -1,6 +1,5 @@
 package dev.secondsun.wla4j.assembler.analyzer;
 
-
 public class Context {
 
   private boolean memoryMapSet;

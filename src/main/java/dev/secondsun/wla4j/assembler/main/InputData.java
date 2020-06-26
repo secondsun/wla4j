@@ -1,14 +1,13 @@
 package dev.secondsun.wla4j.assembler.main;
 
+import dev.secondsun.wla4j.assembler.definition.opcodes.OpCode;
+import dev.secondsun.wla4j.assembler.util.SourceFileDataMap;
+import dev.secondsun.wla4j.assembler.util.SourceScanner;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
-
-import dev.secondsun.wla4j.assembler.definition.opcodes.OpCode;
-import dev.secondsun.wla4j.assembler.util.SourceFileDataMap;
-import dev.secondsun.wla4j.assembler.util.SourceScanner;
 
 /**
  * This class is the "object" which is all of the input files. It is mutable and has a few

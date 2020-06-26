@@ -1,7 +1,7 @@
 package dev.secondsun.wla4j.assembler.pass.parse;
 
-import java.util.stream.Collectors;
 import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
+import java.util.stream.Collectors;
 
 public class OpcodeNode extends Node {
 

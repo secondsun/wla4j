@@ -1,11 +1,11 @@
 package dev.secondsun.wla4j.assembler.analyzer;
 
-import java.util.ArrayList;
-import java.util.List;
 import dev.secondsun.wla4j.assembler.definition.directives.AllDirectives;
 import dev.secondsun.wla4j.assembler.pass.parse.ErrorNode;
 import dev.secondsun.wla4j.assembler.pass.parse.ParseException;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveNode;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BankSizeAnalyzer extends AbstractAnalyzer {
 

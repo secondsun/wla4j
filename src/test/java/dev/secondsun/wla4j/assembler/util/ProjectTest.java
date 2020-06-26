@@ -2,17 +2,18 @@ package dev.secondsun.wla4j.assembler.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.File;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import dev.secondsun.wla4j.assembler.main.ArchRoot;
 import dev.secondsun.wla4j.assembler.main.Project;
 import dev.secondsun.wla4j.assembler.pass.parse.Node;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.macro.MacroNode;
+import java.io.File;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+@Disabled
 public class ProjectTest {
 
   @Test

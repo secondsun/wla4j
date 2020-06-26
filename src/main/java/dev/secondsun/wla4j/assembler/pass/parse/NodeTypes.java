@@ -20,5 +20,4 @@ public enum NodeTypes {
   ERROR,
   SNES_HEADER_DEFINITION,
   ENUM;
-
 }

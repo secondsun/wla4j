@@ -1,9 +1,9 @@
 package dev.secondsun.wla4j.assembler.pass.parse.directive.definition;
 
-import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.DirectiveArgumentsNode;
 import dev.secondsun.wla4j.assembler.pass.parse.directive.StringExpressionNode;
 import dev.secondsun.wla4j.assembler.pass.parse.expression.ExpressionNode;
+import dev.secondsun.wla4j.assembler.pass.scan.token.Token;
 
 public class EnumArgumentsNode extends DirectiveArgumentsNode {
 
