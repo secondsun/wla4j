@@ -1,0 +1,30 @@
+name: Validate
+on: [pull_request]
+
+jobs:
+  validate_comments:
+    name: 'Validate Conventional Commits'
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: wagoid/commitlint-github-action@v1
+  
+  validate_code_style:
+    name: 'Validate Code Style'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Check code style
+      run: npm run lint

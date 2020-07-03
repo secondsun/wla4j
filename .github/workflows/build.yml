@@ -1,0 +1,69 @@
+name: 'Build'
+
+env:
+  TEST_APP_NAME: RNUpsTestApp
+  TEST_SIMULATOR: test_simulator
+  TEST_DEVICE: iPhone-7
+  IOS_VERSION: iOS-13-4
+  DEVELOPER_DIR: /Applications/Xcode_11.4.app/Contents/Developer
+
+on: [pull_request]
+
+jobs:
+  build-android:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout the repo
+      uses: actions/checkout@v2
+
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+
+    - name: Install test application dependencies
+      run: |
+        cd test/${{ env.TEST_APP_NAME }}
+        npm install ../..
+        npm install
+      shell: bash
+
+    - name: Compile the android project
+      run: |
+        cd test/${{ env.TEST_APP_NAME }}/android
+        gradle wrapper
+        ./gradlew clean assembleDebug
+
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout the repo
+      uses: actions/checkout@v2
+
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+
+    - name: Install test application dependencies
+      run: |
+        cd test/${{ env.TEST_APP_NAME }}
+        npm install ../..
+        npm install
+      shell: bash
+
+    - name: Install pods
+      run: |
+        cd test/${{ env.TEST_APP_NAME }}/ios
+        pod install
+      shell: bash
+
+    - name: Create a simulator
+      run: |
+        xcrun simctl create ${{ env.TEST_SIMULATOR }} com.apple.CoreSimulator.SimDeviceType.${{ env.TEST_DEVICE }} com.apple.CoreSimulator.SimRuntime.${{ env.IOS_VERSION}}
+      shell: bash
+
+    - name: Compile iOS project
+      run: |
+        cd test/${{ env.TEST_APP_NAME }}/ios
+        xcodebuild -workspace ${{ env.TEST_APP_NAME }}.xcworkspace -configuration Debug -scheme ${{ env.TEST_APP_NAME }} -destination 'name=${{ env.TEST_SIMULATOR }}'
