@@ -1,6 +1,6 @@
 open module wla4j {
   requires java.logging;
-  requires java.json;
+  requires jakarta.json;
 
   exports dev.secondsun.wla4j.assembler.main;
   exports dev.secondsun.wla4j.assembler.analyzer;
